@@ -3,7 +3,7 @@ This project automates the process of extracting and organizing text from images
 
 
 <div align="center">
-  <img src="extra_files/schematic.png" alt="lab-electronics-inventory" width="600" height="400">
+  <img src="extra_files/schematic.png" alt="lab-electronics-inventory" width="600" height="200">
 </div>
 
 
