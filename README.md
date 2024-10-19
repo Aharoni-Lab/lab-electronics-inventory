@@ -2,6 +2,9 @@
 This project automates the process of extracting and organizing text from images of electronic components, such as resistors, capacitors, and other small parts commonly found in electronics. The idea is to take pictures of these components and use this tool to extract relevant information from the images and sort the data into an Excel file.
 
 
+![Schematic](https://github.com/username/repository-name/blob/main/extra_files/schematic.png)
+
+
 The main steps involved are:
 
 **Image Processing:** The project can handle component photos in different formats, converting them if needed (e.g., from .heic to .jpg).
