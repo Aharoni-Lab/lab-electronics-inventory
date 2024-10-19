@@ -7,16 +7,16 @@ from PIL import Image
 import pyheif
 
 # Set Google Cloud Vision API credentials
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/test/aharonilab-9410614763f1.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/aharonilab-9410614763f1.json"
 
 # Initialize a Vision API client
 client = vision.ImageAnnotatorClient()
 
 # Directories and output files
-heic_source_directory = '/Users/abasaltbahrami/Desktop/test/component_photos'
-converted_image_directory = '/Users/abasaltbahrami/Desktop/test/converted_to_jpeg'
-output_txt_file = '/Users/abasaltbahrami/Desktop/test/extracted_texts.txt'
-output_excel_file = '/Users/abasaltbahrami/Desktop/test/extracted_texts_sorted.xlsx'
+heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/component_photos'
+converted_image_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/converted_to_jpeg'
+output_txt_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
+output_excel_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts_sorted.xlsx'
 
 
 def convert_heic_to_jpg(heic_directory, jpg_directory):
