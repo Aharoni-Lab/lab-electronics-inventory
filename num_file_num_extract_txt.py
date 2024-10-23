@@ -2,8 +2,8 @@ import os
 import re
 
 # Define the path to the text file and the directory
-text_file_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
-directory_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files'
+text_file_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts_Workshop.txt'
+directory_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files/Workshop'
 
 # Function to count IMG_ files in the text file
 

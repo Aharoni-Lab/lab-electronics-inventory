@@ -1,8 +1,9 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import scrolledtext
-import requests
 import re
+import requests
+from tkinter import scrolledtext
+from tkinter import ttk
+import tkinter as tk
+
 
 # Function to fetch file content from Firebase Storage
 
@@ -23,8 +24,9 @@ def is_description(line):
     """
     description_patterns = [
         r'\bDESC\b',                 # Matches 'DESC' or 'DESC:' at the beginning
+        r'\bPart Description\b',      # Matches 'Part Description'
         r'\bCIC\b',                  # Matches 'CIC'
-        r'\bESC\b',                  # Matches 'ESC'
+        r'\bESC\b',                  # Matches 'ESC' in descriptions like 'ESC CAP'
         r'\bSC\b',                   # Matches 'SC'
         r'\bCAP\b',                  # Matches 'CAP' for capacitors
         r'\bRES\b',                  # Matches 'RES' for resistors
@@ -32,7 +34,13 @@ def is_description(line):
         r'\bLED\b',                  # Matches 'LED'
         r'\bDIODE\b',                # Matches 'DIODE'
         r'\bMOSFET\b',               # Matches 'MOSFET'
+        r'\bREF DES\b',              # Matches 'REF DES' for specific components
+        r'\bTEST POINT\b',           # Matches 'TEST POINT' for test points
+        r'\bSCHOTTKY\b',             # Matches 'SCHOTTKY' for diode descriptions
         r'%',                        # Matches the '%' sign in the description
+        r'\bARRAY\b',                # Matches 'ARRAY', commonly used for diodes and MOSFETs
+        r'\bREG LINEAR\b',           # Matches 'REG LINEAR' for regulators
+        r'\bPOS ADJ\b',              # Matches 'POS ADJ' for adjustable components
 
     ]
 
@@ -43,6 +51,7 @@ def is_description(line):
 # Function to search the text file and show the item, description, and location
 
 
+# Function to search the text file and show the item, description, and location
 def search_file():
     # Get the part number and value from the entry boxes
     part_number_query = part_number_entry.get().strip()
@@ -67,8 +76,9 @@ def search_file():
 
     search_patterns = []
     if part_number_query:
+        # Add pattern for part numbers with or without "-ND" suffix
         search_patterns.append(re.compile(
-            rf'{re.escape(part_number_query)}', re.IGNORECASE))
+            rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
     if value_query:
         search_patterns.append(re.compile(
             rf'\b{re.escape(value_query)}\b', re.IGNORECASE))
@@ -87,9 +97,10 @@ def search_file():
 
         # Check if the block contains both the part number and value (if both are provided)
         if all(pattern.search(block) for pattern in search_patterns):
-            # Extract part number
+
+            # Extract part number (supporting both 'P/N:' and 'N:' with full part number)
             part_number_match = re.search(
-                r'P/N:\s*(\S+)', block, re.IGNORECASE)
+                r'(?:P/N|N):\s*([A-Za-z0-9\-]+)', block, re.IGNORECASE)
 
             # Try to find description
             desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
@@ -129,6 +140,7 @@ def search_file():
 
 
 # Firebase Storage URL
+
 file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media&token=fa30c0a3-926a-4ee2-b2b1-7b8b1b84876f"
 
 # Set up the main window
