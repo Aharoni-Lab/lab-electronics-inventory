@@ -113,30 +113,33 @@ def search_file():
     # Regular expressions for different search fields
     search_patterns = []
 
-    # Regex to find part numbers or values + units in the description
+    # Regex to find part numbers or exact numeric values + units in the description
     if part_number_query:
         search_patterns.append(re.compile(
-            rf'\b{part_number_query}\b', re.IGNORECASE))
+            rf'\b{re.escape(part_number_query)}\b', re.IGNORECASE))
+
     if value_query and unit_query:
+        # Match exact value + unit (e.g., 32.7 kHz, case-insensitive, optional spaces)
         search_patterns.append(re.compile(
-            rf'\b{value_query}\s*{unit_query}\b', re.IGNORECASE))
+            rf'\b{re.escape(value_query)}\s*{re.escape(unit_query)}\b', re.IGNORECASE))
     elif value_query:
-        # Less precise if unit is missing
+        # Match exact value followed by any decimal places
         search_patterns.append(re.compile(
-            rf'\b{value_query}\b', re.IGNORECASE))
+            rf'\b{re.escape(value_query)}\d*\b', re.IGNORECASE))
 
     matched_items = []
 
     # Search for each pattern in lines
     for pattern in search_patterns:
-        matched_items.extend([line for line in lines if pattern.search(line)])
+        matches = [line for line in lines if pattern.search(line)]
+        matched_items.extend(matches)
 
-    # Filter to show matches with descriptions like "CAP CER" for capacitors or other full descriptions
+    # Filter to show matches
     if matched_items:
         for item in matched_items:
-            if "CAP" in item or "RES" in item:  # Example check for capacitor or resistor
-                result_box.insert(tk.END, item + '\n')
-                location_box.insert(tk.END, "Workshop\n")
+            result_box.insert(tk.END, item + '\n')
+            # You can update this location info as needed
+            location_box.insert(tk.END, "Workshop\n")
         status_var.set(f"Search completed. Found {len(matched_items)} items.")
     else:
         result_box.insert(tk.END, "No matches found.\n")
