@@ -1,15 +1,14 @@
 # lab-electronics-inventory
-This project automates the process of extracting and organizing text from images of electronic components, such as resistors, capacitors, and other small parts commonly found in electronics. The idea is to take pictures of these components and use this tool to extract relevant information from the images and sort the data into an Excel file.
 
+This project automates the process of extracting and organizing text from images of electronic components, such as resistors, capacitors, and other small parts commonly found in electronics. The idea is to take pictures of these components and use this tool to extract relevant information from the images and sort the data into an Excel file.
 
 <div align="center">
   <img src="extra_files/schematic.png" alt="lab-electronics-inventory" width="600" height="150">
 </div>
 
-
 The main steps involved are:
 
-**Image Processing:** The project can handle component photos in different formats, converting them if needed (e.g., from .heic to .jpg).
+**Image Processing:** The project can handle component photos in different formats, converting them if needed (e.g., from .heic to .jpg). 
 
 **Text Extraction:** Using Google's Cloud Vision API, the tool reads the text labels from images, which often contain key information like part numbers, values, and tolerances.
 
