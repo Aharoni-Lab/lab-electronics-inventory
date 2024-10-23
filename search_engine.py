@@ -14,6 +14,32 @@ def fetch_file_content_from_url(url):
     else:
         return f"Failed to fetch file: {response.status_code}"
 
+# Function to check if a line is a description
+
+
+def is_description(line):
+    """
+    Identifies if a line is likely a component description based on common patterns.
+    """
+    description_patterns = [
+        r'\bDESC\b',                 # Matches 'DESC' or 'DESC:' at the beginning
+        r'\bCIC\b',                  # Matches 'CIC'
+        r'\bESC\b',                  # Matches 'ESC'
+        r'\bSC\b',                   # Matches 'SC'
+        r'\bCAP\b',                  # Matches 'CAP' for capacitors
+        r'\bRES\b',                  # Matches 'RES' for resistors
+        r'\bIC\b',                   # Matches 'IC' for integrated circuits
+        r'\bLED\b',                  # Matches 'LED'
+        r'\bDIODE\b',                # Matches 'DIODE'
+        r'\bMOSFET\b',               # Matches 'MOSFET'
+        r'%',                        # Matches the '%' sign in the description
+
+    ]
+
+    description_regex = re.compile(
+        '|'.join(description_patterns), re.IGNORECASE)
+    return bool(description_regex.search(line))
+
 # Function to search the text file and show the item, description, and location
 
 
@@ -49,6 +75,10 @@ def search_file():
 
     matched_items = []
 
+    # List of common footprints to search for if DESC is missing
+    footprint_patterns = re.compile(
+        r'\b(0201|0402|0603|0805|1206|1210|1812|2220)\b')
+
     # Iterate over each image block
     for block in blocks:
         # Skip empty blocks
@@ -57,16 +87,31 @@ def search_file():
 
         # Check if the block contains both the part number and value (if both are provided)
         if all(pattern.search(block) for pattern in search_patterns):
-            # Extract part number, description, and image filename
+            # Extract part number
             part_number_match = re.search(
-                rf'P/N:\s*(\S+)', block, re.IGNORECASE)
+                r'P/N:\s*(\S+)', block, re.IGNORECASE)
+
+            # Try to find description
             desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
+
+            # If DESC is not found, look for a line that ends with the footprint and treat that line as the description
+            if not desc_match:
+                block_lines = block.splitlines()
+                for line in block_lines:
+                    if is_description(line):  # Use the is_description function
+                        desc_match = line.strip()  # Capture the entire line as the description
+                        break
+
+            # Extract image name
             image_match = re.search(r'IMG_\d+\.jpg', block)
 
             part_number = part_number_match.group(
                 1) if part_number_match else "Unknown Part Number"
-            value = desc_match.group(
-                1) if desc_match else "Value not available"
+
+            # Use description or the entire line as value
+            value = desc_match if isinstance(desc_match, str) else (
+                desc_match.group(1) if desc_match else "Description not available")
+
             image_name = image_match.group(
                 0) if image_match else "Unknown Image"
             location = "Workshop"  # Assuming location is 'Workshop'
