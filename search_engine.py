@@ -92,7 +92,8 @@ def search_file():
         # If no name is provided or doing regular part number/value search, search all files
         url_to_search = urls
 
-    # Helper function to search within a set of blocks from a file
+# Helper function to search within a set of blocks from a file
+
     def search_in_blocks(blocks, location):
         for block in blocks:
             if not block.strip():
@@ -115,13 +116,20 @@ def search_file():
                             if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
                                 desc_match += " " + \
                                     block_lines[i + 1].strip() + \
-                                    " " + block_lines[i + 2].strip()
+                                    block_lines[i + 2].strip()
                             break
 
                 # Extract image name
                 image_match = re.search(r'IMG_\d+\.jpg', block)
-                part_number = part_number_match.group(
-                    1) if part_number_match else "Unknown Part Number"
+
+                # If part number is not found, display "P/N not detected -- Image file name"
+                if not part_number_match:
+                    image_name = image_match.group(
+                        0) if image_match else "Unknown Image"
+                    part_number = f"P/N not detected -- {image_name}"
+                else:
+                    part_number = part_number_match.group(1)
+
                 value = desc_match if isinstance(desc_match, str) else (
                     desc_match.group(1) if desc_match else "Description not available")
                 image_name = image_match.group(
@@ -194,8 +202,8 @@ result_tree = ttk.Treeview(root, columns=columns, show="headings", height=10)
 result_tree.heading("Part Number", text="Part Number")
 result_tree.heading("Value", text="Description")
 result_tree.heading("Location", text="Location")
-result_tree.column("Part Number", width=200)
-result_tree.column("Value", width=300)
+result_tree.column("Part Number", width=250)
+result_tree.column("Value", width=250)
 result_tree.column("Location", width=200)
 result_tree.grid(row=6, column=0, columnspan=2,
                  padx=15, pady=10, sticky="nsew")
