@@ -56,7 +56,8 @@ def is_description(line):
 def search_file():
     # Get the part number and value from the entry boxes
     part_number_query = part_number_entry.get().strip()
-    value_query = value_entry.get().strip()
+    # Convert to lowercase for consistency
+    value_query = value_entry.get().strip().lower()
 
     # Clear previous search results
     result_tree.delete(*result_tree.get_children())
@@ -65,42 +66,41 @@ def search_file():
     status_var.set("Searching...")
     root.update_idletasks()
 
-    # Fetch content from all three files (Workshop, Federico, and Marcel)
-    workshop_content = fetch_file_content_from_url(workshop_file_url)
-    federico_content = fetch_file_content_from_url(federico_file_url)
-    marcel_content = fetch_file_content_from_url(marcel_file_url)
+    # Define URLs for each file
+    urls = {
+        'workshop': workshop_file_url,
+        'federico': federico_file_url,
+        'marcel': marcel_file_url
+    }
 
-    if (workshop_content.startswith("Failed to fetch file") or
-        federico_content.startswith("Failed to fetch file") or
-            marcel_content.startswith("Failed to fetch file")):
-        status_var.set("Failed to fetch one or more files.")
-        return
+    # Determine if the value_query is a specific name (e.g., "marcel")
+    search_by_name = value_query in urls
 
-    # Split content by image blocks
-    workshop_blocks = workshop_content.split("Image:")
-    federico_blocks = federico_content.split("Image:")
-    marcel_blocks = marcel_content.split("Image:")
-
+    # List of patterns for part number and component name/value search
     search_patterns = []
     if part_number_query:
         # Add pattern for part numbers with or without "-ND" suffix
         search_patterns.append(re.compile(
             rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
-    if value_query:
+    if value_query and not search_by_name:  # Avoid searching for value if it's a name
         search_patterns.append(re.compile(
             rf'\b{re.escape(value_query)}\b', re.IGNORECASE))
 
-    # List of common footprints to search for if DESC is missing
-    footprint_patterns = re.compile(
-        r'\b(0201|0402|0603|0805|1206|1210|1812|2220)\b')
+    # If searching by name, restrict search to that person's file
+    if search_by_name:
+        url_to_search = {value_query: urls[value_query]}
+    else:
+        # If no name is provided or doing regular part number/value search, search all files
+        url_to_search = urls
 
+    # Helper function to search within a set of blocks from a file
     def search_in_blocks(blocks, location):
         for block in blocks:
             if not block.strip():
                 continue
 
-            # Check if the block contains both the part number and value (if both are provided)
-            if all(pattern.search(block) for pattern in search_patterns):
+            # If we're searching by name, include all blocks
+            if search_by_name or all(pattern.search(block) for pattern in search_patterns):
                 # Extract part number
                 part_number_match = re.search(
                     r'(?:Lot #|P/N|N):\s*([A-Za-z0-9\-\/# ]+)', block, re.IGNORECASE)
@@ -127,10 +127,16 @@ def search_file():
                 result_tree.insert("", "end", values=(
                     part_number, value, location))
 
-    # Search in Workshop, Federico, and Marcel blocks
-    search_in_blocks(workshop_blocks, "Workshop")
-    search_in_blocks(federico_blocks, "Federico")
-    search_in_blocks(marcel_blocks, "Marcel")
+    # Search through the relevant URLs
+    for name, url in url_to_search.items():
+        file_content = fetch_file_content_from_url(url)
+
+        if file_content.startswith("Failed to fetch file"):
+            status_var.set(f"Failed to fetch {name.capitalize()} file.")
+            continue
+
+        blocks = file_content.split("Image:")
+        search_in_blocks(blocks, name.capitalize())
 
     # Update status bar based on results
     if result_tree.get_children():
@@ -182,7 +188,7 @@ search_button.grid(row=4, column=0, columnspan=2, pady=8, sticky="w")
 columns = ("Part Number", "Value", "Location")
 result_tree = ttk.Treeview(root, columns=columns, show="headings", height=10)
 result_tree.heading("Part Number", text="Part Number")
-result_tree.heading("Value", text="Value")
+result_tree.heading("Value", text="Description")
 result_tree.heading("Location", text="Location")
 result_tree.column("Part Number", width=200)
 result_tree.column("Value", width=300)
