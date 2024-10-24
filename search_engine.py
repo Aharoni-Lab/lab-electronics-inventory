@@ -1,8 +1,8 @@
-import re
-import requests
-from tkinter import scrolledtext
-from tkinter import ttk
 import tkinter as tk
+from tkinter import ttk
+from tkinter import scrolledtext
+import requests
+import re
 
 
 # Function to fetch file content from a URL
@@ -16,6 +16,7 @@ def fetch_file_content_from_url(url):
 # Function to check if a line is a description
 
 
+# Function to check if a line is a description
 def is_description(line):
     """
     Identifies if a line is likely a component description based on common patterns.
@@ -50,13 +51,11 @@ def is_description(line):
         '|'.join(description_patterns), re.IGNORECASE)
     return bool(description_regex.search(line))
 
+
 # Function to search the file and show the item, description, and location
-
-
 def search_file():
     # Get the part number and value from the entry boxes
     part_number_query = part_number_entry.get().strip()
-    # Convert to lowercase for consistency
     value_query = value_entry.get().strip().lower()
 
     # Clear previous search results
@@ -109,9 +108,14 @@ def search_file():
                 desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
                 if not desc_match:
                     block_lines = block.splitlines()
-                    for line in block_lines:
+                    for i, line in enumerate(block_lines):
                         if is_description(line):
                             desc_match = line.strip()
+                            # Check if the description is "CHROMA", then append the next two lines if available
+                            if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                desc_match += " " + \
+                                    block_lines[i + 1].strip() + \
+                                    " " + block_lines[i + 2].strip()
                             break
 
                 # Extract image name
