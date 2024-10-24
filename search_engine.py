@@ -5,9 +5,7 @@ from tkinter import ttk
 import tkinter as tk
 
 
-# Function to fetch file content from Firebase Storage
-
-
+# Function to fetch file content from a URL
 def fetch_file_content_from_url(url):
     response = requests.get(url)
     if response.status_code == 200:
@@ -23,39 +21,42 @@ def is_description(line):
     Identifies if a line is likely a component description based on common patterns.
     """
     description_patterns = [
-        r'\bDESC\b',                 # Matches 'DESC' or 'DESC:' at the beginning
-        r'\bPart Description\b',      # Matches 'Part Description'
-        r'\bCIC\b',                  # Matches 'CIC'
-        r'\bESC\b',                  # Matches 'ESC' in descriptions like 'ESC CAP'
-        r'\bSC\b',                   # Matches 'SC'
-        r'\bCAP\b',                  # Matches 'CAP' for capacitors
-        r'\bRES\b',                  # Matches 'RES' for resistors
-        r'\bIC\b',                   # Matches 'IC' for integrated circuits
-        r'\bLED\b',                  # Matches 'LED'
-        r'\bDIODE\b',                # Matches 'DIODE'
-        r'\bMOSFET\b',               # Matches 'MOSFET'
-        r'\bREF DES\b',              # Matches 'REF DES' for specific components
-        r'\bTEST POINT\b',           # Matches 'TEST POINT' for test points
-        r'\bSCHOTTKY\b',             # Matches 'SCHOTTKY' for diode descriptions
-        r'%',                        # Matches the '%' sign in the description
-        r'\bARRAY\b',                # Matches 'ARRAY', commonly used for diodes and MOSFETs
-        r'\bREG LINEAR\b',           # Matches 'REG LINEAR' for regulators
-        r'\bPOS ADJ\b',              # Matches 'POS ADJ' for adjustable components
-
+        r'\bDESC\b',
+        r'\bPart Description\b',
+        r'\bCIC\b',
+        r'\bESC\b',
+        r'\bSC\b',
+        r'\bCAP\b',
+        r'\bRES\b',
+        r'\bIC\b',
+        r'\bLED\b',
+        r'\bDIODE\b',
+        r'\bMOSFET\b',
+        r'\bREF DES\b',
+        r'\bTEST POINT\b',
+        r'\bSCHOTTKY\b',
+        r'\bARRAY\b',
+        r'\bREG LINEAR\b',
+        r'\bPOS ADJ\b',
+        # New patterns for optical elements
+        r'\bLENS\b',
+        r'\bCHROMA\b',
+        r'\bASPHERE\b',
+        r'\bPRISM\b',
+        r'\bOPTICS\b',
     ]
 
     description_regex = re.compile(
         '|'.join(description_patterns), re.IGNORECASE)
     return bool(description_regex.search(line))
 
-# Function to search the text file and show the item, description, and location
+# Function to search the file and show the item, description, and location
 
 
-# Function to search the text file and show the item, description, and location
 def search_file():
     # Get the part number and value from the entry boxes
     part_number_query = part_number_entry.get().strip()
-    value_query = value_entry.get().strip()  # Get the value from the entry box
+    value_query = value_entry.get().strip()
 
     # Clear previous search results
     result_tree.delete(*result_tree.get_children())
@@ -64,15 +65,21 @@ def search_file():
     status_var.set("Searching...")
     root.update_idletasks()
 
-    # Fetch the file content from the URL
-    file_content = fetch_file_content_from_url(file_url)
+    # Fetch content from all three files (Workshop, Federico, and Marcel)
+    workshop_content = fetch_file_content_from_url(workshop_file_url)
+    federico_content = fetch_file_content_from_url(federico_file_url)
+    marcel_content = fetch_file_content_from_url(marcel_file_url)
 
-    if file_content.startswith("Failed to fetch file"):
-        status_var.set("Failed to fetch file.")
+    if (workshop_content.startswith("Failed to fetch file") or
+        federico_content.startswith("Failed to fetch file") or
+            marcel_content.startswith("Failed to fetch file")):
+        status_var.set("Failed to fetch one or more files.")
         return
 
-    # Split the content by image blocks
-    blocks = file_content.split("Image:")  # Split by each image block
+    # Split content by image blocks
+    workshop_blocks = workshop_content.split("Image:")
+    federico_blocks = federico_content.split("Image:")
+    marcel_blocks = marcel_content.split("Image:")
 
     search_patterns = []
     if part_number_query:
@@ -83,53 +90,47 @@ def search_file():
         search_patterns.append(re.compile(
             rf'\b{re.escape(value_query)}\b', re.IGNORECASE))
 
-    matched_items = []
-
     # List of common footprints to search for if DESC is missing
     footprint_patterns = re.compile(
         r'\b(0201|0402|0603|0805|1206|1210|1812|2220)\b')
 
-    # Iterate over each image block
-    for block in blocks:
-        # Skip empty blocks
-        if not block.strip():
-            continue
+    def search_in_blocks(blocks, location):
+        for block in blocks:
+            if not block.strip():
+                continue
 
-        # Check if the block contains both the part number and value (if both are provided)
-        if all(pattern.search(block) for pattern in search_patterns):
+            # Check if the block contains both the part number and value (if both are provided)
+            if all(pattern.search(block) for pattern in search_patterns):
+                # Extract part number
+                part_number_match = re.search(
+                    r'(?:Lot #|P/N|N):\s*([A-Za-z0-9\-\/# ]+)', block, re.IGNORECASE)
 
-            # Extract part number (supporting both 'P/N:' and 'N:' with full part number)
-            part_number_match = re.search(
-                r'(?:P/N|N):\s*([A-Za-z0-9\-]+)', block, re.IGNORECASE)
+                # Try to find description
+                desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
+                if not desc_match:
+                    block_lines = block.splitlines()
+                    for line in block_lines:
+                        if is_description(line):
+                            desc_match = line.strip()
+                            break
 
-            # Try to find description
-            desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
+                # Extract image name
+                image_match = re.search(r'IMG_\d+\.jpg', block)
+                part_number = part_number_match.group(
+                    1) if part_number_match else "Unknown Part Number"
+                value = desc_match if isinstance(desc_match, str) else (
+                    desc_match.group(1) if desc_match else "Description not available")
+                image_name = image_match.group(
+                    0) if image_match else "Unknown Image"
 
-            # If DESC is not found, look for a line that ends with the footprint and treat that line as the description
-            if not desc_match:
-                block_lines = block.splitlines()
-                for line in block_lines:
-                    if is_description(line):  # Use the is_description function
-                        desc_match = line.strip()  # Capture the entire line as the description
-                        break
+                # Add result to the Treeview
+                result_tree.insert("", "end", values=(
+                    part_number, value, location))
 
-            # Extract image name
-            image_match = re.search(r'IMG_\d+\.jpg', block)
-
-            part_number = part_number_match.group(
-                1) if part_number_match else "Unknown Part Number"
-
-            # Use description or the entire line as value
-            value = desc_match if isinstance(desc_match, str) else (
-                desc_match.group(1) if desc_match else "Description not available")
-
-            image_name = image_match.group(
-                0) if image_match else "Unknown Image"
-            location = "Workshop"  # Assuming location is 'Workshop'
-
-            # Add the result to the Treeview
-            result_tree.insert("", "end", values=(
-                part_number, value, location))
+    # Search in Workshop, Federico, and Marcel blocks
+    search_in_blocks(workshop_blocks, "Workshop")
+    search_in_blocks(federico_blocks, "Federico")
+    search_in_blocks(marcel_blocks, "Marcel")
 
     # Update status bar based on results
     if result_tree.get_children():
@@ -139,14 +140,15 @@ def search_file():
         status_var.set("No matches found.")
 
 
-# Firebase Storage URL
-
-file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media&token=fa30c0a3-926a-4ee2-b2b1-7b8b1b84876f"
+# Firebase Storage URLs for Workshop, Federico, and Marcel
+workshop_file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts_Workshop.txt?alt=media&token=4c67ff8b-f207-4fec-b585-c007518bb976"
+federico_file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts_Federico.txt?alt=media&token=ee37dbb4-44c8-4a82-8ceb-7c9ce8859688"
+marcel_file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts_Marcel.txt?alt=media&token=0e9da0d2-8f8f-451d-9108-4e2283634894"
 
 # Set up the main window
 root = tk.Tk()
 root.title("Component Search Interface")
-root.config(bg="#f0f0f0")  # Light gray background
+root.config(bg="#f0f0f0")
 
 # Create a title label
 title_label = tk.Label(root, text="Component Search Tool", font=(
@@ -161,7 +163,7 @@ part_number_entry = ttk.Entry(root, width=20, font=("Helvetica", 12))
 part_number_entry.grid(row=1, column=1, pady=2, padx=2, sticky="w")
 
 # Create a label and entry widget for value input
-value_label = tk.Label(root, text="Enter value:", font=(
+value_label = tk.Label(root, text="Enter component name/ value:", font=(
     "Helvetica", 12), bg="#f0f0f0", fg="#333")
 value_label.grid(row=2, column=0, pady=2, padx=2, sticky="w")
 value_entry = ttk.Entry(root, width=20, font=("Helvetica", 12))

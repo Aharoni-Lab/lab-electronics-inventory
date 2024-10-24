@@ -14,7 +14,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/la
 client = vision.ImageAnnotatorClient()
 
 # Directories and output files
-heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files/Federico'
+heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files/Marcel'
 converted_image_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/converted_to_jpeg'
 base_output_dir = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/'
 
