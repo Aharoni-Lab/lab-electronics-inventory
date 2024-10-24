@@ -1,7 +1,7 @@
 import requests
 
 # URL to the 'to_be_ordered.txt' file in Firebase Storage
-file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/to_be_ordered.txt?alt=media&token=945490f8-40dd-42ef-b9e0-a1f4b06287b2"
+file_url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/to_be_ordered.txt?alt=media&token=c20e27b9-a434-4fdd-9959-586f1c24003b"
 
 
 def fetch_and_print_file_content(url):
