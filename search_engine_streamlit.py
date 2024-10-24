@@ -29,6 +29,8 @@ def is_description(line):
         '|'.join(description_patterns), re.IGNORECASE)
     return bool(description_regex.search(line))
 
+# Function to search files for part numbers and descriptions
+
 
 def search_file(part_number_query, value_query):
     # URLs of files
@@ -44,20 +46,33 @@ def search_file(part_number_query, value_query):
         for block in blocks:
             if not block.strip():
                 continue
+
+            # Search for part number
             part_number_match = re.search(
                 r'(?:Lot #|P/N|N):\s*([A-Za-z0-9\-\/# ]+)', block, re.IGNORECASE)
+
+            # Try to find description
             desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
             if not desc_match:
                 block_lines = block.splitlines()
                 for i, line in enumerate(block_lines):
                     if is_description(line):
                         desc_match = line.strip()
+                        # Appending additional lines if specific description contains "CHROMA"
+                        if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                            desc_match += " " + \
+                                block_lines[i + 1].strip() + " " + \
+                                block_lines[i + 2].strip()
                         break
+
             if part_number_match:
                 part_number = part_number_match.group(1)
                 value = desc_match if desc_match else "Description not available"
-                results.append({"part_number": part_number,
-                               "value": value, "location": location})
+                results.append({
+                    "part_number": part_number,
+                    "value": value,
+                    "location": location
+                })
 
     # Search all files or specific file
     for name, url in urls.items():
