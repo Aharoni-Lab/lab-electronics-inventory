@@ -4,6 +4,7 @@ import firebase_admin
 import requests
 import re
 from datetime import datetime
+import pandas as pd
 
 # Firebase initialization using Streamlit secrets
 if not firebase_admin._apps:
@@ -83,7 +84,7 @@ if st.button("Search"):
     elif content == "File not found.":
         st.warning(content)
     else:
-        # Perform search and display results
+        # Perform search and display results in a table format
         blocks = content.split("Image:")
         results = []
         for block in blocks:
@@ -103,13 +104,16 @@ if st.button("Search"):
                 location = location_match.group(
                     1) if location_match else "Location not available"
 
-                results.append((part_number, description, location))
+                results.append({
+                    "Part Number": part_number,
+                    "Description": description,
+                    "Location": location
+                })
 
+        # Display results
         if results:
-            st.write("Search Results:")
-            for part_number, description, location in results:
-                st.write(
-                    f"**Part Number:** {part_number}, **Description:** {description}, **Location:** {location}")
+            st.write(f"Search Results: {len(results)} items found.")
+            st.table(pd.DataFrame(results))
         else:
             st.warning("No matches found.")
 
