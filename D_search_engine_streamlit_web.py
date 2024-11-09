@@ -9,6 +9,17 @@ from PIL import Image
 import io
 import time
 
+import streamlit as st
+from datetime import datetime
+import requests
+import re
+import pandas as pd
+import firebase_admin
+from firebase_admin import credentials, storage
+from PIL import Image
+import io
+import time  # Import time for delay
+
 # Firebase initialization using Streamlit secrets
 if not firebase_admin._apps:
     cred = credentials.Certificate({
@@ -67,8 +78,11 @@ def reorder_item(part_number, description, requester_name):
             existing_content = blob.download_as_text()
             re_order_text = existing_content + re_order_text
         blob.upload_from_string(re_order_text)
-        st.toast("Re-order request saved successfully.",
-                 duration=2)  # Toast message for 2 seconds
+
+        # Show the success message temporarily
+        success_message = st.success("Re-order request saved successfully.")
+        time.sleep(2)  # Wait for 2 seconds
+        success_message.empty()  # Clear the success message after 2 seconds
     except Exception as e:
         st.error(f"Failed to save re-order request: {e}")
 
@@ -81,9 +95,12 @@ def upload_files(files, uploader_name):
         blob = bucket.blob(file_name)
         try:
             blob.upload_from_string(file.read(), content_type=file.type)
-            # Toast message for 2 seconds
-            st.toast(
-                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.", duration=2)
+
+            # Show the success message temporarily
+            success_message = st.success(
+                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+            time.sleep(2)  # Wait for 2 seconds
+            success_message.empty()  # Clear the success message after 2 seconds
         except Exception as e:
             st.error(f"Failed to upload file '{file.name}': {e}")
 
