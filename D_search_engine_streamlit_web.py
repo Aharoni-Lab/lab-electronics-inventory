@@ -15,19 +15,24 @@ import time
 def login():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
+    if "remember_me" not in st.session_state:
+        st.session_state["remember_me"] = False
 
-    if not st.session_state["authenticated"]:
-        st.sidebar.title("Login")
-        username = st.sidebar.text_input("Username")
-        password = st.sidebar.text_input("Password", type="password")
+    if not st.session_state["authenticated"] or not st.session_state["remember_me"]:
+        with st.sidebar:
+            st.title("Login")
+            username = st.text_input("Username")
+            password = st.text_input("Password", type="password")
+            remember_me = st.checkbox("Remember me")
 
-        if st.sidebar.button("Login"):
-            # Fetch username and password from Streamlit secrets
-            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                st.session_state["authenticated"] = True
-                st.sidebar.success("Logged in successfully!")
-            else:
-                st.sidebar.error("Invalid username or password")
+            if st.button("Login"):
+                # Fetch username and password from Streamlit secrets
+                if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+                    st.session_state["authenticated"] = True
+                    st.session_state["remember_me"] = remember_me
+                    st.success("Logged in successfully!")
+                else:
+                    st.error("Invalid username or password")
 
     return st.session_state["authenticated"]
 
