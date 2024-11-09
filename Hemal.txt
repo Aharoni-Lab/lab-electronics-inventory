@@ -1,0 +1,360 @@
+
+Image: IMG_4268.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001032204-23090
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4252.heic
+Extracted Text:
+CHROMA
+Broken
+T500spxr
+3 x 3.2 x 0.5mm
+Lot # 401640
+Location: Hemal
+
+Image: IMG_4244.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4264.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4248.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4249.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4265.heic
+Extracted Text:
+.30mm RIGHT ANGLE
+PRISM AI COATED
+HYPOTENUSE
+Made in the USA
+SNL5014 Rev A
+66770
+Location: Hemal
+
+Image: IMG_4245.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+ur
+Location: Hemal
+
+Image: IMG_4253.heic
+Extracted Text:
+CHROMA
+ET525/50m
+2.5 x 3.2 x 0.5mm
+Lot # 401081
+Location: Hemal
+
+Image: IMG_4269.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001032204-23090
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4262.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4258.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4239.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4254.heic
+Extracted Text:
+poLight
+VENDOR
+POLIGHT
+PRODUCT
+PAF.19.U01
+QUANTITY
+8
+BATCH
+B0319
+DATECODE 2212
+MADE IN
+TAIWAN
+P.O. Box 163, Kongeveien 77,
+N-3192 Horten, Norway
+Tel: +47 33 07 12 60
+E-mail: info@polight.com
+www.polight.com
+Location: Hemal
+
+Image: IMG_4242.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4243.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4255.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4238.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4259.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4263.heic
+Extracted Text:
+93-22
+USA
+Optics
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4237.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4260.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4240.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4256.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4257.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4241.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4261.heic
+Extracted Text:
+86621
+00 175
+Prism RA Micro 1mm TS BK7 AL CTD
+R5000920893-22125
+Made in USA
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4236.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4246.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4250.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4270.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001032204-23090
+Made in Germany
+Edmund Optics
+Location: Hemal
+
+Image: IMG_4266.heic
+Extracted Text:
+.30mm RIGHT ANGLE
+PRISM AI COATED
+HYPOTENUSE
+Made in the USA
+SNL5014 Rev A
+66770
+Location: Hemal
+
+Image: IMG_4267.heic
+Extracted Text:
+.50mm RIGHT ANGLE
+PRISM AI COATED
+HYPOTENUSE
+SNL5007 Rev A
+Made in the USA
+66771
+Location: Hemal
+
+Image: IMG_4251.heic
+Extracted Text:
+CHROMA
+T500spxr
+3 x 3.2 x 0.5mm
+Lot # 401640
+Location: Hemal
+
+Image: IMG_4247.heic
+Extracted Text:
+64520
+00 145
+GRIN 1.8 DIA 0.23 PITCH 670NM UNCTD
+R5001062389-23191
+Made in Germany
+Edmund Optics
+Location: Hemal

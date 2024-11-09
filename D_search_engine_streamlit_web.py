@@ -76,7 +76,8 @@ st.title("Inventory Search Tool")
 # Inputs for search
 st.write("### Search for Components")
 part_number_query = st.text_input("Enter Part Number")
-value_query = st.text_input("Enter Component Name / Value")
+value_query = st.text_input(
+    "Enter Component Name / Value", placeholder="e.g., 22pF, CAP, LENS")
 footprint_query = st.text_input("Enter Footprint")
 
 # Search button
