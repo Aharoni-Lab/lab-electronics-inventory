@@ -13,19 +13,23 @@ import time
 
 
 def login():
-    st.sidebar.title("Login")
-    username = st.sidebar.text_input("Username")
-    password = st.sidebar.text_input("Password", type="password")
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
 
-    if st.sidebar.button("Login"):
-        # Fetch username and password from Streamlit secrets
-        if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-            st.session_state["authenticated"] = True
-            st.sidebar.success("Logged in successfully!")
-        else:
-            st.sidebar.error("Invalid username or password")
+    if not st.session_state["authenticated"]:
+        st.sidebar.title("Login")
+        username = st.sidebar.text_input("Username")
+        password = st.sidebar.text_input("Password", type="password")
 
-    return st.session_state.get("authenticated", False)
+        if st.sidebar.button("Login"):
+            # Fetch username and password from Streamlit secrets
+            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+                st.session_state["authenticated"] = True
+                st.sidebar.success("Logged in successfully!")
+            else:
+                st.sidebar.error("Invalid username or password")
+
+    return st.session_state["authenticated"]
 
 
 # Display login screen if not authenticated
