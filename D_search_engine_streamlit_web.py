@@ -115,21 +115,25 @@ else:
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
-    # Function to search BOM items in the inventory
+# Function to search BOM items in the inventory by Value
+
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.splitlines()
         results = []
+
         for index, row in bom_df.iterrows():
-            part_number = row.get("Part Number")
+            # Get the "Value" column instead of "Part Number"
+            value = row.get("Value", "N/A")
+            # Get the description if available
             description = row.get("Description", "N/A")
 
-            # Check if part number exists in inventory
+            # Check if the value exists in the inventory text
             is_in_inventory = any(
-                part_number in line for line in inventory_items)
+                value in line for line in inventory_items) if value != "N/A" else False
             status = "Available" if is_in_inventory else "Missing"
 
             results.append({
-                "Part Number": part_number,
+                "Value": value,
                 "Description": description,
                 "Status": status
             })
