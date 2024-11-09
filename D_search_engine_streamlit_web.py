@@ -71,99 +71,90 @@ def reorder_item(part_number, description, requester_name):
 
 
 # Streamlit Interface
-st.title("Inventory Search Tool")
+st.title("🔍 Inventory Search & Management")
 
-# Inputs for search
-st.write("### Search for Components")
-part_number_query = st.text_input("Enter Part Number")
-value_query = st.text_input(
-    "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, XOR, ...")
-footprint_query = st.text_input("Enter Footprint")
+# Main container for interactive sections
+with st.container():
+    st.header("📦 Search for Components")
 
-# Search button
-if st.button("Search"):
-    file_content = fetch_file_content()
-    if file_content.startswith("Failed to fetch file"):
-        st.error(file_content)
-    else:
-        # Parse and search file content
-        blocks = file_content.split("Image:")
-        search_patterns = []
+    # Using columns for side-by-side input fields
+    col1, col2, col3 = st.columns(3)
+    part_number_query = col1.text_input("Enter Part Number")
+    value_query = col2.text_input(
+        "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, XOR, ...")
+    footprint_query = col3.text_input("Enter Footprint")
 
-        # Pattern for part number
-        if part_number_query:
-            search_patterns.append(re.compile(
-                rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
-
-        # Pattern for value, allowing flexible spacing
-        if value_query:
-            value_query_cleaned = value_query.replace(" ", "")
-            value_query_pattern = "".join(
-                [ch + r"\s*" if (i < len(value_query_cleaned) - 1 and
-                                 ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or
-                                  (value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit())))
-                 else ch
-                 for i, ch in enumerate(value_query_cleaned)]
-            )
-            search_patterns.append(re.compile(
-                fr'\b{value_query_pattern}\b', re.IGNORECASE))
-
-        # Pattern for footprint
-        if footprint_query:
-            search_patterns.append(re.compile(
-                rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
-
-        # Search results
-        results = []
-        for block in blocks:
-            if all(pattern.search(block) for pattern in search_patterns):
-                # Flexible part number pattern to capture similar formats
-                part_number_match = re.search(
-                    r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
-                desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
-
-                # Multi-line description handling
-                if not desc_match:
-                    block_lines = block.splitlines()
-                    for i, line in enumerate(block_lines):
-                        if is_description(line):
-                            desc_match = line.strip()
-                            if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-                                desc_match += " " + \
-                                    block_lines[i + 1].strip() + \
-                                    " " + block_lines[i + 2].strip()
-                            break
-
-                location_match = re.search(
-                    r'Location:\s*(.*)', block, re.IGNORECASE)
-
-                part_number = part_number_match.group(
-                    0) if part_number_match else "P/N not detected"
-                description = desc_match.group(1) if isinstance(
-                    desc_match, re.Match) else desc_match or "Description not available"
-                location = location_match.group(
-                    1) if location_match else "Location not available"
-                results.append((part_number, description, location))
-
-        # Displaying results
-        if results:
-            st.write("### Search Results")
-            df_results = pd.DataFrame(
-                results, columns=["Part Number", "Description", "Location"])
-            df_results.index = df_results.index + 1  # Set index to start from 1
-            st.table(df_results)
+    # Interactive button to start search
+    if st.button("🔎 Search"):
+        file_content = fetch_file_content()
+        if file_content.startswith("Failed to fetch file"):
+            st.error(file_content)
         else:
-            st.warning("No items found matching the search criteria.")
+            # Parse and search file content
+            blocks = file_content.split("Image:")
+            search_patterns = []
 
-# Reorder Missing Parts section
-st.write("### Re-Order Missing Parts")
-with st.form("manual_reorder_form"):
-    part_number = st.text_input("Part Number for Reorder")
-    description = st.text_input("Description for Reorder")
-    requester_name = st.text_input("Requester Name")
-    submit_reorder = st.form_submit_button("Submit Re-Order")
-    if submit_reorder:
-        if part_number and description and requester_name:
-            reorder_item(part_number, description, requester_name)
-        else:
-            st.warning("Please fill in all fields before submitting.")
+            # Add patterns based on input
+            if part_number_query:
+                search_patterns.append(re.compile(
+                    rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
+            if value_query:
+                value_query_cleaned = value_query.replace(" ", "")
+                value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
+                    value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
+                search_patterns.append(re.compile(
+                    fr'\b{value_query_pattern}\b', re.IGNORECASE))
+            if footprint_query:
+                search_patterns.append(re.compile(
+                    rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
+
+            # Display search results
+            results = []
+            for block in blocks:
+                if all(pattern.search(block) for pattern in search_patterns):
+                    part_number_match = re.search(
+                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                    desc_match = re.search(
+                        r'DESC:\s*(.*)', block, re.IGNORECASE)
+                    if not desc_match:
+                        block_lines = block.splitlines()
+                        for i, line in enumerate(block_lines):
+                            if is_description(line):
+                                desc_match = line.strip()
+                                if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                    desc_match += " " + \
+                                        block_lines[i + 1].strip() + \
+                                        " " + block_lines[i + 2].strip()
+                                break
+                    location_match = re.search(
+                        r'Location:\s*(.*)', block, re.IGNORECASE)
+                    part_number = part_number_match.group(
+                        0) if part_number_match else "P/N not detected"
+                    description = desc_match.group(1) if isinstance(
+                        desc_match, re.Match) else desc_match or "Description not available"
+                    location = location_match.group(
+                        1) if location_match else "Location not available"
+                    results.append((part_number, description, location))
+
+            if results:
+                st.write("### Search Results")
+                df_results = pd.DataFrame(
+                    results, columns=["Part Number", "Description", "Location"])
+                df_results.index = df_results.index + 1  # Start index from 1
+                st.table(df_results)
+            else:
+                st.warning("No items found matching the search criteria.")
+
+# Section for Reordering items with an interactive form
+st.write("### 📝 Re-Order Missing Parts")
+with st.expander("Click here to reorder parts", expanded=False):
+    with st.form("manual_reorder_form"):
+        part_number = st.text_input("Part Number for Reorder")
+        description = st.text_input("Description for Reorder")
+        requester_name = st.text_input("Requester Name")
+        submit_reorder = st.form_submit_button("Submit Re-Order")
+        if submit_reorder:
+            if part_number and description and requester_name:
+                reorder_item(part_number, description, requester_name)
+            else:
+                st.warning("Please fill in all fields before submitting.")
