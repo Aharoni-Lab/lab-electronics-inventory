@@ -71,32 +71,29 @@ def reorder_item(part_number, description, requester_name):
     except Exception as e:
         st.error(f"Failed to save re-order request: {e}")
 
-# Function to upload image to Firebase in a specific folder
+# Function to upload multiple images to Firebase in a specific folder
 
 
-def upload_image(file, description, uploader_name):
+def upload_images(files, uploader_name):
     bucket = storage.bucket()
-    # Create a folder for each uploader in Firebase
-    file_name = f"component_images/{uploader_name}/{file.name}"
-    blob = bucket.blob(file_name)
-    try:
-        blob.upload_from_string(file.read(), content_type=file.type)
-        blob.metadata = {'description': description, 'uploader': uploader_name}
-        blob.patch()
-        st.success(
-            f"Image '{file.name}' uploaded successfully to folder '{uploader_name}'.")
-    except Exception as e:
-        st.error(f"Failed to upload image: {e}")
+    for file in files:
+        file_name = f"component_images/{uploader_name}/{file.name}"
+        blob = bucket.blob(file_name)
+        try:
+            blob.upload_from_string(file.read(), content_type=file.type)
+            st.success(
+                f"Image '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+        except Exception as e:
+            st.error(f"Failed to upload image '{file.name}': {e}")
 
 
 # Sidebar for image uploads
 st.sidebar.header("📸 Upload Component Photos")
 uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
-uploaded_file = st.sidebar.file_uploader(
-    "Choose a photo to upload", type=["jpg", "jpeg", "png"])
-description = st.sidebar.text_input("Photo Description (Optional)")
-if uploader_name and uploaded_file and st.sidebar.button("Upload Photo"):
-    upload_image(uploaded_file, description, uploader_name)
+uploaded_files = st.sidebar.file_uploader("Choose photos to upload", type=[
+                                          "jpg", "jpeg", "png"], accept_multiple_files=True)
+if uploader_name and uploaded_files and st.sidebar.button("Upload Photos"):
+    upload_images(uploaded_files, uploader_name)
 elif not uploader_name:
     st.sidebar.warning("Please enter your name before uploading.")
 
