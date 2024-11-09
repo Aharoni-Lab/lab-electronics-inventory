@@ -32,6 +32,7 @@ def login():
                     st.session_state["authenticated"] = True
                     st.session_state["remember_me"] = remember_me
                     st.success("Logged in successfully!")
+                    st.experimental_rerun()  # Rerun the app to hide login box immediately
                 else:
                     st.error("Invalid username or password")
 
