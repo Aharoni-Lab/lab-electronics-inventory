@@ -5,6 +5,8 @@ import re
 import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, storage
+from PIL import Image
+import io
 
 # Firebase initialization using Streamlit secrets
 if not firebase_admin._apps:
@@ -69,8 +71,31 @@ def reorder_item(part_number, description, requester_name):
     except Exception as e:
         st.error(f"Failed to save re-order request: {e}")
 
+# Function to upload image to Firebase
 
-# Streamlit Interface
+
+def upload_image(file, description):
+    bucket = storage.bucket()
+    file_name = f"component_images/{file.name}"
+    blob = bucket.blob(file_name)
+    try:
+        blob.upload_from_string(file.read(), content_type=file.type)
+        blob.metadata = {'description': description}
+        blob.patch()
+        st.success(f"Image '{file.name}' uploaded successfully.")
+    except Exception as e:
+        st.error(f"Failed to upload image: {e}")
+
+
+# Sidebar for image uploads
+st.sidebar.header("📸 Upload Component Photos")
+uploaded_file = st.sidebar.file_uploader(
+    "Choose a photo to upload", type=["jpg", "jpeg", "png"])
+description = st.sidebar.text_input("Photo Description (Optional)")
+if uploaded_file and st.sidebar.button("Upload Photo"):
+    upload_image(uploaded_file, description)
+
+# Main Interface
 st.title("Inventory Search & Management")
 
 # Main container for interactive sections
