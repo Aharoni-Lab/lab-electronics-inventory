@@ -86,6 +86,28 @@ def upload_files(files, uploader_name):
         except Exception as e:
             st.error(f"Failed to upload file '{file.name}': {e}")
 
+# Function to search BOM items in the inventory
+
+
+def search_bom_in_inventory(bom_df, inventory_text):
+    inventory_items = inventory_text.splitlines()
+    results = []
+    for index, row in bom_df.iterrows():
+        part_number = row.get("Part Number")
+        description = row.get("Description", "N/A")
+
+        # Check if part number exists in inventory
+        is_in_inventory = any(part_number in line for line in inventory_items)
+        status = "Available" if is_in_inventory else "Missing"
+
+        results.append({
+            "Part Number": part_number,
+            "Description": description,
+            "Status": status
+        })
+
+    return pd.DataFrame(results)
+
 
 # Sidebar for file uploads (images and PDFs)
 st.sidebar.header("📸 Upload Component Photos & Quotes")
@@ -97,12 +119,29 @@ if uploader_name and uploaded_files and st.sidebar.button("Upload Files"):
 elif not uploader_name:
     st.sidebar.warning("Please enter your name before uploading.")
 
+# Right Sidebar for BOM upload and search
+st.sidebar.header("📋 BOM Inventory Check")
+bom_file = st.sidebar.file_uploader(
+    "Upload your BOM (CSV format)", type=["csv"])
+if bom_file and st.sidebar.button("Check Inventory"):
+    bom_df = pd.read_csv(bom_file)
+    st.write("Uploaded BOM:")
+    st.dataframe(bom_df)
+
+    # Fetch inventory content
+    inventory_text = fetch_file_content()
+
+    # Search BOM in inventory
+    bom_results = search_bom_in_inventory(bom_df, inventory_text)
+    st.write("### BOM Inventory Check Results")
+    st.table(bom_results)
+
 # Main Interface
-st.title("Inventory Search & Management")
+st.title("🔍 Inventory Search & Management")
 
 # Main container for interactive sections
 with st.container():
-    st.header("Search for Components")
+    st.header("📦 Search for Components")
 
     # Using columns for side-by-side input fields
     col1, col2, col3 = st.columns(3)
