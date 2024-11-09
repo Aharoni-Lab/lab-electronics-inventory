@@ -115,7 +115,8 @@ else:
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
-# Function to search BOM items in the inventory by Value only and include location information
+# ================================================
+    # Function to search BOM items in the inventory by Value and include location and description information
 
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.splitlines()
@@ -124,19 +125,34 @@ else:
         for index, row in bom_df.iterrows():
             value = row.get("Value", "N/A")  # Get the "Value" column
 
-            # Check if the value exists in the inventory and find its location
+            # Initialize placeholders for found information
             found_location = None
+            found_description = None
+
+            # Check if the value exists in the inventory and find its location and description
             for line in inventory_items:
                 if value in line:
-                    found_location = line  # Store the line where the value was found
+                    # Extract location and description based on assumed patterns in the line
+                    found_location = re.search(
+                        r'Location:\s*(.*)', line, re.IGNORECASE)
+                    found_description = re.search(
+                        r'DESC:\s*(.*)', line, re.IGNORECASE)
+
+                    # Use matched groups if available
+                    found_location = found_location.group(
+                        1) if found_location else "Location not available"
+                    found_description = found_description.group(
+                        1) if found_description else "Description not available"
                     break  # Stop after the first match
 
-            status = "Available" if found_location else "Missing"
+            status = "Available" if found_location or found_description else "Missing"
             location_info = found_location if found_location else "Not found in inventory"
+            description_info = found_description if found_description else "Not found in inventory"
 
             results.append({
                 "Value": value,
                 "Status": status,
+                "Description": description_info,
                 "Location": location_info  # Include location information
             })
 
@@ -153,6 +169,8 @@ else:
             highlight_status, subset=['Status'])
 
         return styled_df
+
+# ================================================
 
     # Sidebar for file uploads (images and PDFs)
     st.sidebar.header("📸 Upload Component Photos/ Quotes")
