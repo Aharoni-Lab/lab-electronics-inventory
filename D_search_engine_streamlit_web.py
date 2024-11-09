@@ -110,7 +110,7 @@ def search_bom_in_inventory(bom_df, inventory_text):
 
 
 # Sidebar for file uploads (images and PDFs)
-st.sidebar.header("📸 Upload Component Photos & Quotes")
+st.sidebar.header("📸 Upload Component Photos/ Quotes")
 uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
 uploaded_files = st.sidebar.file_uploader("Choose photos or PDF quotes to upload", type=[
                                           "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
@@ -137,11 +137,11 @@ if bom_file and st.sidebar.button("Check Inventory"):
     st.table(bom_results)
 
 # Main Interface
-st.title("🔍 Inventory Search & Management")
+st.title("Inventory Search & Management")
 
 # Main container for interactive sections
 with st.container():
-    st.header("📦 Search for Components")
+    st.header("Search for Components")
 
     # Using columns for side-by-side input fields
     col1, col2, col3 = st.columns(3)
@@ -212,7 +212,7 @@ with st.container():
                 st.warning("No items found matching the search criteria.")
 
 # Section for Reordering items with an interactive form
-st.write("### 📝 Re-Order Missing Parts")
+st.write("### Re-Order Missing Parts")
 with st.expander("Click here to reorder parts", expanded=False):
     with st.form("manual_reorder_form"):
         part_number = st.text_input("Part Number for Reorder")
