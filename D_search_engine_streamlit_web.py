@@ -166,3 +166,25 @@ with st.form("manual_reorder_form"):
             reorder_item(part_number, description, requester_name)
         else:
             st.warning("Please fill in all fields before submitting.")
+
+# Add HTML, CSS, and JavaScript for a moving character
+html_code = """
+<div id="mouse" style="width: 20px; height: 20px; background-color: red; border-radius: 50%; position: absolute; pointer-events: none;"></div>
+
+<script>
+document.addEventListener("mousemove", function(event) {
+    var mouse = document.getElementById("mouse");
+    mouse.style.left = event.pageX + "px";
+    mouse.style.top = event.pageY + "px";
+});
+</script>
+
+<style>
+#mouse {
+    transition: transform 0.05s ease;
+}
+</style>
+"""
+
+# Display the HTML for the moving character
+st.components.v1.html(html_code, height=0, width=0)
