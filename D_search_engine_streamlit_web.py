@@ -152,3 +152,16 @@ if st.button("Search"):
             st.table(df_results)
         else:
             st.warning("No items found matching the search criteria.")
+
+# Reorder Missing Parts section
+st.write("### Re-Order Missing Parts")
+with st.form("manual_reorder_form"):
+    part_number = st.text_input("Part Number for Reorder")
+    description = st.text_input("Description for Reorder")
+    requester_name = st.text_input("Requester Name")
+    submit_reorder = st.form_submit_button("Submit Re-Order")
+    if submit_reorder:
+        if part_number and description and requester_name:
+            reorder_item(part_number, description, requester_name)
+        else:
+            st.warning("Please fill in all fields before submitting.")
