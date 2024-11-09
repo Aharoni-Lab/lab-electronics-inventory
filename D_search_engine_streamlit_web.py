@@ -136,6 +136,9 @@ if bom_file and st.sidebar.button("Check Inventory"):
     st.write("### BOM Inventory Check Results")
     st.table(bom_results)
 
+
+# Main Interface
+# Main Interface
 # Main Interface
 st.title("Inventory Search & Management")
 
