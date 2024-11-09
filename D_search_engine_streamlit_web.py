@@ -55,7 +55,6 @@ def is_description(line):
 
 
 def reorder_item(part_number, description, requester_name):
-    """Append the re-order request to Firebase Storage."""
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     re_order_text = f"Date and Time: {current_time}, Part Number: {part_number}, Description: {description}, Requester Name: {requester_name}\n"
     bucket = storage.bucket()
@@ -89,9 +88,13 @@ if st.button("Search"):
         # Parse and search file content
         blocks = file_content.split("Image:")
         search_patterns = []
+
+        # Pattern for part number
         if part_number_query:
             search_patterns.append(re.compile(
                 rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
+
+        # Pattern for value, allowing flexible spacing
         if value_query:
             value_query_cleaned = value_query.replace(" ", "")
             value_query_pattern = "".join(
@@ -103,6 +106,8 @@ if st.button("Search"):
             )
             search_patterns.append(re.compile(
                 fr'\b{value_query_pattern}\b', re.IGNORECASE))
+
+        # Pattern for footprint
         if footprint_query:
             search_patterns.append(re.compile(
                 rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
@@ -116,6 +121,7 @@ if st.button("Search"):
                 desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
                 location_match = re.search(
                     r'Location:\s*(.*)', block, re.IGNORECASE)
+
                 part_number = part_number_match.group(
                     1) if part_number_match else "P/N not detected"
                 description = desc_match.group(
@@ -133,7 +139,7 @@ if st.button("Search"):
         else:
             st.warning("No items found matching the search criteria.")
 
-# Reorder Missing Parts section (always visible)
+# Reorder Missing Parts section
 st.write("### Re-Order Missing Parts")
 with st.form("manual_reorder_form"):
     part_number = st.text_input("Part Number for Reorder")
