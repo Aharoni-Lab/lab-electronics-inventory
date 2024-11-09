@@ -98,7 +98,7 @@ elif not uploader_name:
     st.sidebar.warning("Please enter your name before uploading.")
 
 # Main Interface
-st.title("🔍 Inventory Search & Management")
+st.title("Inventory Search & Management")
 
 # Main container for interactive sections
 with st.container():
