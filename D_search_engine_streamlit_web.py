@@ -18,7 +18,7 @@ def login():
     if "remember_me" not in st.session_state:
         st.session_state["remember_me"] = False
 
-    # Only display login if not authenticated
+    # Only display login form if not authenticated
     if not st.session_state["authenticated"]:
         with st.sidebar:
             st.title("Login")
@@ -42,6 +42,32 @@ def login():
 if not login():
     st.stop()
 else:
+    # Only show sidebar content if authenticated
+    with st.sidebar:
+        st.header("📸 Upload Component Photos/ Quotes")
+        uploader_name = st.text_input("Your Name")  # Uploader's name input
+        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
+                                          "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+        if uploader_name and uploaded_files and st.button("Upload Files"):
+            upload_files(uploaded_files, uploader_name)
+        elif not uploader_name:
+            st.warning("Please enter your name before uploading.")
+
+        st.header("📋 BOM Inventory Check")
+        bom_file = st.file_uploader(
+            "Upload your BOM (CSV format)", type=["csv"])
+        if bom_file and st.button("Check Inventory"):
+            bom_df = pd.read_csv(bom_file)
+            st.write("Uploaded BOM:")
+            st.dataframe(bom_df)
+
+            # Fetch inventory content
+            inventory_text = fetch_file_content()
+            # Search BOM in inventory
+            bom_results = search_bom_in_inventory(bom_df, inventory_text)
+            st.write("### BOM Inventory Check Results")
+            st.table(bom_results)
+
     # Firebase initialization using Streamlit secrets
     if not firebase_admin._apps:
         cred = credentials.Certificate({
@@ -142,39 +168,10 @@ else:
 
         return pd.DataFrame(results)
 
-    # Sidebar for file uploads (images and PDFs)
-    st.sidebar.header("📸 Upload Component Photos/ Quotes")
-    uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
-    uploaded_files = st.sidebar.file_uploader("Choose photos or PDF quotes to upload", type=[
-                                              "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
-    if uploader_name and uploaded_files and st.sidebar.button("Upload Files"):
-        upload_files(uploaded_files, uploader_name)
-    elif not uploader_name:
-        st.sidebar.warning("Please enter your name before uploading.")
-
-    # Right Sidebar for BOM upload and search
-    st.sidebar.header("📋 BOM Inventory Check")
-    bom_file = st.sidebar.file_uploader(
-        "Upload your BOM (CSV format)", type=["csv"])
-    if bom_file and st.sidebar.button("Check Inventory"):
-        bom_df = pd.read_csv(bom_file)
-        st.write("Uploaded BOM:")
-        st.dataframe(bom_df)
-
-        # Fetch inventory content
-        inventory_text = fetch_file_content()
-
-        # Search BOM in inventory
-        bom_results = search_bom_in_inventory(bom_df, inventory_text)
-        st.write("### BOM Inventory Check Results")
-        st.table(bom_results)
-
     # Main Interface
     st.title("Inventory Search & Management")
     with st.container():
         st.header("Search for Components")
-
-        # Using columns for side-by-side input fields
         col1, col2, col3 = st.columns(3)
         part_number_query = col1.text_input("Enter Part Number")
         value_query = col2.text_input(
@@ -187,7 +184,6 @@ else:
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
-                # Parse and search file content
                 blocks = file_content.split("Image:")
                 search_patterns = []
 
@@ -246,18 +242,11 @@ else:
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
-            # Using columns for side-by-side input fields
             col1, col2, col3 = st.columns(3)
-
-            # Input fields in each column with titles
             part_number = col1.text_input("Part Number for Reorder")
             description = col2.text_input("Description for Reorder")
             requester_name = col3.text_input("Requester Name")
-
-            # Submit button for the form
             submit_reorder = st.form_submit_button("Submit Re-Order")
-
-            # Validation and submission feedback
             if submit_reorder:
                 if part_number and description and requester_name:
                     reorder_item(part_number, description, requester_name)
