@@ -7,6 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from PIL import Image
 import io
+import time
 
 # Firebase initialization using Streamlit secrets
 if not firebase_admin._apps:
@@ -53,9 +54,8 @@ def is_description(line):
         '|'.join(description_patterns), re.IGNORECASE)
     return bool(description_regex.search(line))
 
+
 # Function to save re-order request to Firebase
-
-
 def reorder_item(part_number, description, requester_name):
     current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     re_order_text = f"Date and Time: {current_time}, Part Number: {part_number}, Description: {description}, Requester Name: {requester_name}\n"
@@ -67,13 +67,13 @@ def reorder_item(part_number, description, requester_name):
             existing_content = blob.download_as_text()
             re_order_text = existing_content + re_order_text
         blob.upload_from_string(re_order_text)
-        st.success("Re-order request saved successfully.")
+        st.toast("Re-order request saved successfully.",
+                 duration=2)  # Toast message for 2 seconds
     except Exception as e:
         st.error(f"Failed to save re-order request: {e}")
 
+
 # Function to upload multiple files (images and PDFs) to Firebase in a specific folder
-
-
 def upload_files(files, uploader_name):
     bucket = storage.bucket()
     for file in files:
@@ -81,10 +81,12 @@ def upload_files(files, uploader_name):
         blob = bucket.blob(file_name)
         try:
             blob.upload_from_string(file.read(), content_type=file.type)
-            st.success(
-                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+            # Toast message for 2 seconds
+            st.toast(
+                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.", duration=2)
         except Exception as e:
             st.error(f"Failed to upload file '{file.name}': {e}")
+
 
 # Function to search BOM items in the inventory
 
