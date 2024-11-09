@@ -130,9 +130,11 @@ def search_file():
             if not block.strip():
                 continue
             if all(pattern.search(block) for pattern in search_patterns):
+                # Flexible part number pattern to match formats like 'R5001091458-23289', 'P000001477818-23285', 'ET525/50m', 'ET470/40x', and similar
                 part_number_match = re.search(
-                    r'(?:Lot #|P/N|N):\s*([A-Za-z0-9\-\/# ]+)', block, re.IGNORECASE)
+                    r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                 desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
+
                 if not desc_match:
                     block_lines = block.splitlines()
                     for i, line in enumerate(block_lines):
@@ -143,12 +145,13 @@ def search_file():
                                     block_lines[i + 1].strip() + \
                                     block_lines[i + 2].strip()
                             break
+
                 location_match = re.search(
                     r'Location:\s*(.*)', block, re.IGNORECASE)
                 location = location_match.group(
                     1) if location_match else "Location not available"
                 part_number = part_number_match.group(
-                    1) if part_number_match else "P/N not detected"
+                    0) if part_number_match else "P/N not detected"
                 value = desc_match.group(1) if isinstance(
                     desc_match, re.Match) else desc_match or "Description not available"
                 result_tree.insert("", "end", values=(
