@@ -172,7 +172,7 @@ else:
         col1, col2, col3 = st.columns(3)
         part_number_query = col1.text_input("Enter Part Number")
         value_query = col2.text_input(
-            "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, XOR, ...")
+            "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
         footprint_query = col3.text_input("Enter Footprint")
 
         # Interactive button to start search
