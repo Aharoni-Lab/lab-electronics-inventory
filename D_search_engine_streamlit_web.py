@@ -116,8 +116,9 @@ if st.button("Search"):
         results = []
         for block in blocks:
             if all(pattern.search(block) for pattern in search_patterns):
+                # Flexible part number pattern to capture similar formats
                 part_number_match = re.search(
-                    r'(?:Lot #|P/N|N):\s*([A-Za-z0-9\-\/# ]+)', block, re.IGNORECASE)
+                    r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                 desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
 
                 # Multi-line description handling
@@ -136,7 +137,7 @@ if st.button("Search"):
                     r'Location:\s*(.*)', block, re.IGNORECASE)
 
                 part_number = part_number_match.group(
-                    1) if part_number_match else "P/N not detected"
+                    0) if part_number_match else "P/N not detected"
                 description = desc_match.group(1) if isinstance(
                     desc_match, re.Match) else desc_match or "Description not available"
                 location = location_match.group(
@@ -151,16 +152,3 @@ if st.button("Search"):
             st.table(df_results)
         else:
             st.warning("No items found matching the search criteria.")
-
-# Reorder Missing Parts section
-st.write("### Re-Order Missing Parts")
-with st.form("manual_reorder_form"):
-    part_number = st.text_input("Part Number for Reorder")
-    description = st.text_input("Description for Reorder")
-    requester_name = st.text_input("Requester Name")
-    submit_reorder = st.form_submit_button("Submit Re-Order")
-    if submit_reorder:
-        if part_number and description and requester_name:
-            reorder_item(part_number, description, requester_name)
-        else:
-            st.warning("Please fill in all fields before submitting.")
