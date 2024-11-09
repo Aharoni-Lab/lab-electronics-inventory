@@ -18,7 +18,8 @@ def login():
     if "remember_me" not in st.session_state:
         st.session_state["remember_me"] = False
 
-    if not st.session_state["authenticated"] or not st.session_state["remember_me"]:
+    # Only display login if not authenticated
+    if not st.session_state["authenticated"]:
         with st.sidebar:
             st.title("Login")
             username = st.text_input("Username")
