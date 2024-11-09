@@ -71,7 +71,7 @@ def reorder_item(part_number, description, requester_name):
 
 
 # Streamlit Interface
-st.title("🔍 Inventory Search & Management")
+st.title("Inventory Search & Management")
 
 # Main container for interactive sections
 with st.container():
