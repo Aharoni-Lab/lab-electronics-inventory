@@ -71,10 +71,10 @@ def reorder_item(part_number, description, requester_name):
     except Exception as e:
         st.error(f"Failed to save re-order request: {e}")
 
-# Function to upload multiple images to Firebase in a specific folder
+# Function to upload multiple files (images and PDFs) to Firebase in a specific folder
 
 
-def upload_images(files, uploader_name):
+def upload_files(files, uploader_name):
     bucket = storage.bucket()
     for file in files:
         file_name = f"component_images/{uploader_name}/{file.name}"
@@ -82,18 +82,18 @@ def upload_images(files, uploader_name):
         try:
             blob.upload_from_string(file.read(), content_type=file.type)
             st.success(
-                f"Image '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
         except Exception as e:
-            st.error(f"Failed to upload image '{file.name}': {e}")
+            st.error(f"Failed to upload file '{file.name}': {e}")
 
 
-# Sidebar for image uploads
-st.sidebar.header("📸 Upload Component Photos")
+# Sidebar for file uploads (images and PDFs)
+st.sidebar.header("📸 Upload Component Photos & Quotes")
 uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
-uploaded_files = st.sidebar.file_uploader("Choose photos to upload", type=[
-                                          "jpg", "jpeg", "png"], accept_multiple_files=True)
-if uploader_name and uploaded_files and st.sidebar.button("Upload Photos"):
-    upload_images(uploaded_files, uploader_name)
+uploaded_files = st.sidebar.file_uploader("Choose photos or PDF quotes to upload", type=[
+                                          "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+if uploader_name and uploaded_files and st.sidebar.button("Upload Files"):
+    upload_files(uploaded_files, uploader_name)
 elif not uploader_name:
     st.sidebar.warning("Please enter your name before uploading.")
 
@@ -102,7 +102,7 @@ st.title("Inventory Search & Management")
 
 # Main container for interactive sections
 with st.container():
-    st.header("📦 Search for Components")
+    st.header("Search for Components")
 
     # Using columns for side-by-side input fields
     col1, col2, col3 = st.columns(3)
