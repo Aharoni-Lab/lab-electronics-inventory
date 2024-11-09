@@ -218,10 +218,18 @@ with st.container():
 st.write("### Re-Order Missing Parts")
 with st.expander("Click here to reorder parts", expanded=False):
     with st.form("manual_reorder_form"):
-        part_number = st.text_input("Part Number for Reorder")
-        description = st.text_input("Description for Reorder")
-        requester_name = st.text_input("Requester Name")
+        # Using columns for side-by-side input fields
+        col1, col2, col3 = st.columns(3)
+
+        # Input fields in each column with titles
+        part_number = col1.text_input("Part Number for Reorder")
+        description = col2.text_input("Description for Reorder")
+        requester_name = col3.text_input("Requester Name")
+
+        # Submit button for the form
         submit_reorder = st.form_submit_button("Submit Re-Order")
+
+        # Validation and submission feedback
         if submit_reorder:
             if part_number and description and requester_name:
                 reorder_item(part_number, description, requester_name)
