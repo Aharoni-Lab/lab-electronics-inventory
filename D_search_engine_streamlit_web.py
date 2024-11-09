@@ -115,30 +115,44 @@ else:
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
-# Function to search BOM items in the inventory by Value
+# Function to search BOM items in the inventory by Value only and include location information
 
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.splitlines()
         results = []
 
         for index, row in bom_df.iterrows():
-            # Get the "Value" column instead of "Part Number"
-            value = row.get("Value", "N/A")
-            # Get the description if available
-            description = row.get("Description", "N/A")
+            value = row.get("Value", "N/A")  # Get the "Value" column
 
-            # Check if the value exists in the inventory text
-            is_in_inventory = any(
-                value in line for line in inventory_items) if value != "N/A" else False
-            status = "Available" if is_in_inventory else "Missing"
+            # Check if the value exists in the inventory and find its location
+            found_location = None
+            for line in inventory_items:
+                if value in line:
+                    found_location = line  # Store the line where the value was found
+                    break  # Stop after the first match
+
+            status = "Available" if found_location else "Missing"
+            location_info = found_location if found_location else "Not found in inventory"
 
             results.append({
                 "Value": value,
-                "Description": description,
-                "Status": status
+                "Status": status,
+                "Location": location_info  # Include location information
             })
 
-        return pd.DataFrame(results)
+        # Convert results to a DataFrame
+        result_df = pd.DataFrame(results)
+
+        # Apply conditional formatting
+        def highlight_status(val):
+            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
+            return color
+
+        # Apply the styling to the "Status" column
+        styled_df = result_df.style.applymap(
+            highlight_status, subset=['Status'])
+
+        return styled_df
 
     # Sidebar for file uploads (images and PDFs)
     st.sidebar.header("📸 Upload Component Photos/ Quotes")
