@@ -90,11 +90,10 @@ else:
                 re_order_text = existing_content + re_order_text
             blob.upload_from_string(re_order_text)
 
-            # Show the success message temporarily
             success_message = st.success(
                 "Re-order request saved successfully.")
-            time.sleep(2)  # Wait for 2 seconds
-            success_message.empty()  # Clear the success message after 2 seconds
+            time.sleep(2)
+            success_message.empty()
         except Exception as e:
             st.error(f"Failed to save re-order request: {e}")
 
@@ -106,18 +105,15 @@ else:
             blob = bucket.blob(file_name)
             try:
                 blob.upload_from_string(file.read(), content_type=file.type)
-
-                # Show the success message temporarily
                 success_message = st.success(
                     f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
-                time.sleep(2)  # Wait for 2 seconds
-                success_message.empty()  # Clear the success message after 2 seconds
+                time.sleep(2)
+                success_message.empty()
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
 # ================================================
     # Enhanced BOM inventory search function with DNL check
-
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.split("Image:")
         results = []
@@ -131,19 +127,15 @@ else:
 
             # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
-                r'\b' + re.escape(value) + r'\b', re.IGNORECASE
-            )
+                r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
 
             for block in inventory_items:
                 if value_pattern.search(block):
-                    # Extract location and description from the block
                     part_number_match = re.search(
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                     desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE
-                    )
+                        r'DESC:\s*(.*)', block, re.IGNORECASE)
 
-                    # Fallback description search if `DESC` keyword is not found
                     if not desc_match:
                         block_lines = block.splitlines()
                         for i, line in enumerate(block_lines):
@@ -156,8 +148,7 @@ else:
                                 break
 
                     location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE
-                    )
+                        r'Location:\s*(.*)', block, re.IGNORECASE)
                     part_number = part_number_match.group(
                         0) if part_number_match else "P/N not detected"
                     description = desc_match.group(1) if isinstance(
@@ -165,7 +156,6 @@ else:
                     location = location_match.group(
                         1) if location_match else "Location not available"
 
-                    # Append each match to results instead of stopping at the first one
                     results.append({
                         "Value": value,
                         "Status": "Available",
@@ -182,27 +172,24 @@ else:
                     "Location": "X"
                 })
 
-        # Convert results to DataFrame
         result_df = pd.DataFrame(results)
+        return result_df
 
-        # Apply conditional formatting for "Status"
-        def highlight_status(val):
-            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-            return color
+    # Function to display BOM results with expandable sections
+    def display_bom_results(bom_results_df):
+        unique_values = bom_results_df['Value'].unique()
 
-        # Style DataFrame for display
-        styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status']
-        )
+        for value in unique_values:
+            value_df = bom_results_df[bom_results_df['Value'] == value]
 
-        return styled_df
-
+            with st.expander(f"{value} (Matches: {len(value_df)})", expanded=False):
+                st.table(value_df.reset_index(drop=True))
 
 # ================================================
 
     # Sidebar for file uploads (images and PDFs)
     st.sidebar.header("📸 Upload Component Photos/ Quotes")
-    uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
+    uploader_name = st.sidebar.text_input("Your Name")
     uploaded_files = st.sidebar.file_uploader("Choose photos or PDF quotes to upload", type=[
                                               "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
     if uploader_name and uploaded_files and st.sidebar.button("Upload Files"):
@@ -224,32 +211,30 @@ else:
 
         # Search BOM in inventory
         bom_results = search_bom_in_inventory(bom_df, inventory_text)
+
+        # Display results with expandable sections
         st.write("### BOM Inventory Check Results")
-        st.table(bom_results)
+        display_bom_results(bom_results)
 
     # Main Interface
     st.title("Inventory Search & Management")
     with st.container():
         st.header("Search for Components")
 
-        # Using columns for side-by-side input fields
         col1, col2, col3 = st.columns(3)
         part_number_query = col1.text_input("Enter Part Number")
         value_query = col2.text_input(
             "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
         footprint_query = col3.text_input("Enter Footprint")
 
-        # Interactive button to start search
         if st.button("🔎 Search"):
             file_content = fetch_file_content()
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
-                # Parse and search file content
                 blocks = file_content.split("Image:")
                 search_patterns = []
 
-                # Add patterns based on input
                 if part_number_query:
                     search_patterns.append(re.compile(
                         rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
@@ -263,7 +248,6 @@ else:
                     search_patterns.append(re.compile(
                         rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
 
-                # Display search results
                 results = []
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
@@ -295,27 +279,20 @@ else:
                     st.write("### Search Results")
                     df_results = pd.DataFrame(
                         results, columns=["Part Number", "Description", "Location"])
-                    df_results.index = df_results.index + 1  # Start index from 1
+                    df_results.index = df_results.index + 1
                     st.table(df_results)
                 else:
                     st.warning("No items found matching the search criteria.")
 
-    # Section for Reordering items with an interactive form
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
-            # Using columns for side-by-side input fields
             col1, col2, col3 = st.columns(3)
-
-            # Input fields in each column with titles
             part_number = col1.text_input("Part Number for Reorder")
             description = col2.text_input("Description for Reorder")
             requester_name = col3.text_input("Requester Name")
 
-            # Submit button for the form
             submit_reorder = st.form_submit_button("Submit Re-Order")
-
-            # Validation and submission feedback
             if submit_reorder:
                 if part_number and description and requester_name:
                     reorder_item(part_number, description, requester_name)
