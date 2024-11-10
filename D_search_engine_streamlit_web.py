@@ -117,81 +117,80 @@ else:
 
 # ================================================
     def search_bom_in_inventory(bom_df, inventory_text):
-        inventory_items = inventory_text.split("Image:")
-        results = []
+    inventory_items = inventory_text.split("Image:")
+    results = []
 
-        for index, row in bom_df.iterrows():
-            value = row.get("Value", "N/A").strip().upper()
+    for index, row in bom_df.iterrows():
+        value = row.get("Value", "N/A").strip().upper()
 
-            # Skip rows where Value is marked as "DNL" (Do Not Load)
-            if value == "DNL":
-                continue
+        # Skip rows where Value is marked as "DNL" (Do Not Load)
+        if value == "DNL":
+            continue
 
-            # Pattern for flexible matching similar to component search mechanism
-            value_pattern = re.compile(
-                r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
-            matches_found = False  # Track if any matches are found
+        # Pattern for flexible matching similar to component search mechanism
+        value_pattern = re.compile(
+            r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
+        matches_found = False  # Track if any matches are found
 
-            for block in inventory_items:
-                if value_pattern.search(block):
-                    # Extract location and description from the block
-                    part_number_match = re.search(
-                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
-                    desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE)
+        for block in inventory_items:
+            if value_pattern.search(block):
+                # Extract location and description from the block
+                part_number_match = re.search(
+                    r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
 
-                    # Fallback description search if `DESC` keyword is not found
-                    if not desc_match:
-                        block_lines = block.splitlines()
-                        for i, line in enumerate(block_lines):
-                            if is_description(line):
-                                desc_match = line.strip()
-                                if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-                                    desc_match += " " + \
-                                        block_lines[i + 1].strip() + \
-                                        " " + block_lines[i + 2].strip()
-                                break
+                # Fallback description search if `DESC` keyword is not found
+                if not desc_match:
+                    block_lines = block.splitlines()
+                    for i, line in enumerate(block_lines):
+                        if is_description(line):
+                            desc_match = line.strip()
+                            if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                desc_match += " " + \
+                                    block_lines[i + 1].strip() + \
+                                    " " + block_lines[i + 2].strip()
+                            break
 
-                    location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE)
-                    part_number = part_number_match.group(
-                        0) if part_number_match else "P/N not detected"
-                    description = desc_match.group(1) if isinstance(
-                        desc_match, re.Match) else desc_match or "Description not available"
-                    location = location_match.group(
-                        1) if location_match else "Location not available"
+                location_match = re.search(
+                    r'Location:\s*(.*)', block, re.IGNORECASE)
+                part_number = part_number_match.group(
+                    0) if part_number_match else "P/N not detected"
+                description = desc_match.group(1) if isinstance(
+                    desc_match, re.Match) else desc_match or "Description not available"
+                location = location_match.group(
+                    1) if location_match else "Location not available"
 
-                    # Append each found match as a new row
-                    results.append({
-                        "Value": value,
-                        "Status": "Available",
-                        "Description": description,
-                        "Location": location
-                    })
-                    matches_found = True
-
-            # If no matches are found, add a row indicating "Missing" status
-            if not matches_found:
+                # Append each found match as a new row
                 results.append({
                     "Value": value,
-                    "Status": "Missing",
-                    "Description": "Description not available",
-                    "Location": "Location not available"
+                    "Status": "Available",
+                    "Description": description,
+                    "Location": location
                 })
+                matches_found = True
 
-        # Convert results to DataFrame
-        result_df = pd.DataFrame(results)
+        # If no matches are found, add a row indicating "Missing" status
+        if not matches_found:
+            results.append({
+                "Value": value,
+                "Status": "Missing",
+                "Description": "Description not available",
+                "Location": "Location not available"
+            })
 
-        # Apply conditional formatting for "Status"
-        def highlight_status(val):
-            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-            return color
+    # Convert results to DataFrame
+    result_df = pd.DataFrame(results)
 
-        # Style DataFrame for display
-        styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status'])
+    # Apply conditional formatting for "Status"
+    def highlight_status(val):
+        color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
+        return color
 
-        return styled_df
+    # Style DataFrame for display
+    styled_df = result_df.style.applymap(highlight_status, subset=['Status'])
+
+    return styled_df
+
 
 # ================================================
 
