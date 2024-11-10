@@ -194,32 +194,32 @@ else:
 
 # ================================================
 
-    # Sidebar for file uploads (images and PDFs)
-    with st.sidebar.expander("📸 Upload Component Photos/ Quotes", expanded=False):
-        uploader_name = st.text_input("Your Name")  # Uploader's name input
-        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
-            "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
-        if uploader_name and uploaded_files and st.button("Upload Files"):
-            upload_files(uploaded_files, uploader_name)
-        elif not uploader_name:
-            st.warning("Please enter your name before uploading.")
+# Sidebar for file uploads (images and PDFs)
+with st.sidebar.expander("📸 Upload Component Photos/ Quotes", expanded=False):
+    uploader_name = st.text_input("Your Name")  # Uploader's name input
+    uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
+                                      "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+    if uploader_name and uploaded_files and st.button("Upload Files"):
+        upload_files(uploaded_files, uploader_name)
+    elif not uploader_name:
+        st.warning("Please enter your name before uploading.")
 
     # Right Sidebar for BOM upload and search
-        st.sidebar.header("📋 BOM Inventory Check")
-        bom_file = st.sidebar.file_uploader(
-            "Upload your BOM (CSV format)", type=["csv"])
-        if bom_file and st.sidebar.button("Check Inventory"):
-            bom_df = pd.read_csv(bom_file)
-            st.write("Uploaded BOM:")
-            st.dataframe(bom_df)
+    st.sidebar.header("📋 BOM Inventory Check")
+    bom_file = st.sidebar.file_uploader(
+        "Upload your BOM (CSV format)", type=["csv"])
+    if bom_file and st.sidebar.button("Check Inventory"):
+        bom_df = pd.read_csv(bom_file)
+        st.write("Uploaded BOM:")
+        st.dataframe(bom_df)
 
-            # Fetch inventory content
-            inventory_text = fetch_file_content()
+        # Fetch inventory content
+        inventory_text = fetch_file_content()
 
-            # Search BOM in inventory
-            bom_results = search_bom_in_inventory(bom_df, inventory_text)
-            st.write("### BOM Inventory Check Results")
-            st.table(bom_results)
+        # Search BOM in inventory
+        bom_results = search_bom_in_inventory(bom_df, inventory_text)
+        st.write("### BOM Inventory Check Results")
+        st.table(bom_results)
 
     # Main Interface
     st.title("Inventory Search & Management")
