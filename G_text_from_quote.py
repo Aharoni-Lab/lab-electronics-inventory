@@ -1,3 +1,4 @@
+from datetime import datetime
 from pdfrw import PdfReader, PdfWriter, PdfDict
 from io import BytesIO
 import streamlit as st
@@ -9,11 +10,18 @@ import os
 
 def extract_quote_data(quote_pdf):
     data = []
+    quote_number = None
     with pdfplumber.open(quote_pdf) as pdf:
         for page in pdf.pages:
             text = page.extract_text()
 
-            # Updated regex pattern for more flexibility
+            # Extract quote number (e.g., "Quote # 17102424")
+            quote_match = re.search(r'Quote #\s*(\d+)', text)
+            if quote_match:
+                # Entire match including "Quote #"
+                quote_number = quote_match.group(0)
+
+            # Updated regex pattern for parts
             matches = re.findall(
                 r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
                 text,
@@ -27,20 +35,19 @@ def extract_quote_data(quote_pdf):
                     "Catalog #": part_number.strip(),
                     "Description": description.strip(),
                     "Quantity": quantity,
-                    "Unit": "EA",  # Assuming unit is always EA; adjust if needed
                     "Unit Price": unit_price,
                     "Total Price": extended_price
                 })
-    return data
+    return data, quote_number
 
 
-def fill_pdf(data, template_pdf_path):
+def fill_pdf(data, template_pdf_path, quote_number):
     pdf_reader = PdfReader(template_pdf_path)
     pdf_writer = PdfWriter()
 
-    # Track unused text fields to populate with "Total Price" values
-    # Adjust range as needed based on available Text fields
-    text_fields = [f"Text{i}" for i in range(12, 50)]
+    # Get today's date in the desired format
+    today_date = datetime.today().strftime("%m/%d/%y")
+    tax_rate = 0.095  # 9.5% tax
 
     # Fill in form fields on the first page
     for page_num, page in enumerate(pdf_reader.pages):
@@ -53,7 +60,7 @@ def fill_pdf(data, template_pdf_path):
                             value = None
                             font_size = 10  # Default font size
 
-                            # Fill each field based on the field name
+                            # Map data to specific fields based on your mappings
                             if field_name == f"QUAN{i+1}":
                                 value = item["Quantity"]
                             elif field_name == f"UNIT{i+1}":
@@ -65,38 +72,57 @@ def fill_pdf(data, template_pdf_path):
                             elif field_name == f"DESCRIPTION{i+1}":
                                 value = item["Description"]
                                 font_size = 8  # Smaller font size for Description
+                            # Total price for QUAN1 to QUAN10
+                            elif field_name == f"Text{39 + i}":
+                                value = item["Total Price"]
 
                             if value:
                                 annot.update(
                                     PdfDict(V=f"{value}",
                                             AP=PdfDict(N=f"{value}"))
                                 )
-                                # Update font size for the field, specifically for Description if needed
+                                # Update font size for Description fields
                                 if field_name.startswith("DESCRIPTION"):
                                     annot.update(
                                         PdfDict(
                                             DA=f"/Helvetica {font_size} Tf 0 g")
                                     )
 
-                # Populate "Total Price" values in generic text fields
-                for i, item in enumerate(data[:10]):  # Limit to 10 items
-                    if i < len(text_fields):
-                        field_name = text_fields[i]
-                        total_price = item["Total Price"]
-                        for annot in page.Annots:
-                            if annot.T and annot.T[1:-1] == field_name:
-                                annot.update(
-                                    PdfDict(V=f"{total_price}", AP=PdfDict(N=f"{total_price}")))
-                                break
+                # Calculate subtotal, tax, and total, then populate fields
+                subtotal = sum(float(item["Total Price"]) for item in data)
+                tax = subtotal * tax_rate
+                total = subtotal + tax
 
-                # Calculate the overall total and fill it in the "Total" field at the bottom if found
-                overall_total = sum(
-                    float(item["Total Price"]) for item in data)
                 for annot in page.Annots:
                     if annot.T:
                         field_name = annot.T[1:-1]
-                        if field_name.lower() == "total":
-                            annot.update(PdfDict(V=f"{overall_total:.2f}"))
+                        if field_name == "Text12":  # Date field
+                            annot.update(
+                                PdfDict(V=today_date, AP=PdfDict(N=today_date)))
+                        elif field_name == "Text49":  # Subtotal
+                            annot.update(
+                                PdfDict(V=f"{subtotal:.2f}", AP=PdfDict(N=f"{subtotal:.2f}")))
+                        elif field_name == "Text3":  # Tax
+                            annot.update(
+                                PdfDict(V=f"{tax:.2f}", AP=PdfDict(N=f"{tax:.2f}")))
+                        elif field_name == "Text50":  # Total
+                            annot.update(
+                                PdfDict(V=f"{total:.2f}", AP=PdfDict(N=f"{total:.2f}")))
+
+                # Set other specific fields
+                for annot in page.Annots:
+                    if annot.T:
+                        field_name = annot.T[1:-1]
+                        if field_name == "Text1":  # P.I. Approval - leave blank
+                            annot.update(PdfDict(V="", AP=PdfDict(N="")))
+                        elif field_name == "Text2":  # Fund Manager's Approval
+                            annot.update(PdfDict(V="Fund Manager Approval Signature Here", AP=PdfDict(
+                                N="Fund Manager Approval Signature Here")))
+                        elif field_name == "FAU":  # FAU - leave blank
+                            annot.update(PdfDict(V="", AP=PdfDict(N="")))
+                        elif field_name == "PO#":  # PO# for Quote number
+                            annot.update(
+                                PdfDict(V=quote_number, AP=PdfDict(N=quote_number)))
 
         pdf_writer.addpage(page)
 
@@ -121,7 +147,7 @@ order_form_pdf = st.file_uploader("Upload Order Form PDF Template", type="pdf")
 
 if quote_pdf:
     # Extract data from the uploaded quote
-    data = extract_quote_data(quote_pdf)
+    data, quote_number = extract_quote_data(quote_pdf)
 
     # Display extracted data in a table for verification
     if data:
@@ -133,7 +159,7 @@ if quote_pdf:
 
 if quote_pdf and order_form_pdf:
     if len(data) > 0:
-        filled_pdf_path = fill_pdf(data, order_form_pdf)
+        filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
         st.success("Order form filled successfully!")
 
         # Download button
@@ -146,10 +172,8 @@ if quote_pdf and order_form_pdf:
             )
 
         # Open in default viewer (Safari for PDFs on macOS)
-# Open in Safari
         if st.button("Open in Safari"):
             safari_path = "/Applications/Safari.app"
             os.system(f"open -a {safari_path} {filled_pdf_path}")
-
     else:
         st.error("No data found in the quote. Please check the format.")
