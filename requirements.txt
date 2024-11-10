@@ -3,3 +3,6 @@ firebase-admin
 requests
 beautifulsoup4
 pdfplumber
+pdfplumber
+reportlab
+PyPDF2
