@@ -37,6 +37,7 @@ def fill_pdf(data, template_pdf_path):
     pdf_reader = PdfReader(template_pdf_path)
     pdf_writer = PdfWriter()
 
+    # Fill in form fields on the first page
     for page_num, page in enumerate(pdf_reader.pages):
         if page_num == 0:  # Only fill fields on the first page
             if page.Annots:
@@ -44,23 +45,23 @@ def fill_pdf(data, template_pdf_path):
                     for annot in page.Annots:
                         if annot.T:
                             field_name = annot.T[1:-1]  # Strip parentheses
+                            value = None
 
                             # Fill each field based on the field name
                             if field_name == f"QUAN{i+1}":
-                                annot.update(
-                                    PdfDict(V='{}'.format(item["Quantity"])))
+                                value = item["Quantity"]
                             elif field_name == f"UNIT{i+1}":
-                                annot.update(
-                                    PdfDict(V='{}'.format(item["Unit"])))
+                                value = item["Unit"]
                             elif field_name == f"PRICE{i+1}":
-                                annot.update(
-                                    PdfDict(V='{}'.format(item["Unit Price"])))
+                                value = item["Unit Price"]
                             elif field_name == f"CATALOG {i+1}":
-                                annot.update(
-                                    PdfDict(V='{}'.format(item["Catalog #"])))
+                                value = item["Catalog #"]
                             elif field_name == f"DESCRIPTION{i+1}":
+                                value = item["Description"]
+
+                            if value:
                                 annot.update(
-                                    PdfDict(V='{}'.format(item["Description"])))
+                                    PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
 
                 # Calculate the overall total and fill it in the "Total" field
                 overall_total = sum(
@@ -69,9 +70,15 @@ def fill_pdf(data, template_pdf_path):
                     if annot.T:
                         field_name = annot.T[1:-1]
                         if field_name == "Total":
-                            annot.update(PdfDict(V=f"{overall_total:.2f}"))
+                            annot.update(
+                                PdfDict(V=f"{overall_total:.2f}", AP=PdfDict(N=f"{overall_total:.2f}")))
 
         pdf_writer.addpage(page)
+
+    # Set NeedAppearances to true after filling the form
+    if '/AcroForm' in pdf_reader.Root:
+        pdf_reader.Root.AcroForm.update(
+            PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
 
     # Write the output to a new PDF
     result_pdf = BytesIO()
