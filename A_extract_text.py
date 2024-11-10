@@ -57,36 +57,42 @@ def extract_text_from_image(image_path):
     return None
 
 
-def process_all_heic_images(directory, txt_output, processed_files):
-    """Process all HEIC images in each subfolder, save extracted texts, and add location."""
-    all_heic_files = [f for f in os.listdir(directory) if f.lower().endswith(
-        '.heic') and f not in processed_files]
+def process_all_images(directory, txt_output, processed_files, supported_formats=('.heic', '.jpg', '.jpeg', '.png', '.bmp')):
+    """Process all supported image formats in each subfolder, save extracted texts, and add location."""
+    all_files = [f for f in os.listdir(directory) if f.lower().endswith(
+        supported_formats) and f not in processed_files]
 
     # Extract the folder name (location)
     location = os.path.basename(directory)
 
     with open(txt_output, 'a') as f_output:
-        for filename in all_heic_files:
-            heic_path = os.path.join(directory, filename)
+        for filename in all_files:
+            file_path = os.path.join(directory, filename)
 
             # Skip processing if the file is already in processed_files
             if filename in processed_files:
                 print(f"Skipping {filename}, already processed.")
                 continue
 
-            jpg_filename = os.path.splitext(filename)[0] + '.jpg'
-            jpg_path = os.path.join(converted_image_directory, jpg_filename)
+            if filename.lower().endswith('.heic'):
+                # Convert to JPG if the format is HEIC
+                jpg_filename = os.path.splitext(filename)[0] + '.jpg'
+                jpg_path = os.path.join(
+                    converted_image_directory, jpg_filename)
+                convert_heic_to_jpg(file_path, jpg_path)
+                image_path = jpg_path
+            else:
+                # Use the existing path for non-HEIC formats
+                image_path = file_path
 
-            # Convert to JPG
-            convert_heic_to_jpg(heic_path, jpg_path)
+            # Add to processed files
             processed_files.add(filename)
 
-            # Extract text from JPG
-            extracted_text = extract_text_from_image(jpg_path)
+            # Extract text from the image
+            extracted_text = extract_text_from_image(image_path)
             if extracted_text:
                 f_output.write(f"Image: {filename}\n")
                 f_output.write(f"Extracted Text:\n{extracted_text}\n")
-                # Add location here
                 f_output.write(f"Location: {location}\n\n")
                 print(f"Text from {filename} saved with location {location}.")
 
