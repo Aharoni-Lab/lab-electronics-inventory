@@ -22096,3 +22096,47 @@ G08 G07 GND G06 G05 G04
 8210S
 Location: test_2
 
+Image: IMG_4533.heic
+Extracted Text:
+300Mbps Wireless N Nano Router
+Model: TL-WR802N Power: 5V 1A
+FCC ID: 2AXJ4WR802NV4
+IC: 26583-WR802NV4
+HVIN: TL-WR802NV4
+FC O
+AR-NZA ROHS
+MADE IN VIETNAM
+Default Access:
+http://tplinkwifi.net
+MAO
+Address
+D8-44-89-A1-15-EA
+SSID:TP-Link 15EA
+Wireless
+Password
+57919157
+R
+Location: Z
+
+Image: Screenshot 2024-10-31 at 2.25.42 PM.png
+Extracted Text:
+300Mbps Wireless N Nano Router
+Model: TL-WR802N Power: 5V 1A
+FCC ID: 2AXJ4WR802NV4
+IC: 26583-WR802NV4
+HVIN: TL-WR802NV4
+FC
+AR-NZA ROHS
+MAC
+Andress
+MADE IN VIETNAM
+D8-44-89-A1-15-EA
+Default Access:
+http://tplinkwifi.net
+SSID:TP-Link 15EA
+Wireleas
+Password
+AN
+57919157
+Location: Z
+
