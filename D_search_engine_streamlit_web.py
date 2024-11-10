@@ -116,7 +116,7 @@ else:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
 # ================================================
-    # Enhanced BOM inventory search function with DNL check
+    # Enhanced BOM inventory search function with DNL check and footprint matching
 
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.split("Image:")
@@ -124,21 +124,37 @@ else:
 
         for index, row in bom_df.iterrows():
             value = row.get("Value", "N/A").strip().upper()
+            footprint = row.get("Footprint", "").strip().upper()
 
             # Skip rows where Value is marked as "DNL" (Do Not Load)
             if value == "DNL":
                 continue
 
-            found_location = "X"
-            found_description = "X"
+            # Initialize placeholders
+            found_location = "Not found in inventory"
+            found_description = "Not found in inventory"
             status = "Missing"
+
+            # Check if component is a capacitor or resistor and extract the relevant footprint
+            extracted_footprint = None
+            if "CAP" in value or "RES" in value:
+                footprint_match = re.search(r'[CR]_(\d{4})', footprint)
+                if footprint_match:
+                    extracted_footprint = footprint_match.group(1)
 
             # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
                 r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
+            footprint_pattern = re.compile(
+                r'\b' + re.escape(extracted_footprint) + r'\b', re.IGNORECASE) if extracted_footprint else None
 
             for block in inventory_items:
+                # Check if the value matches in the block
                 if value_pattern.search(block):
+                    # If there's an extracted footprint, ensure it also matches in the block
+                    if extracted_footprint and not footprint_pattern.search(block):
+                        continue  # Skip if footprint doesn't match
+
                     # Extract location and description from the block
                     part_number_match = re.search(
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
