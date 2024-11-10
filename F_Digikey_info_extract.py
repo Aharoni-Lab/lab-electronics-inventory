@@ -35,18 +35,19 @@ def extract_digikey_info(url):
         description_text = "Not found"
 
     # Extract Unit Price
-    unit_price_tag = soup.find("table", {"id": "pricing"})  # Targeting pricing table
-    if unit_price_tag:
-        unit_price_row = unit_price_tag.find("td", {"data-testid": "pricing-table-unit-price"})
-        unit_price_text = unit_price_row.text.strip() if unit_price_row else "Not found"
-    else:
-        unit_price_text = "Not found"
+    unit_price = "Not found"
+    price_table = soup.find("table", {"id": "pricing"})
+    if price_table:
+        # Look for the first unit price in the pricing table
+        price_cell = price_table.find("td", {"data-testid": "pricing-table-unit-price"})
+        if price_cell:
+            unit_price = price_cell.text.strip()
 
     return {
         "DigiKey Part Number": part_number_text,
         "Manufacturer Product Number": manufacturer_product_number_text,
         "Description": description_text,
-        "Unit Price": unit_price_text
+        "Unit Price": unit_price
     }
 
 st.title("DigiKey Electronics Component Information Extractor")
