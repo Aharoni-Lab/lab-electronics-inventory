@@ -116,97 +116,125 @@ else:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
 # ================================================
-    # Enhanced BOM inventory search function with DNL check and footprint matching
 
-    def search_bom_in_inventory(bom_df, inventory_text):
-        inventory_items = inventory_text.split("Image:")
-        results = []
+# Function to check if a line is a description (reused from component search)
 
-        for index, row in bom_df.iterrows():
-            value = row.get("Value", "N/A").strip().upper()
-            footprint = row.get("Footprint", "").strip().upper()
 
-            # Skip rows where Value is marked as "DNL" (Do Not Load)
-            if value == "DNL":
-                continue
+def is_description(line):
+    description_patterns = [
+        r'\bDESC\b', r'\bPart Description\b', r'\bCIC\b', r'\bESC\b',
+        r'\bSC\b', r'\bCAP\b', r'\bRES\b', r'\bIC\b', r'\bLED\b',
+        r'\bDIODE\b', r'\bMOSFET\b', r'\bREF DES\b', r'\bTEST POINT\b',
+        r'\bSCHOTTKY\b', r'\bARRAY\b', r'\bREG LINEAR\b', r'\bPOS ADJ\b',
+        r'\bLENS\b', r'\bCHROMA\b', r'\bASPHERE\b', r'\bPRISM\b', r'\bOPTICS\b',
+    ]
+    description_regex = re.compile(
+        '|'.join(description_patterns), re.IGNORECASE)
+    return bool(description_regex.search(line))
 
-            # Initialize placeholders
-            found_location = "Not found in inventory"
-            found_description = "Not found in inventory"
-            status = "Missing"
+# Enhanced BOM inventory search function with multiple result dropdown display
 
-            # Check if component is a capacitor or resistor and extract the relevant footprint
-            extracted_footprint = None
-            if "CAP" in value or "RES" in value:
-                footprint_match = re.search(r'[CR]_(\d{4})', footprint)
-                if footprint_match:
-                    extracted_footprint = footprint_match.group(1)
 
-            # Pattern for flexible matching similar to component search mechanism
-            value_pattern = re.compile(
-                r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
-            footprint_pattern = re.compile(
-                r'\b' + re.escape(extracted_footprint) + r'\b', re.IGNORECASE) if extracted_footprint else None
+def search_bom_in_inventory(bom_df, inventory_text):
+    inventory_items = inventory_text.split("Image:")
+    results = []
 
-            for block in inventory_items:
-                # Check if the value matches in the block
-                if value_pattern.search(block):
-                    # If there's an extracted footprint, ensure it also matches in the block
-                    if extracted_footprint and not footprint_pattern.search(block):
-                        continue  # Skip if footprint doesn't match
+    for index, row in bom_df.iterrows():
+        value = row.get("Value", "N/A").strip().upper()
+        footprint = row.get("Footprint", "").strip().upper()
 
-                    # Extract location and description from the block
-                    part_number_match = re.search(
-                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
-                    desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE)
+        # Skip rows where Value is marked as "DNL" (Do Not Load)
+        if value == "DNL":
+            continue
 
-                    # Fallback description search if `DESC` keyword is not found
-                    if not desc_match:
-                        block_lines = block.splitlines()
-                        for i, line in enumerate(block_lines):
-                            if is_description(line):
-                                desc_match = line.strip()
-                                if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-                                    desc_match += " " + \
-                                        block_lines[i + 1].strip() + \
-                                        " " + block_lines[i + 2].strip()
-                                break
+        # Initialize placeholders
+        all_matches = []
+        status = "Missing"
 
-                    location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE)
-                    part_number = part_number_match.group(
-                        0) if part_number_match else "P/N not detected"
-                    description = desc_match.group(1) if isinstance(
-                        desc_match, re.Match) else desc_match or "Description not available"
-                    location = location_match.group(
-                        1) if location_match else "Location not available"
+        # Check if component is a capacitor or resistor and extract the relevant footprint
+        extracted_footprint = None
+        if "CAP" in value or "RES" in value:
+            footprint_match = re.search(r'[CR]_(\d{4})', footprint)
+            if footprint_match:
+                extracted_footprint = footprint_match.group(1)
 
-                    found_description = description
-                    found_location = location
-                    status = "Available"
-                    break  # Stop after finding the first match
+        # Pattern for flexible matching similar to component search mechanism
+        value_pattern = re.compile(
+            r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
+        footprint_pattern = re.compile(
+            r'\b' + re.escape(extracted_footprint) + r'\b', re.IGNORECASE) if extracted_footprint else None
 
-            results.append({
-                "Value": value,
-                "Status": status,
-                "Description": found_description,
-                "Location": found_location
-            })
+        for block in inventory_items:
+            # Check if the value matches in the block
+            if value_pattern.search(block):
+                # If there's an extracted footprint, ensure it also matches in the block
+                if extracted_footprint and not footprint_pattern.search(block):
+                    continue  # Skip if footprint doesn't match
 
-        # Convert results to DataFrame
-        result_df = pd.DataFrame(results)
+                # Extract location and description from the block
+                part_number_match = re.search(
+                    r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                desc_match = re.search(r'DESC:\s*(.*)', block, re.IGNORECASE)
 
-        # Apply conditional formatting for "Status"
-        def highlight_status(val):
-            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-            return color
+                # Fallback description search if `DESC` keyword is not found
+                if not desc_match:
+                    block_lines = block.splitlines()
+                    for i, line in enumerate(block_lines):
+                        if is_description(line):
+                            desc_match = line.strip()
+                            if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                desc_match += " " + \
+                                    block_lines[i + 1].strip() + \
+                                    " " + block_lines[i + 2].strip()
+                            break
 
-        # Style DataFrame for display
-        styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status'])
+                location_match = re.search(
+                    r'Location:\s*(.*)', block, re.IGNORECASE)
+                part_number = part_number_match.group(
+                    0) if part_number_match else "P/N not detected"
+                description = desc_match.group(1) if isinstance(
+                    desc_match, re.Match) else desc_match or "Description not available"
+                location = location_match.group(
+                    1) if location_match else "Location not available"
 
-        return styled_df
+                # Add each match as a dictionary to all_matches
+                all_matches.append({
+                    "Part Number": part_number,
+                    "Description": description,
+                    "Location": location
+                })
+                status = "Available"
+
+        # Append all matches as a single row with expandable view
+        results.append({
+            "Value": value,
+            "Status": status,
+            "Matches": all_matches if all_matches else "Not found in inventory"
+        })
+
+    # Convert results to DataFrame for display in Streamlit
+    return results
+
+# Displaying results in Streamlit with expandable sections for each item
+
+
+def display_bom_results(results):
+    import streamlit as st
+
+    # Iterate over each item in results and display
+    for result in results:
+        value = result["Value"]
+        status = result["Status"]
+
+        # Display main result with expandable section for matches
+        with st.expander(f"{value} - {status}", expanded=False):
+            if result["Matches"] == "Not found in inventory":
+                st.write("Not found in inventory")
+            else:
+                # Convert matches to a DataFrame for better readability
+                matches_df = pd.DataFrame(result["Matches"])
+                st.table(matches_df)
+
 
 # ================================================
 
