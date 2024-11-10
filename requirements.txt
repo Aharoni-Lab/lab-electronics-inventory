@@ -1,3 +1,5 @@
 streamlit
 firebase-admin
 requests
+beautifulsoup4
+pdfplumber
