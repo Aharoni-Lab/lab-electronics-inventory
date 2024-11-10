@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def extract_digikey_info(url):
     headers = {
@@ -15,33 +16,24 @@ def extract_digikey_info(url):
     
     # Extract DigiKey Part Number
     part_number = soup.find("td", string="DigiKey Part Number")
-    if part_number:
-        part_number_text = part_number.find_next("td").text.strip()
-    else:
-        part_number_text = "Not found"
+    part_number_text = part_number.find_next("td").text.strip() if part_number else "Not found"
 
     # Extract Manufacturer Product Number
     manufacturer_product_number = soup.find("td", string="Manufacturer Product Number")
-    if manufacturer_product_number:
-        manufacturer_product_number_text = manufacturer_product_number.find_next("td").text.strip()
-    else:
-        manufacturer_product_number_text = "Not found"
+    manufacturer_product_number_text = manufacturer_product_number.find_next("td").text.strip() if manufacturer_product_number else "Not found"
 
     # Extract Description
     description_tag = soup.find("td", string="Description")
-    if description_tag:
-        description_text = description_tag.find_next("td").text.strip()
-    else:
-        description_text = "Not found"
+    description_text = description_tag.find_next("td").text.strip() if description_tag else "Not found"
 
-    # Extract Unit Price
+    # Extract First Unit Price from Bulk Pricing Table
     unit_price = "Not found"
     price_table = soup.find("table", {"id": "pricing"})
     if price_table:
-        # Look for the first unit price in the pricing table
-        price_cell = price_table.find("td", {"data-testid": "pricing-table-unit-price"})
-        if price_cell:
-            unit_price = price_cell.text.strip()
+        # Find all cells that contain a dollar amount using regex, and select the first one
+        price_cells = price_table.find_all(text=re.compile(r"\$\d+\.\d{4}"))
+        if price_cells:
+            unit_price = price_cells[0].strip()  # Get the first unit price available
 
     return {
         "DigiKey Part Number": part_number_text,
