@@ -1,19 +1,16 @@
+from pdfrw import PdfReader, PdfWriter, PdfDict
+from io import BytesIO
 import streamlit as st
 import pdfplumber
 import re
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from PyPDF2 import PdfReader, PdfWriter
-from io import BytesIO
+import pandas as pd
 
 
 def extract_quote_data(quote_pdf):
     data = []
-    all_text = ""
     with pdfplumber.open(quote_pdf) as pdf:
         for page in pdf.pages:
             text = page.extract_text()
-            all_text += text + "\n"
             matches = re.findall(
                 r'PART:\s*([\w\-]+).*?DESC:\s*(.*?)\s+(\d+)\s+\d+\s+1\s+([\d.]+)\s+([\d.]+)',
                 text,
@@ -26,53 +23,49 @@ def extract_quote_data(quote_pdf):
                     "Description": description,
                     "Quantity": quantity,
                     "Unit": "EA",
-                    "Unit Price": unit_price
+                    "Unit Price": unit_price,
+                    "Total Price": extended_price
                 })
-    return data, all_text
+    return data
 
 
-def create_overlay(data):
-    packet = BytesIO()
-    can = canvas.Canvas(packet, pagesize=letter)
-    can.setFont("Helvetica", 8)
+def fill_pdf(data, template_pdf):
+    pdf_reader = PdfReader(template_pdf)
+    pdf_writer = PdfWriter()
 
-    # Starting y-coordinate for the first row in the lower table
-    y_start = 270  # Adjusted to target the lower table
-    x_positions = {
-        "Quantity": 100,       # x-position for Quantity
-        "Unit": 150,          # x-position for Unit
-        "Unit Price": 220,    # x-position for Unit Price
-        "Catalog #": 310,     # x-position for Catalog #
-        "Description": 450    # x-position for Description
-    }
+    # Fill fields based on the field names found
+    for i, item in enumerate(data[:10]):  # Limiting to 10 items
+        for annotation in pdf_reader.pages[0].Annots or []:
+            if annotation.T:
+                field_name = annotation.T.strip('()')
 
-    y = y_start
-    # Limiting to 10 rows to fit in the table
-    for idx, item in enumerate(data[:10]):
-        can.drawString(x_positions["Quantity"], y, item["Quantity"])
-        can.drawString(x_positions["Unit"], y, item["Unit"])
-        can.drawString(x_positions["Unit Price"], y, item["Unit Price"])
-        can.drawString(x_positions["Catalog #"], y, item["Catalog #"])
-        can.drawString(x_positions["Description"], y, item["Description"])
-        y -= 20  # Move down for the next row
+                # Update fields based on specific names identified
+                if field_name == f"QUAN{i+1}":
+                    annotation.update(PdfDict(V='{}'.format(item["Quantity"])))
+                elif field_name == f"UNIT{i+1}":
+                    annotation.update(PdfDict(V='{}'.format(item["Unit"])))
+                elif field_name == f"PRICE{i+1}":
+                    annotation.update(
+                        PdfDict(V='{}'.format(item["Unit Price"])))
+                elif field_name == f"CATALOG {i+1}":
+                    annotation.update(
+                        PdfDict(V='{}'.format(item["Catalog #"])))
+                elif field_name == f"DESCRIPTION{i+1}":
+                    annotation.update(
+                        PdfDict(V='{}'.format(item["Description"])))
 
-    can.save()
-    packet.seek(0)
-    return PdfReader(packet)
+    # Calculate overall total and update it if there's a field for it
+    overall_total = sum(float(item["Total Price"]) for item in data)
+    for annotation in pdf_reader.pages[0].Annots or []:
+        if annotation.T and annotation.T.strip('()') == "Total":
+            annotation.update(PdfDict(V=f"{overall_total:.2f}"))
 
-
-def merge_pdfs(order_form_pdf, overlay_pdf):
-    order_form = PdfReader(order_form_pdf)
-    output_pdf = PdfWriter()
-
-    for page_num in range(len(order_form.pages)):
-        page = order_form.pages[page_num]
-        if page_num == 0:
-            page.merge_page(overlay_pdf.pages[0])
-        output_pdf.add_page(page)
+    # Write to a new PDF
+    for page in pdf_reader.pages:
+        pdf_writer.addpage(page)
 
     result_pdf = BytesIO()
-    output_pdf.write(result_pdf)
+    pdf_writer.write(result_pdf)
     result_pdf.seek(0)
     return result_pdf
 
@@ -84,15 +77,19 @@ st.write("Upload your DigiKey quote and order form, and let the app automaticall
 quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
 order_form_pdf = st.file_uploader("Upload Order Form PDF", type="pdf")
 
+if quote_pdf:
+    # Extract data from the uploaded quote
+    data = extract_quote_data(quote_pdf)
+
+    # Display extracted data in a table for verification
+    if data:
+        st.write("Extracted Data from Quote:")
+        df = pd.DataFrame(data)
+        st.dataframe(df)  # Display the extracted data in a table format
+
 if quote_pdf and order_form_pdf:
-    data, extracted_text = extract_quote_data(quote_pdf)
-
-    if st.button("Show Extracted Text"):
-        st.text_area("Extracted Text from PDF", extracted_text, height=300)
-
     if len(data) > 0:
-        overlay_pdf = create_overlay(data)
-        filled_pdf = merge_pdfs(order_form_pdf, overlay_pdf)
+        filled_pdf = fill_pdf(data, order_form_pdf)
         st.success("Order form filled successfully!")
 
         # Download button
