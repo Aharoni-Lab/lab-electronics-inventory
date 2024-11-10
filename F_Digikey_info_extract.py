@@ -1,51 +1,44 @@
 import streamlit as st
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-import time
+import requests
+from bs4 import BeautifulSoup
+import re
 
 def extract_digikey_info(url):
-    # Set up headless Chrome for Selenium
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        st.error("Failed to retrieve data from DigiKey. Please check the link.")
+        return None
     
-    # Start the browser
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.get(url)
-    time.sleep(5)  # Allow time for the page to fully load
-
+    soup = BeautifulSoup(response.text, "html.parser")
+    
     # Extract DigiKey Part Number
-    try:
-        part_number = driver.find_element("xpath", "//td[contains(text(),'DigiKey Part Number')]/following-sibling::td").text
-    except:
-        part_number = "Not found"
+    part_number = soup.find("td", string="DigiKey Part Number")
+    part_number_text = part_number.find_next("td").text.strip() if part_number else "Not found"
 
     # Extract Manufacturer Product Number
-    try:
-        manufacturer_product_number = driver.find_element("xpath", "//td[contains(text(),'Manufacturer Product Number')]/following-sibling::td").text
-    except:
-        manufacturer_product_number = "Not found"
+    manufacturer_product_number = soup.find("td", string="Manufacturer Product Number")
+    manufacturer_product_number_text = manufacturer_product_number.find_next("td").text.strip() if manufacturer_product_number else "Not found"
 
     # Extract Description
-    try:
-        description = driver.find_element("xpath", "//td[contains(text(),'Description')]/following-sibling::td").text
-    except:
-        description = "Not found"
+    description_tag = soup.find("td", string="Description")
+    description_text = description_tag.find_next("td").text.strip() if description_tag else "Not found"
 
     # Extract First Unit Price from Bulk Pricing Table
-    try:
-        unit_price = driver.find_element("xpath", "//table[@id='pricing']//td[contains(text(),'$')]").text
-    except:
-        unit_price = "Not found"
-
-    # Close the browser
-    driver.quit()
+    unit_price = "Not found"
+    price_table = soup.find("table", {"id": "pricing"})
+    if price_table:
+        # Find all cells that contain a dollar amount using regex, and select the first one
+        price_cells = price_table.find_all(text=re.compile(r"\$\d+\.\d{4}"))
+        if price_cells:
+            unit_price = price_cells[0].strip()  # Get the first unit price available
 
     return {
-        "DigiKey Part Number": part_number,
-        "Manufacturer Product Number": manufacturer_product_number,
-        "Description": description,
+        "DigiKey Part Number": part_number_text,
+        "Manufacturer Product Number": manufacturer_product_number_text,
+        "Description": description_text,
         "Unit Price": unit_price
     }
 
@@ -61,4 +54,4 @@ if url:
         st.write(f"**Description:** {data['Description']}")
         st.write(f"**Unit Price:** {data['Unit Price']}")
     else:
-        st.error("Failed to extract data from the page.")
+        st.error("Failed to extract data from the page. The page structure may have changed.")
