@@ -116,7 +116,7 @@ else:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
 # ================================================
-    # Enhanced BOM inventory search function
+    # Enhanced BOM inventory search function with DNL check
 
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.split("Image:")
@@ -124,8 +124,13 @@ else:
 
         for index, row in bom_df.iterrows():
             value = row.get("Value", "N/A").strip().upper()
-            found_location = "Not found in inventory"
-            found_description = "Not found in inventory"
+
+            # Skip rows where Value is marked as "DNL" (Do Not Load)
+            if value == "DNL":
+                continue
+
+            found_location = "X"
+            found_description = "X"
             status = "Missing"
 
             # Pattern for flexible matching similar to component search mechanism
@@ -186,6 +191,7 @@ else:
             highlight_status, subset=['Status'])
 
         return styled_df
+
 # ================================================
 
     # Sidebar for file uploads (images and PDFs)
