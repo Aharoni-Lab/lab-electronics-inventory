@@ -13,27 +13,38 @@ def extract_digikey_info(url):
     
     soup = BeautifulSoup(response.text, "html.parser")
     
-    # Trying different ways to extract Part Number, Description, and Unit Price
-    part_number = soup.find(text="DigiKey Part Number")
-    description = soup.find("h1")  # Often, the description is in the <h1> tag
-    price = soup.find("span", {"id": "pricing"})
-
+    # Extract DigiKey Part Number
+    part_number = soup.find("td", string="DigiKey Part Number")
     if part_number:
         part_number_text = part_number.find_next("td").text.strip()
     else:
         part_number_text = "Not found"
-    
-    description_text = description.text.strip() if description else "Not found"
-    
-    if price:
-        unit_price_text = price.text.strip()
+
+    # Extract Manufacturer Product Number
+    manufacturer_product_number = soup.find("td", string="Manufacturer Product Number")
+    if manufacturer_product_number:
+        manufacturer_product_number_text = manufacturer_product_number.find_next("td").text.strip()
     else:
-        # Another way to extract price if the ID-based method fails
-        unit_price_text = soup.find("td", {"data-testid": "pricing-table-unit-price"})
-        unit_price_text = unit_price_text.text.strip() if unit_price_text else "Not found"
+        manufacturer_product_number_text = "Not found"
+
+    # Extract Description
+    description_tag = soup.find("td", string="Description")
+    if description_tag:
+        description_text = description_tag.find_next("td").text.strip()
+    else:
+        description_text = "Not found"
+
+    # Extract Unit Price
+    unit_price_tag = soup.find("table", {"id": "pricing"})  # Targeting pricing table
+    if unit_price_tag:
+        unit_price_row = unit_price_tag.find("td", {"data-testid": "pricing-table-unit-price"})
+        unit_price_text = unit_price_row.text.strip() if unit_price_row else "Not found"
+    else:
+        unit_price_text = "Not found"
 
     return {
-        "Part Number": part_number_text,
+        "DigiKey Part Number": part_number_text,
+        "Manufacturer Product Number": manufacturer_product_number_text,
         "Description": description_text,
         "Unit Price": unit_price_text
     }
@@ -45,7 +56,8 @@ if url:
     data = extract_digikey_info(url)
     if data:
         st.write("### Component Information")
-        st.write(f"**Part Number:** {data['Part Number']}")
+        st.write(f"**DigiKey Part Number:** {data['DigiKey Part Number']}")
+        st.write(f"**Manufacturer Product Number:** {data['Manufacturer Product Number']}")
         st.write(f"**Description:** {data['Description']}")
         st.write(f"**Unit Price:** {data['Unit Price']}")
     else:
