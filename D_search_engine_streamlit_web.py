@@ -127,11 +127,10 @@ else:
             if value == "DNL":
                 continue
 
-            found_matches = []  # Collect all matches for this item
-
             # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
                 r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
+            matches_found = False  # Track if any matches are found
 
             for block in inventory_items:
                 if value_pattern.search(block):
@@ -140,6 +139,8 @@ else:
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
+
+                    # Fallback description search if `DESC` keyword is not found
                     if not desc_match:
                         block_lines = block.splitlines()
                         for i, line in enumerate(block_lines):
@@ -160,30 +161,37 @@ else:
                     location = location_match.group(
                         1) if location_match else "Location not available"
 
-                    found_matches.append({
-                        "Part Number": part_number,
+                    # Append each found match as a new row
+                    results.append({
+                        "Value": value,
+                        "Status": "Available",
                         "Description": description,
                         "Location": location
                     })
+                    matches_found = True
 
-            # Add the matched items to the results with dropdown option
-            if found_matches:
+            # If no matches are found, add a row indicating "Missing" status
+            if not matches_found:
                 results.append({
                     "Value": value,
-                    "Matches": found_matches  # Store all matches found for dropdown
-                })
-            else:
-                results.append({
-                    "Value": value,
-                    "Matches": [{"Part Number": "Not Found", "Description": "Not Found", "Location": "Not Found"}]
+                    "Status": "Missing",
+                    "Description": "Description not available",
+                    "Location": "Location not available"
                 })
 
-        # Display results
-        for result in results:
-            st.write(f"### Matches for Value: {result['Value']}")
-            match_df = pd.DataFrame(result["Matches"])
-            st.selectbox("Select a Match", match_df.to_dict(
-                orient="records"), format_func=lambda x: f"{x['Part Number']} - {x['Location']}")
+        # Convert results to DataFrame
+        result_df = pd.DataFrame(results)
+
+        # Apply conditional formatting for "Status"
+        def highlight_status(val):
+            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
+            return color
+
+        # Style DataFrame for display
+        styled_df = result_df.style.applymap(
+            highlight_status, subset=['Status'])
+
+        return styled_df
 
 # ================================================
 
