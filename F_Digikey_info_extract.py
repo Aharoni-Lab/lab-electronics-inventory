@@ -27,17 +27,20 @@ def extract_digikey_info(url):
     description_tag = soup.find("td", string="Description")
     description_text = description_tag.find_next("td").text.strip() if description_tag else "Not found"
 
-    # Find JSON-like data within the page source
-    script_tag = soup.find("script", text=re.compile(r'"priceQuantity"'))
+    # Try to extract JSON-like data for unit price
     unit_price = "Not found"
+    script_tag = soup.find("script", text=re.compile(r'"priceQuantity"'))
     
     if script_tag:
-        # Extract JSON-like data from script text
-        json_text = re.search(r'\{.*"priceQuantity".*?\}', script_tag.string)
-        if json_text:
+        # Find the JSON-like structure within the script text
+        json_text_match = re.search(r'\{.*"priceQuantity":\{.*?\}\}', script_tag.string)
+        if json_text_match:
+            json_text = json_text_match.group(0)
             try:
-                data = json.loads(json_text.group())
-                # Access the first unit price
+                # Load JSON data
+                data = json.loads(json_text)
+                
+                # Access the first unit price in the pricing array
                 if "priceQuantity" in data and "pricing" in data["priceQuantity"]:
                     first_price_info = data["priceQuantity"]["pricing"][0]["mergedPricingTiers"][0]
                     unit_price = first_price_info["unitPrice"]
