@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 from bs4 import BeautifulSoup
+import json
 import re
 
 def extract_digikey_info(url):
@@ -26,14 +27,22 @@ def extract_digikey_info(url):
     description_tag = soup.find("td", string="Description")
     description_text = description_tag.find_next("td").text.strip() if description_tag else "Not found"
 
-    # Extract First Unit Price from Bulk Pricing Table
+    # Find JSON-like data within the page source
+    script_tag = soup.find("script", text=re.compile(r'"priceQuantity"'))
     unit_price = "Not found"
-    price_table = soup.find("table", {"id": "pricing"})
-    if price_table:
-        # Find all cells that contain a dollar amount using regex, and select the first one
-        price_cells = price_table.find_all(text=re.compile(r"\$\d+\.\d{4}"))
-        if price_cells:
-            unit_price = price_cells[0].strip()  # Get the first unit price available
+    
+    if script_tag:
+        # Extract JSON-like data from script text
+        json_text = re.search(r'\{.*"priceQuantity".*?\}', script_tag.string)
+        if json_text:
+            try:
+                data = json.loads(json_text.group())
+                # Access the first unit price
+                if "priceQuantity" in data and "pricing" in data["priceQuantity"]:
+                    first_price_info = data["priceQuantity"]["pricing"][0]["mergedPricingTiers"][0]
+                    unit_price = first_price_info["unitPrice"]
+            except json.JSONDecodeError:
+                st.error("Failed to parse JSON data from the page.")
 
     return {
         "DigiKey Part Number": part_number_text,
