@@ -104,7 +104,7 @@ def process_all_subfolders(base_source_directory, output_txt_file):
         if root == base_source_directory or root in heic_source_directory:
             continue  # Skip the base directory and excluded directories
         print(f"Processing folder: {root}")
-        process_all_heic_images(root, output_txt_file, processed_files)
+        process_all_images(root, output_txt_file, processed_files)
 
 
 # Start processing all subfolders
