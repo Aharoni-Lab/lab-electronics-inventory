@@ -204,12 +204,14 @@ else:
         elif not uploader_name:
             st.warning("Please enter your name before uploading.")
 
-    # Sidebar for BOM upload and inventory check
+# Sidebar for BOM upload and inventory check
     with st.sidebar.expander("📋 BOM Inventory Check", expanded=False):
         bom_file = st.file_uploader(
             "Upload your BOM (CSV format)", type=["csv"])
         if bom_file and st.button("Check Inventory"):
             bom_df = pd.read_csv(bom_file)
+
+            # Display the uploaded BOM in the main area
             st.write("Uploaded BOM:")
             st.dataframe(bom_df)
 
@@ -218,6 +220,8 @@ else:
 
             # Search BOM in inventory
             bom_results = search_bom_in_inventory(bom_df, inventory_text)
+
+            # Display the results in the main section
             st.write("### BOM Inventory Check Results")
             st.table(bom_results)
 
