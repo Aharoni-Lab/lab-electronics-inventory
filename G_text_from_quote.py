@@ -11,16 +11,20 @@ def extract_quote_data(quote_pdf):
     with pdfplumber.open(quote_pdf) as pdf:
         for page in pdf.pages:
             text = page.extract_text()
+
+            # Updated regex pattern for more flexibility
             matches = re.findall(
-                r'PART:\s*([\w\-]+).*?DESC:\s*(.*?)\s+(\d+)\s+\d+\s+1\s+([\d.]+)\s+([\d.]+)',
+                r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
                 text,
                 re.DOTALL
             )
+
+            # Collecting all matches into a structured format
             for match in matches:
                 part_number, description, quantity, unit_price, extended_price = match
                 data.append({
-                    "Catalog #": part_number,
-                    "Description": description,
+                    "Catalog #": part_number.strip(),
+                    "Description": description.strip(),
                     "Quantity": quantity,
                     "Unit": "EA",  # Assuming unit is always EA; adjust if needed
                     "Unit Price": unit_price,
@@ -40,12 +44,6 @@ def fill_pdf(data, template_pdf_path):
                     for annot in page.Annots:
                         if annot.T:
                             field_name = annot.T[1:-1]  # Strip parentheses
-
-                            # Debugging print statements
-                            print(f"Field Name: {field_name}")
-                            if field_name.startswith("QUAN") or field_name.startswith("UNIT") or field_name.startswith("PRICE") or field_name.startswith("CATALOG") or field_name.startswith("DESCRIPTION"):
-                                print(
-                                    f"Attempting to fill {field_name} with value: {item}")
 
                             # Fill each field based on the field name
                             if field_name == f"QUAN{i+1}":
@@ -84,10 +82,10 @@ def fill_pdf(data, template_pdf_path):
 
 # Streamlit app layout
 st.title("DigiKey Quote to Order Form Filler")
-st.write("Upload your DigiKey quote and order form, and let the app automatically fill in the order form.")
+st.write("Upload your DigiKey quote PDF and order form PDF, and let the app automatically fill in the order form.")
 
 quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
-order_form_pdf = st.file_uploader("Upload Order Form PDF", type="pdf")
+order_form_pdf = st.file_uploader("Upload Order Form PDF Template", type="pdf")
 
 if quote_pdf:
     # Extract data from the uploaded quote
@@ -98,6 +96,8 @@ if quote_pdf:
         st.write("Extracted Data from Quote:")
         df = pd.DataFrame(data)
         st.dataframe(df)  # Display the extracted data in a table format
+    else:
+        st.error("No data found in the quote. Please check the format.")
 
 if quote_pdf and order_form_pdf:
     if len(data) > 0:
