@@ -14,22 +14,25 @@ def extract_digikey_info(url):
 
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Extracting information
-    part_number = soup.find(
-        "td", {"class": "MuiTableCell-root", "data-testid": "product-overview-product-name"})
-    description = soup.find(
-        "span", {"data-testid": "product-overview-description"})
-    price = soup.find("td", {"data-testid": "pricing-table-unit-price"})
+    # Trying different ways to extract Part Number, Description, and Unit Price
+    part_number = soup.find(text="DigiKey Part Number")
+    description = soup.find("h1")  # Often, the description is in the <h1> tag
+    price = soup.find("span", {"id": "pricing"})
 
-    # Check if data is found
-    if not part_number or not description or not price:
-        st.error(
-            "Failed to extract data from the page. The page structure may have changed.")
-        return None
+    if part_number:
+        part_number_text = part_number.find_next("td").text.strip()
+    else:
+        part_number_text = "Not found"
 
-    part_number_text = part_number.text.strip()
-    description_text = description.text.strip()
-    unit_price_text = price.text.strip()
+    description_text = description.text.strip() if description else "Not found"
+
+    if price:
+        unit_price_text = price.text.strip()
+    else:
+        # Another way to extract price if the ID-based method fails
+        unit_price_text = soup.find(
+            "td", {"data-testid": "pricing-table-unit-price"})
+        unit_price_text = unit_price_text.text.strip() if unit_price_text else "Not found"
 
     return {
         "Part Number": part_number_text,
@@ -48,3 +51,6 @@ if url:
         st.write(f"**Part Number:** {data['Part Number']}")
         st.write(f"**Description:** {data['Description']}")
         st.write(f"**Unit Price:** {data['Unit Price']}")
+    else:
+        st.error(
+            "Failed to extract data from the page. The page structure may have changed.")
