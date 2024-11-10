@@ -4,6 +4,7 @@ import streamlit as st
 import pdfplumber
 import re
 import pandas as pd
+import os
 
 
 def extract_quote_data(quote_pdf):
@@ -46,6 +47,7 @@ def fill_pdf(data, template_pdf_path):
                         if annot.T:
                             field_name = annot.T[1:-1]  # Strip parentheses
                             value = None
+                            font_size = 10  # Default font size
 
                             # Fill each field based on the field name
                             if field_name == f"QUAN{i+1}":
@@ -58,10 +60,21 @@ def fill_pdf(data, template_pdf_path):
                                 value = item["Catalog #"]
                             elif field_name == f"DESCRIPTION{i+1}":
                                 value = item["Description"]
+                                font_size = 8  # Smaller font size for Description
+                            elif field_name == f"TOTAL{i+1}":
+                                value = item["Total Price"]
 
                             if value:
                                 annot.update(
-                                    PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
+                                    PdfDict(V=f"{value}",
+                                            AP=PdfDict(N=f"{value}"))
+                                )
+                                # Update font size for the field, specifically for Description if needed
+                                if field_name.startswith("DESCRIPTION"):
+                                    annot.update(
+                                        PdfDict(
+                                            DA=f"/Helvetica {font_size} Tf 0 g")
+                                    )
 
                 # Calculate the overall total and fill it in the "Total" field
                 overall_total = sum(
@@ -71,7 +84,9 @@ def fill_pdf(data, template_pdf_path):
                         field_name = annot.T[1:-1]
                         if field_name == "Total":
                             annot.update(
-                                PdfDict(V=f"{overall_total:.2f}", AP=PdfDict(N=f"{overall_total:.2f}")))
+                                PdfDict(V=f"{overall_total:.2f}", AP=PdfDict(
+                                    N=f"{overall_total:.2f}"))
+                            )
 
         pdf_writer.addpage(page)
 
@@ -81,10 +96,10 @@ def fill_pdf(data, template_pdf_path):
             PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
 
     # Write the output to a new PDF
-    result_pdf = BytesIO()
-    pdf_writer.write(result_pdf)
-    result_pdf.seek(0)
-    return result_pdf
+    result_pdf_path = "/tmp/Filled_Order_Form.pdf"
+    with open(result_pdf_path, "wb") as f:
+        pdf_writer.write(f)
+    return result_pdf_path
 
 
 # Streamlit app layout
@@ -108,15 +123,23 @@ if quote_pdf:
 
 if quote_pdf and order_form_pdf:
     if len(data) > 0:
-        filled_pdf = fill_pdf(data, order_form_pdf)
+        filled_pdf_path = fill_pdf(data, order_form_pdf)
         st.success("Order form filled successfully!")
 
         # Download button
-        st.download_button(
-            label="Download Filled Order Form",
-            data=filled_pdf,
-            file_name="Filled_Order_Form.pdf",
-            mime="application/pdf"
-        )
+        with open(filled_pdf_path, "rb") as f:
+            st.download_button(
+                label="Download Filled Order Form",
+                data=f,
+                file_name="Filled_Order_Form.pdf",
+                mime="application/pdf"
+            )
+
+        # Open in default viewer (Safari for PDFs on macOS)
+# Open in Safari
+        if st.button("Open in Safari"):
+            safari_path = "/Applications/Safari.app"
+            os.system(f"open -a {safari_path} {filled_pdf_path}")
+
     else:
         st.error("No data found in the quote. Please check the format.")
