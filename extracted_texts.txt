@@ -21848,3 +21848,154 @@ HT
 6685
 Location: Federico
 
+Image: Screenshot 2024-11-09 at 12.39.58 AM.png
+Extracted Text:
+Upload Component Photos/Quotes
+Your Name
+Adi
+Choose photos or PDF quotes to upload
+Drag and drop files here
+Limit 200MB per file⚫ JPG, JPEG, PNG, PDF
+Browse files
+Inventory Search & Management
+Search for Components
+Enter Part Number
+Enter Component Name / Value
+e.g., 4.7uF, 100 OHM, XOR, ...
+Enter Footprint
+BOM Inventory Check
+Upload your BOM (CSV format)
+Drag and drop file here
+Limit 200MB per file ⚫ CSV
+Browse files
+Search
+Re-Order Missing Parts
+Click here to reorder parts
+Part Number for Reorder
+Description for Reorder
+Requester Name
+XXX
+4.7uF 10V 0201
+Abasalt
+Submit Re-Order
+Re-order request saved successfully.
+>
+Location: Test
+
+Image: Screenshot 2024-11-09 at 12.39.25 AM.png
+Extracted Text:
+Upload Component Photos/Quotes
+Your Name
+Adi
+Choose photos or PDF quotes to upload
+Drag and drop files here
+Limit 200MB per file⚫ JPG, JPEG, PNG, PDF
+Browse files
+Inventory Search & Management
+Search for Components
+Enter Part Number
+Enter Component Name / Value
+e.g., 4.7uF, 100 OHM, XOR, ...
+Enter Footprint
+Search
+BOM Inventory Check
+Upload your BOM (CSV format)
+Re-Order Missing Parts
+Click here to reorder parts
+Drag and drop file here
+Limit 200MB per file ⚫ CSV
+Browse files
+>
+Location: Test
+
+Image: Screenshot 2024-11-09 at 12.39.54 AM.png
+Extracted Text:
+Upload Component Photos/Quotes
+Your Name
+Adi
+Choose photos or PDF quotes to upload
+Drag and drop files here
+Limit 200MB per file⚫ JPG, JPEG, PNG, PDF
+Browse files
+Inventory Search & Management
+Search for Components
+Enter Part Number
+Enter Component Name / Value
+e.g., 4.7uF, 100 OHM, XOR, ...
+Enter Footprint
+BOM Inventory Check
+Upload your BOM (CSV format)
+Drag and drop file here
+Limit 200MB per file ⚫ CSV
+Browse files
+Search
+Re-Order Missing Parts
+Click here to reorder parts
+Part Number for Reorder
+Description for Reorder
+Requester Name
+XXX
+4.7uF 10V 0201
+Abasalt
+Submit Re-Order
+>
+Location: Test
+
+Image: Screenshot 2024-11-09 at 3.03.43 PM.png
+Extracted Text:
+Upload Component
+Photos/Quotes
+Your Name
+Choose photos or PDF quotes to upload
+Drag and drop files here
+Limit 200MB per file⚫ JPG, JPEG, PNG,
+PDF
+Browse files
+Inventory Search & Management
+Search for Components
+Enter Part Number
+Enter Component Name / Value
+e.g., 4.7uF, 100 OHM, XOR, ...
+Enter Footprint
+Search
+Re-Order Missing Parts
+Please enter your name before
+uploading.
+Click here to reorder parts
+BOM Inventory Check
+Upload your BOM (CSV format)
+Drag and drop file here
+Limit 200MB per file ⚫ CSV
+•
+Share
+☆
+streamlitApp
+C
+Location: Test
+
+Image: Screenshot 2024-11-09 at 12.39.20 AM.png
+Extracted Text:
+Upload Component Photos/Quotes
+Your Name
+Adi
+Choose photos or PDF quotes to upload
+Drag and drop files here
+Limit 200MB per file⚫ JPG, JPEG, PNG, PDF
+Browse files
+Inventory Search & Management
+Search for Components
+Enter Part Number
+Enter Component Name / Value
+e.g., 4.7uF, 100 OHM, XOR, ...
+Enter Footprint
+Search
+BOM Inventory Check
+Upload your BOM (CSV format)
+Re-Order Missing Parts →→
+Click here to reorder parts
+Drag and drop file here
+Limit 200MB per file ⚫ CSV
+Browse files
+>
+Location: Test
+
