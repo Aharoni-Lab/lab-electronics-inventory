@@ -129,10 +129,13 @@ else:
             if value == "DNL":
                 continue
 
+            found_location = "X"
+            found_description = "X"
+            status = "Missing"
+
             # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
-                r'\b' + re.escape(value) + r'\b', re.IGNORECASE
-            )
+                r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
 
             for block in inventory_items:
                 if value_pattern.search(block):
@@ -140,8 +143,7 @@ else:
                     part_number_match = re.search(
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                     desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE
-                    )
+                        r'DESC:\s*(.*)', block, re.IGNORECASE)
 
                     # Fallback description search if `DESC` keyword is not found
                     if not desc_match:
@@ -156,8 +158,7 @@ else:
                                 break
 
                     location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE
-                    )
+                        r'Location:\s*(.*)', block, re.IGNORECASE)
                     part_number = part_number_match.group(
                         0) if part_number_match else "P/N not detected"
                     description = desc_match.group(1) if isinstance(
@@ -165,22 +166,17 @@ else:
                     location = location_match.group(
                         1) if location_match else "Location not available"
 
-                    # Append each match to results instead of stopping at the first one
-                    results.append({
-                        "Value": value,
-                        "Status": "Available",
-                        "Description": description,
-                        "Location": location
-                    })
+                    found_description = description
+                    found_location = location
+                    status = "Available"
+                    break  # Stop after finding the first match
 
-            # If no matches found, add as missing item
-            if not any(result["Value"] == value for result in results):
-                results.append({
-                    "Value": value,
-                    "Status": "Missing",
-                    "Description": "X",
-                    "Location": "X"
-                })
+            results.append({
+                "Value": value,
+                "Status": status,
+                "Description": found_description,
+                "Location": found_location
+            })
 
         # Convert results to DataFrame
         result_df = pd.DataFrame(results)
@@ -192,11 +188,9 @@ else:
 
         # Style DataFrame for display
         styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status']
-        )
+            highlight_status, subset=['Status'])
 
         return styled_df
-
 
 # ================================================
 
