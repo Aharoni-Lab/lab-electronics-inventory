@@ -116,8 +116,6 @@ else:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
 # ================================================
-    # Enhanced BOM inventory search function with DNL check
-
     def search_bom_in_inventory(bom_df, inventory_text):
         inventory_items = inventory_text.split("Image:")
         results = []
@@ -129,9 +127,7 @@ else:
             if value == "DNL":
                 continue
 
-            found_location = "X"
-            found_description = "X"
-            status = "Missing"
+            found_matches = []  # Collect all matches for this item
 
             # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
@@ -144,8 +140,6 @@ else:
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
-
-                    # Fallback description search if `DESC` keyword is not found
                     if not desc_match:
                         block_lines = block.splitlines()
                         for i, line in enumerate(block_lines):
@@ -166,31 +160,30 @@ else:
                     location = location_match.group(
                         1) if location_match else "Location not available"
 
-                    found_description = description
-                    found_location = location
-                    status = "Available"
-                    break  # Stop after finding the first match
+                    found_matches.append({
+                        "Part Number": part_number,
+                        "Description": description,
+                        "Location": location
+                    })
 
-            results.append({
-                "Value": value,
-                "Status": status,
-                "Description": found_description,
-                "Location": found_location
-            })
+            # Add the matched items to the results with dropdown option
+            if found_matches:
+                results.append({
+                    "Value": value,
+                    "Matches": found_matches  # Store all matches found for dropdown
+                })
+            else:
+                results.append({
+                    "Value": value,
+                    "Matches": [{"Part Number": "Not Found", "Description": "Not Found", "Location": "Not Found"}]
+                })
 
-        # Convert results to DataFrame
-        result_df = pd.DataFrame(results)
-
-        # Apply conditional formatting for "Status"
-        def highlight_status(val):
-            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-            return color
-
-        # Style DataFrame for display
-        styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status'])
-
-        return styled_df
+        # Display results
+        for result in results:
+            st.write(f"### Matches for Value: {result['Value']}")
+            match_df = pd.DataFrame(result["Matches"])
+            st.selectbox("Select a Match", match_df.to_dict(
+                orient="records"), format_func=lambda x: f"{x['Part Number']} - {x['Location']}")
 
 # ================================================
 
