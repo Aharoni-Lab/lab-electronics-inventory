@@ -55,7 +55,7 @@ else:
         })
 
     # Function to fetch file content from Firebase Storage
-    @st.cache_data
+    # @st.cache_data
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
         response = requests.get(url)
