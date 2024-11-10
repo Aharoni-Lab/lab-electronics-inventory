@@ -194,15 +194,15 @@ else:
 
 # ================================================
 
-# Sidebar for file uploads (images and PDFs)
-with st.sidebar.expander("📸 Upload Component Photos/ Quotes", expanded=False):
-    uploader_name = st.text_input("Your Name")  # Uploader's name input
-    uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
-                                      "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
-    if uploader_name and uploaded_files and st.button("Upload Files"):
+    # Sidebar for file uploads (images and PDFs)
+    st.sidebar.header("📸 Upload Component Photos/ Quotes")
+    uploader_name = st.sidebar.text_input("Your Name")  # Uploader's name input
+    uploaded_files = st.sidebar.file_uploader("Choose photos or PDF quotes to upload", type=[
+                                              "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+    if uploader_name and uploaded_files and st.sidebar.button("Upload Files"):
         upload_files(uploaded_files, uploader_name)
     elif not uploader_name:
-        st.warning("Please enter your name before uploading.")
+        st.sidebar.warning("Please enter your name before uploading.")
 
     # Right Sidebar for BOM upload and search
     st.sidebar.header("📋 BOM Inventory Check")
