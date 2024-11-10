@@ -21999,3 +21999,100 @@ Browse files
 >
 Location: Test
 
+Image: Screenshot 2024-11-04 at 2.48.27 PM.png
+Extracted Text:
+24-11-05
+Via hole to Track
+1-05 06:47
+0.2mm
+heyadon
+heyadong
+2024-12
+024-11-05
+06:47
+06:47
+2024-1
+Location: test_2
+
+Image: Screenshot 2024-11-06 at 10.52.44 PM.png
+Extracted Text:
+D C A C Q
+Α CQ Q Q
+Track: use netclas width
+Via: use netclass sizes
+685
+B.Silkscreen
+FINER 2: 0.0010 mm (0.04 mils) ✓ Zoom 20.00
+×
+☑
+Board Setup
+Board Stackup
+Physical Stackup
+Board Finish
+Copper layers: 6
+Impedance controlled
+Add Dielectric Layer...
+Remove Dielectric Layer...
+Board Editor Layers
+Layer
+ld
+Type
+Material
+Thickness
+Color
+in
+Solder Mask/Paste
+mil
+mm
+Text & Graphics
+Defaults
+Formatting
+Text Variables
+Design Rules
+Constraints
+Pre-defined Sizes
+Teardrops
+-Length-tuning Patterns
+Net Classes
+Custom Rules
+F.Silkscreen Top Silk Screen
+Not specified
+Not specifi
+F.Paste
+Top Solder Paste
+F.Mask
+Top Solder Mask
+Not specified
+0.01 mm
+Not specifi
+F.Cu
+Copper
+0.035 mm
+Dielectric 1 PrePreg
+FR4
+0.1164 mm
+Not specifi
+Location: test_2
+
+Image: Screenshot 2024-11-06 at 10.42.56 PM.png
+Extracted Text:
+Pad Hole-to-Hole Spacing
+0.45mm
+Min. Castellated Holes
+0.60mm
+Pad Hole-to-Hole Spacing
+OO P1
+Spacing
+Castellated holes are metalized half-holes on PCB
+edges, commonly used on daughter boards to be
+soldered onto carrier PCBs.
+Hole diameter ($): ≥ 0.6 mm
+2 Hole to board edge (L): ≥1 mm
+③3 Hole to hole (D): ≥ 0.6 mm
+4 Min. PCB size: 10 × 10 mm
+⑤Min. PCB thickness: 0.6 mm
+D
+G08 G07 GND G06 G05 G04
+8210S
+Location: test_2
+
