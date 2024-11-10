@@ -2,81 +2,77 @@ import streamlit as st
 import pdfplumber
 import re
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 from PyPDF2 import PdfReader, PdfWriter
 from io import BytesIO
 
 
 def extract_quote_data(quote_pdf):
     data = []
+    all_text = ""
     with pdfplumber.open(quote_pdf) as pdf:
-        all_text = ""
         for page in pdf.pages:
             text = page.extract_text()
             all_text += text + "\n"
-
-            # Updated regular expression to capture all fields
             matches = re.findall(
                 r'PART:\s*([\w\-]+).*?DESC:\s*(.*?)\s+(\d+)\s+\d+\s+1\s+([\d.]+)\s+([\d.]+)',
                 text,
                 re.DOTALL
             )
-
-            # Parse each match and store it in data
             for match in matches:
                 part_number, description, quantity, unit_price, extended_price = match
                 data.append({
-                    "Part Number": part_number,
+                    "Catalog #": part_number,
                     "Description": description,
                     "Quantity": quantity,
-                    "Unit Price": unit_price,
-                    "Extended Price": extended_price
+                    "Unit": "EA",
+                    "Unit Price": unit_price
                 })
-
     return data, all_text
 
 
-def fill_order_form(order_form_pdf, data):
+def create_overlay(data):
     packet = BytesIO()
-    can = canvas.Canvas(packet)
+    can = canvas.Canvas(packet, pagesize=letter)
+    can.setFont("Helvetica", 8)
 
-    # Static information positions
-    can.drawString(430, 750, "17188941")  # PO number
-    can.drawString(130, 750, "DigiKey")   # Vendor name
-    can.drawString(130, 700, "Abasalt Bahrami")  # Requestor's name
-    can.drawString(330, 700, "8729858327")  # Requestor's phone
-    can.drawString(130, 650, "441437-AH-86058")  # Project fund
+    # Starting y-coordinate for the first row in the lower table
+    y_start = 270  # Adjusted to target the lower table
+    x_positions = {
+        "Quantity": 100,       # x-position for Quantity
+        "Unit": 150,          # x-position for Unit
+        "Unit Price": 220,    # x-position for Unit Price
+        "Catalog #": 310,     # x-position for Catalog #
+        "Description": 450    # x-position for Description
+    }
 
-    # Line item positions (start at y = 500 for line items, decrease y for each item)
-    y = 500
-    for idx, item in enumerate(data[:10]):  # Fill up to 10 items
-        can.drawString(50, y, str(idx + 1))  # Item number
-        can.drawString(100, y, item["Quantity"])  # Quantity
-        can.drawString(150, y, "EA")  # Unit (assuming "EA" for each item)
-        can.drawString(200, y, item["Unit Price"])  # Unit price
-        can.drawString(300, y, item["Part Number"])  # Catalog/Part number
-        can.drawString(400, y, item["Description"])  # Description
-        can.drawString(550, y, item["Extended Price"])  # Total/Extended price
-        y -= 20  # Move down for the next line item
+    y = y_start
+    # Limiting to 10 rows to fit in the table
+    for idx, item in enumerate(data[:10]):
+        can.drawString(x_positions["Quantity"], y, item["Quantity"])
+        can.drawString(x_positions["Unit"], y, item["Unit"])
+        can.drawString(x_positions["Unit Price"], y, item["Unit Price"])
+        can.drawString(x_positions["Catalog #"], y, item["Catalog #"])
+        can.drawString(x_positions["Description"], y, item["Description"])
+        y -= 20  # Move down for the next row
 
     can.save()
     packet.seek(0)
-    new_pdf = PdfReader(packet)
+    return PdfReader(packet)
 
-    # Read original order form PDF
-    existing_pdf = PdfReader(order_form_pdf)
-    output = PdfWriter()
 
-    # Merge new data with original PDF
-    page = existing_pdf.pages[0]
-    page.merge_page(new_pdf.pages[0])
-    output.add_page(page)
+def merge_pdfs(order_form_pdf, overlay_pdf):
+    order_form = PdfReader(order_form_pdf)
+    output_pdf = PdfWriter()
 
-    for page_num in range(1, len(existing_pdf.pages)):
-        output.add_page(existing_pdf.pages[page_num])
+    for page_num in range(len(order_form.pages)):
+        page = order_form.pages[page_num]
+        if page_num == 0:
+            page.merge_page(overlay_pdf.pages[0])
+        output_pdf.add_page(page)
 
-    # Save the final PDF to BytesIO
     result_pdf = BytesIO()
-    output.write(result_pdf)
+    output_pdf.write(result_pdf)
     result_pdf.seek(0)
     return result_pdf
 
@@ -89,24 +85,20 @@ quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
 order_form_pdf = st.file_uploader("Upload Order Form PDF", type="pdf")
 
 if quote_pdf and order_form_pdf:
-    # Extract data and text from the PDF
     data, extracted_text = extract_quote_data(quote_pdf)
 
-    # Button to display the extracted text
     if st.button("Show Extracted Text"):
         st.text_area("Extracted Text from PDF", extracted_text, height=300)
 
-    # Check if data was successfully extracted
     if len(data) > 0:
-        # Display parsed data for debugging
-        st.write("Parsed Data from PDF:", data)
-        result_pdf = fill_order_form(order_form_pdf, data)
+        overlay_pdf = create_overlay(data)
+        filled_pdf = merge_pdfs(order_form_pdf, overlay_pdf)
         st.success("Order form filled successfully!")
 
-        # Button to download the filled order form
+        # Download button
         st.download_button(
             label="Download Filled Order Form",
-            data=result_pdf,
+            data=filled_pdf,
             file_name="Filled_Order_Form.pdf",
             mime="application/pdf"
         )
