@@ -63,8 +63,8 @@ else:
             return response.text
         else:
             return f"Failed to fetch file: {response.status_code}"
-
     # Function to check if a line is a description
+
     def is_description(line):
         description_patterns = [
             r'\bDESC\b', r'\bPart Description\b', r'\bCIC\b', r'\bESC\b',
@@ -202,25 +202,20 @@ else:
 
     # Sidebar for BOM upload in dropdown menu
     with st.sidebar.expander("📋 BOM Inventory Check"):
-        bom_file = st.file_uploader("Upload your BOM (CSV format)", type=["csv"])
-        check_inventory_button = st.button("Check Inventory")  # Separate button for sidebar
-    
-    # Main section for displaying BOM results
-    if bom_file and check_inventory_button:
-        bom_df = pd.read_csv(bom_file)
-        st.write("Uploaded BOM:")
-        st.dataframe(bom_df)
-    
-        # Fetch inventory content
-        inventory_text = fetch_file_content()
-    
-        # Search BOM in inventory
-        bom_results = search_bom_in_inventory(bom_df, inventory_text)
-        
-        # Display BOM results in the main section
-        st.write("### BOM Inventory Check Results")
-        st.table(bom_results)
+        bom_file = st.file_uploader(
+            "Upload your BOM (CSV format)", type=["csv"])
+        if bom_file and st.button("Check Inventory"):
+            bom_df = pd.read_csv(bom_file)
+            st.write("Uploaded BOM:")
+            st.dataframe(bom_df)
 
+            # Fetch inventory content
+            inventory_text = fetch_file_content()
+
+            # Search BOM in inventory
+            bom_results = search_bom_in_inventory(bom_df, inventory_text)
+            st.write("### BOM Inventory Check Results")
+            st.table(bom_results)
 
     # Main Interface
     st.title("Inventory Search & Management")
