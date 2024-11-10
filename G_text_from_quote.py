@@ -38,6 +38,10 @@ def fill_pdf(data, template_pdf_path):
     pdf_reader = PdfReader(template_pdf_path)
     pdf_writer = PdfWriter()
 
+    # Track unused text fields to populate with "Total Price" values
+    # Adjust range as needed based on available Text fields
+    text_fields = [f"Text{i}" for i in range(12, 50)]
+
     # Fill in form fields on the first page
     for page_num, page in enumerate(pdf_reader.pages):
         if page_num == 0:  # Only fill fields on the first page
@@ -53,7 +57,7 @@ def fill_pdf(data, template_pdf_path):
                             if field_name == f"QUAN{i+1}":
                                 value = item["Quantity"]
                             elif field_name == f"UNIT{i+1}":
-                                value = item["Unit"]
+                                value = "1"  # Set Unit to "1" instead of extracted data
                             elif field_name == f"PRICE{i+1}":
                                 value = item["Unit Price"]
                             elif field_name == f"CATALOG {i+1}":
@@ -61,8 +65,6 @@ def fill_pdf(data, template_pdf_path):
                             elif field_name == f"DESCRIPTION{i+1}":
                                 value = item["Description"]
                                 font_size = 8  # Smaller font size for Description
-                            elif field_name == f"TOTAL{i+1}":
-                                value = item["Total Price"]
 
                             if value:
                                 annot.update(
@@ -76,17 +78,25 @@ def fill_pdf(data, template_pdf_path):
                                             DA=f"/Helvetica {font_size} Tf 0 g")
                                     )
 
-                # Calculate the overall total and fill it in the "Total" field
+                # Populate "Total Price" values in generic text fields
+                for i, item in enumerate(data[:10]):  # Limit to 10 items
+                    if i < len(text_fields):
+                        field_name = text_fields[i]
+                        total_price = item["Total Price"]
+                        for annot in page.Annots:
+                            if annot.T and annot.T[1:-1] == field_name:
+                                annot.update(
+                                    PdfDict(V=f"{total_price}", AP=PdfDict(N=f"{total_price}")))
+                                break
+
+                # Calculate the overall total and fill it in the "Total" field at the bottom if found
                 overall_total = sum(
                     float(item["Total Price"]) for item in data)
                 for annot in page.Annots:
                     if annot.T:
                         field_name = annot.T[1:-1]
-                        if field_name == "Total":
-                            annot.update(
-                                PdfDict(V=f"{overall_total:.2f}", AP=PdfDict(
-                                    N=f"{overall_total:.2f}"))
-                            )
+                        if field_name.lower() == "total":
+                            annot.update(PdfDict(V=f"{overall_total:.2f}"))
 
         pdf_writer.addpage(page)
 
