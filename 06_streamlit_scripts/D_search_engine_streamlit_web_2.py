@@ -8,10 +8,12 @@ from firebase_admin import credentials, storage
 from PIL import Image
 import io
 import time
+from pdfrw import PdfReader, PdfWriter, PdfDict
+import pdfplumber
+import os
+
 
 # Authentication setup using Streamlit secrets
-
-
 def login():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
@@ -22,7 +24,6 @@ def login():
         password = st.sidebar.text_input("Password", type="password")
 
         if st.sidebar.button("Login"):
-            # Fetch username and password from Streamlit secrets
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.sidebar.success("Logged in successfully!")
@@ -54,8 +55,143 @@ else:
             'storageBucket': 'aharonilabinventory.appspot.com'
         })
 
+    # DigiKey Quote to Order Form Filler functions
+    def extract_quote_data(quote_pdf):
+        data = []
+        quote_number = None
+        with pdfplumber.open(quote_pdf) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text()
+                quote_match = re.search(r'Quote #\s*(\d+)', text)
+                if quote_match:
+                    quote_number = quote_match.group(0)
+                matches = re.findall(
+                    r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
+                    text, re.DOTALL
+                )
+                for match in matches:
+                    part_number, description, quantity, unit_price, extended_price = match
+                    data.append({
+                        "Catalog #": part_number.strip(),
+                        "Description": description.strip(),
+                        "Quantity": quantity,
+                        "Unit Price": unit_price,
+                        "Total Price": extended_price
+                    })
+        return data, quote_number
+
+    def fill_pdf(data, template_pdf_path, quote_number):
+        pdf_reader = PdfReader(template_pdf_path)
+        pdf_writer = PdfWriter()
+        today_date = datetime.today().strftime("%m/%d/%y")
+        tax_rate = 0.095
+
+        for page_num, page in enumerate(pdf_reader.pages):
+            if page_num == 0:
+                if page.Annots:
+                    for i, item in enumerate(data[:10]):
+                        for annot in page.Annots:
+                            if annot.T:
+                                field_name = annot.T[1:-1]
+                                value = None
+                                font_size = 10
+                                if field_name == f"QUAN{i+1}":
+                                    value = item["Quantity"]
+                                elif field_name == f"UNIT{i+1}":
+                                    value = "1"
+                                elif field_name == f"PRICE{i+1}":
+                                    value = item["Unit Price"]
+                                elif field_name == f"CATALOG {i+1}":
+                                    value = item["Catalog #"]
+                                elif field_name == f"DESCRIPTION{i+1}":
+                                    value = item["Description"]
+                                    font_size = 8
+                                elif field_name == f"Text{39 + i}":
+                                    value = item["Total Price"]
+
+                                if value:
+                                    annot.update(
+                                        PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
+                                    if field_name.startswith("DESCRIPTION"):
+                                        annot.update(
+                                            PdfDict(DA=f"/Helvetica {font_size} Tf 0 g"))
+
+                    subtotal = sum(float(item["Total Price"]) for item in data)
+                    tax = subtotal * tax_rate
+                    total = subtotal + tax
+
+                    for annot in page.Annots:
+                        if annot.T:
+                            field_name = annot.T[1:-1]
+                            if field_name == "Text12":
+                                annot.update(
+                                    PdfDict(V=today_date, AP=PdfDict(N=today_date)))
+                            elif field_name == "Text49":
+                                annot.update(
+                                    PdfDict(V=f"{subtotal:.2f}", AP=PdfDict(N=f"{subtotal:.2f}")))
+                            elif field_name == "Text3":
+                                annot.update(
+                                    PdfDict(V=f"{tax:.2f}", AP=PdfDict(N=f"{tax:.2f}")))
+                            elif field_name == "Text50":
+                                annot.update(
+                                    PdfDict(V=f"{total:.2f}", AP=PdfDict(N=f"{total:.2f}")))
+
+                    for annot in page.Annots:
+                        if annot.T:
+                            field_name = annot.T[1:-1]
+                            if field_name == "Text1":
+                                annot.update(PdfDict(V="", AP=PdfDict(N="")))
+                            elif field_name == "Text2":
+                                annot.update(PdfDict(V="", AP=PdfDict(
+                                    N="Fund Manager Approval Signature Here")))
+                            elif field_name == "FAU":
+                                annot.update(PdfDict(V="", AP=PdfDict(N="")))
+                            elif field_name == "PO#":
+                                annot.update(
+                                    PdfDict(V=quote_number, AP=PdfDict(N=quote_number)))
+
+        pdf_writer.addpage(page)
+        if '/AcroForm' in pdf_reader.Root:
+            pdf_reader.Root.AcroForm.update(
+                PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
+        result_pdf_path = "/tmp/Filled_Order_Form.pdf"
+        with open(result_pdf_path, "wb") as f:
+            pdf_writer.write(f)
+        return result_pdf_path
+
+    # Sidebar for DigiKey Quote to Order Form Filler
+    with st.sidebar.expander("📄 DigiKey Quote to Order Form Filler"):
+        quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
+        order_form_pdf = st.file_uploader(
+            "Upload Order Form PDF Template", type="pdf")
+
+        if quote_pdf:
+            data, quote_number = extract_quote_data(quote_pdf)
+            if data:
+                st.write("Extracted Data from Quote:")
+                df = pd.DataFrame(data)
+                st.dataframe(df)
+            else:
+                st.error("No data found in the quote. Please check the format.")
+
+        if quote_pdf and order_form_pdf:
+            if len(data) > 0:
+                filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
+                st.success("Order form filled successfully!")
+                with open(filled_pdf_path, "rb") as f:
+                    st.download_button(
+                        label="Download Filled Order Form",
+                        data=f,
+                        file_name="Filled_Order_Form.pdf",
+                        mime="application/pdf"
+                    )
+                if st.button("Open in Safari"):
+                    safari_path = "/Applications/Safari.app"
+                    os.system(f"open -a {safari_path} {filled_pdf_path}")
+            else:
+                st.error("No data found in the quote. Please check the format.")
+
     # Function to fetch file content from Firebase Storage
-    # @st.cache_data
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
         response = requests.get(url)
@@ -77,7 +213,7 @@ else:
             '|'.join(description_patterns), re.IGNORECASE)
         return bool(description_regex.search(line))
 
-    # Function to save re-order request to Firebase
+    # Function to save reorder request to Firebase
     def reorder_item(part_number, description, requester_name):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         re_order_text = f"Date and Time: {current_time}, Part Number: {part_number}, Description: {description}, Requester Name: {requester_name}\n"
@@ -93,8 +229,8 @@ else:
             # Show the success message temporarily
             success_message = st.success(
                 "Re-order request saved successfully.")
-            time.sleep(2)  # Wait for 2 seconds
-            success_message.empty()  # Clear the success message after 2 seconds
+            time.sleep(2)
+            success_message.empty()
         except Exception as e:
             st.error(f"Failed to save re-order request: {e}")
 
@@ -110,8 +246,8 @@ else:
                 # Show the success message temporarily
                 success_message = st.success(
                     f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
-                time.sleep(2)  # Wait for 2 seconds
-                success_message.empty()  # Clear the success message after 2 seconds
+                time.sleep(2)
+                success_message.empty()
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
@@ -190,22 +326,11 @@ else:
 
         return styled_df
 
-    # Sidebar for file uploads in dropdown menu
-    with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
-        uploader_name = st.text_input("Your Name")  # Uploader's name input
-        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
-            "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
-        if uploader_name and uploaded_files and st.button("Upload Files"):
-            upload_files(uploaded_files, uploader_name)
-        elif not uploader_name:
-            st.warning("Please enter your name before uploading.")
-
-    # Sidebar for BOM upload in dropdown menu
+    # Sidebar for BOM upload and inventory check
     with st.sidebar.expander("📋 BOM Inventory Check"):
         bom_file = st.file_uploader(
             "Upload your BOM (CSV format)", type=["csv"])
-        check_inventory_button = st.button(
-            "Check Inventory")  # Separate button for sidebar
+        check_inventory_button = st.button("Check Inventory")
 
     # Main section for displaying BOM results
     if bom_file and check_inventory_button:
@@ -251,8 +376,10 @@ else:
                         rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
                 if value_query:
                     value_query_cleaned = value_query.replace(" ", "")
-                    value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
-                        value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
+                    value_query_pattern = "".join(
+                        [ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
+                            value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)]
+                    )
                     search_patterns.append(re.compile(
                         fr'\b{value_query_pattern}\b', re.IGNORECASE))
                 if footprint_query:
