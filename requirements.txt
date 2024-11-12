@@ -6,3 +6,4 @@ pdfplumber
 pdfplumber
 reportlab
 PyPDF2
+pdfrw
