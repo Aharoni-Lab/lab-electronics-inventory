@@ -184,11 +184,7 @@ else:
 
         if quote_pdf:
             data, quote_number = extract_quote_data(quote_pdf)
-            if data:
-                st.write("Extracted Data from Quote:")
-                df = pd.DataFrame(data)
-                st.dataframe(df)
-            else:
+            if not data:
                 st.error("No data found in the quote. Please check the format.")
 
         if quote_pdf and order_form_pdf:
@@ -203,8 +199,8 @@ else:
                         mime="application/pdf"
                     )
                 if st.button("Open in Safari"):
-                    safari_path = "/Applications/Safari.app"
-                    os.system(f"open -a {safari_path} {filled_pdf_path}")
+                    os.system(f"open {filled_pdf_path}")
+
             else:
                 st.error("No data found in the quote. Please check the format.")
 
