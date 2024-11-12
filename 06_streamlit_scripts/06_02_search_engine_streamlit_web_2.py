@@ -12,8 +12,9 @@ from pdfrw import PdfReader, PdfWriter, PdfDict
 import pdfplumber
 import os
 
-
 # Authentication setup using Streamlit secrets
+
+
 def login():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
@@ -191,6 +192,19 @@ else:
             else:
                 st.error("No data found in the quote. Please check the format.")
 
+    # Sidebar for uploading component photos or quotes
+    with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
+        uploader_name = st.text_input("Your Name")  # Uploader's name input
+        uploaded_files = st.file_uploader(
+            "Choose photos or PDF quotes to upload",
+            type=["jpg", "jpeg", "png", "pdf"],
+            accept_multiple_files=True
+        )
+        if uploader_name and uploaded_files and st.button("Upload Files"):
+            upload_files(uploaded_files, uploader_name)
+        elif not uploader_name:
+            st.warning("Please enter your name before uploading.")
+
     # Function to fetch file content from Firebase Storage
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
@@ -225,16 +239,12 @@ else:
                 existing_content = blob.download_as_text()
                 re_order_text = existing_content + re_order_text
             blob.upload_from_string(re_order_text)
-
-            # Show the success message temporarily
-            success_message = st.success(
-                "Re-order request saved successfully.")
+            st.success("Re-order request saved successfully.")
             time.sleep(2)
-            success_message.empty()
         except Exception as e:
             st.error(f"Failed to save re-order request: {e}")
 
-    # Function to upload multiple files (images and PDFs) to Firebase in a specific folder
+    # Function to upload multiple files to Firebase
     def upload_files(files, uploader_name):
         bucket = storage.bucket()
         for file in files:
@@ -242,12 +252,9 @@ else:
             blob = bucket.blob(file_name)
             try:
                 blob.upload_from_string(file.read(), content_type=file.type)
-
-                # Show the success message temporarily
-                success_message = st.success(
+                st.success(
                     f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
                 time.sleep(2)
-                success_message.empty()
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
@@ -267,19 +274,16 @@ else:
             found_description = "X"
             status = "Missing"
 
-            # Pattern for flexible matching similar to component search mechanism
             value_pattern = re.compile(
                 r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
 
             for block in inventory_items:
                 if value_pattern.search(block):
-                    # Extract location and description from the block
                     part_number_match = re.search(
                         r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
 
-                    # Fallback description search if `DESC` keyword is not found
                     if not desc_match:
                         block_lines = block.splitlines()
                         for i, line in enumerate(block_lines):
@@ -303,7 +307,7 @@ else:
                     found_description = description
                     found_location = location
                     status = "Available"
-                    break  # Stop after finding the first match
+                    break
 
             results.append({
                 "Value": value,
@@ -312,18 +316,14 @@ else:
                 "Location": found_location
             })
 
-        # Convert results to DataFrame
         result_df = pd.DataFrame(results)
 
-        # Apply conditional formatting for "Status"
         def highlight_status(val):
             color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
             return color
 
-        # Style DataFrame for display
         styled_df = result_df.style.applymap(
             highlight_status, subset=['Status'])
-
         return styled_df
 
     # Sidebar for BOM upload and inventory check
@@ -338,13 +338,9 @@ else:
         st.write("Uploaded BOM:")
         st.dataframe(bom_df)
 
-        # Fetch inventory content
         inventory_text = fetch_file_content()
-
-        # Search BOM in inventory
         bom_results = search_bom_in_inventory(bom_df, inventory_text)
 
-        # Display BOM results in the main section
         st.write("### BOM Inventory Check Results")
         st.table(bom_results)
 
@@ -353,40 +349,33 @@ else:
     with st.container():
         st.header("Search for Components")
 
-        # Using columns for side-by-side input fields
         col1, col2, col3 = st.columns(3)
         part_number_query = col1.text_input("Enter Part Number")
         value_query = col2.text_input(
             "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
         footprint_query = col3.text_input("Enter Footprint")
 
-        # Interactive button to start search
         if st.button("🔎 Search"):
             file_content = fetch_file_content()
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
-                # Parse and search file content
                 blocks = file_content.split("Image:")
                 search_patterns = []
 
-                # Add patterns based on input
                 if part_number_query:
                     search_patterns.append(re.compile(
                         rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
                 if value_query:
                     value_query_cleaned = value_query.replace(" ", "")
-                    value_query_pattern = "".join(
-                        [ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
-                            value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)]
-                    )
+                    value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
+                        value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
                     search_patterns.append(re.compile(
                         fr'\b{value_query_pattern}\b', re.IGNORECASE))
                 if footprint_query:
                     search_patterns.append(re.compile(
                         rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
 
-                # Display search results
                 results = []
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
@@ -418,27 +407,22 @@ else:
                     st.write("### Search Results")
                     df_results = pd.DataFrame(
                         results, columns=["Part Number", "Description", "Location"])
-                    df_results.index = df_results.index + 1  # Start index from 1
+                    df_results.index = df_results.index + 1
                     st.table(df_results)
                 else:
                     st.warning("No items found matching the search criteria.")
 
-    # Section for Reordering items with an interactive form
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
-            # Using columns for side-by-side input fields
             col1, col2, col3 = st.columns(3)
 
-            # Input fields in each column with titles
             part_number = col1.text_input("Part Number for Reorder")
             description = col2.text_input("Description for Reorder")
             requester_name = col3.text_input("Requester Name")
 
-            # Submit button for the form
             submit_reorder = st.form_submit_button("Submit Re-Order")
 
-            # Validation and submission feedback
             if submit_reorder:
                 if part_number and description and requester_name:
                     reorder_item(part_number, description, requester_name)
