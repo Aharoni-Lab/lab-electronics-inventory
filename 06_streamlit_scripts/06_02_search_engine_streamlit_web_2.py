@@ -182,27 +182,33 @@ else:
         order_form_pdf = st.file_uploader(
             "Upload Order Form PDF Template", type="pdf")
 
-        if quote_pdf:
-            data, quote_number = extract_quote_data(quote_pdf)
-            if not data:
-                st.error("No data found in the quote. Please check the format.")
+    # Process the quote PDF without displaying the extracted data
+    if quote_pdf:
+        data, quote_number = extract_quote_data(quote_pdf)
+        if not data:
+            st.error("No data found in the quote. Please check the format.")
 
-        if quote_pdf and order_form_pdf:
-            if len(data) > 0:
-                filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
-                st.success("Order form filled successfully!")
-                with open(filled_pdf_path, "rb") as f:
-                    st.download_button(
-                        label="Download Filled Order Form",
-                        data=f,
-                        file_name="Filled_Order_Form.pdf",
-                        mime="application/pdf"
-                    )
-                if st.button("Open in Safari"):
-                    os.system(f"open {filled_pdf_path}")
+    # Fill the PDF and provide download and "Open in Safari" options
+    if quote_pdf and order_form_pdf:
+        if len(data) > 0:
+            filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
+            st.success("Order form filled successfully!")
 
-            else:
-                st.error("No data found in the quote. Please check the format.")
+            # Download button
+            with open(filled_pdf_path, "rb") as f:
+                st.download_button(
+                    label="Download Filled Order Form",
+                    data=f,
+                    file_name="Filled_Order_Form.pdf",
+                    mime="application/pdf"
+                )
+
+            # Open in Safari
+            if st.button("Open in Safari"):
+                safari_path = "/Applications/Safari.app"
+                os.system(f"open -a {safari_path} {filled_pdf_path}")
+        else:
+            st.error("No data found in the quote. Please check the format.")
 
     # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
