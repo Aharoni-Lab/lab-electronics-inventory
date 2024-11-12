@@ -33,6 +33,22 @@ def login():
 
     return st.session_state["authenticated"]
 
+# Function to upload multiple files (images and PDFs) to Firebase in a specific folder
+
+
+def upload_files(files, uploader_name):
+    bucket = storage.bucket()
+    for file in files:
+        file_name = f"component_images/{uploader_name}/{file.name}"
+        blob = bucket.blob(file_name)
+        try:
+            blob.upload_from_string(file.read(), content_type=file.type)
+            st.success(
+                f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+            time.sleep(2)
+        except Exception as e:
+            st.error(f"Failed to upload file '{file.name}': {e}")
+
 
 # Display login screen if not authenticated
 if not login():
@@ -195,17 +211,15 @@ else:
     # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
         uploader_name = st.text_input("Your Name")  # Uploader's name input
-        uploaded_files = st.file_uploader(
-            "Choose photos or PDF quotes to upload",
-            type=["jpg", "jpeg", "png", "pdf"],
-            accept_multiple_files=True
-        )
+        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
+            "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
         if uploader_name and uploaded_files and st.button("Upload Files"):
             upload_files(uploaded_files, uploader_name)
         elif not uploader_name:
             st.warning("Please enter your name before uploading.")
 
     # Function to fetch file content from Firebase Storage
+
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
         response = requests.get(url)
