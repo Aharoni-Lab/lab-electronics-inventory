@@ -1,3 +1,11 @@
+'''
+
+This code extracts text from component images and uploads the extracted data to Firebase.
+Once completed, the inventory is automatically updated, and no further action is required.
+
+'''
+
+
 from firebase_admin import credentials, storage
 import firebase_admin
 from google.api_core.exceptions import GoogleAPICallError
@@ -12,8 +20,8 @@ import pyheif
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/aharonilab-8a8c472b70e5.json"
 
 # Directories and output file
-heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files'
-converted_image_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/converted_to_jpeg'
+heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/01_inventory_original_files'
+converted_image_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/03_converted_to_jpeg'
 output_txt_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
 
 
