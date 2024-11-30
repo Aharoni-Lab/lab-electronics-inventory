@@ -355,107 +355,87 @@ else:
         st.write("### BOM Inventory Check Results")
         st.table(bom_results)
 
-# Function to fetch suggestions for the search query
+    # Main Interface
+    st.title("Inventory Search & Management")
+    with st.container():
+        st.header("Search for Components")
 
+        col1, col2, col3 = st.columns(3)
+        part_number_query = col1.text_input("Enter Part Number")
+        value_query = col2.text_input(
+            "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
+        footprint_query = col3.text_input("Enter Footprint")
 
-def get_suggestions(query, inventory_text):
-    inventory_items = inventory_text.split("Image:")
-    suggestions = set()
-
-    for block in inventory_items:
-        # Check if the query matches any value in the block
-        if query.lower() in block.lower():
-            # Extract component values (e.g., capacitance, resistance, etc.)
-            value_match = re.findall(
-                r'\b\d+(\.\d+)?[A-Z]*[uUnNpPmMfFkKΩohm]\b', block, re.IGNORECASE)
-            if value_match:
-                suggestions.update(value_match)
-            # Extract descriptions (if no specific value found)
-            desc_match = re.findall(r'DESC:\s*(.*)', block, re.IGNORECASE)
-            if desc_match:
-                suggestions.update(desc_match)
-
-    return sorted(suggestions)[:10]  # Limit to top 10 suggestions
-
-
-# Main Interface
-st.title("Inventory Search & Management")
-with st.container():
-    st.header("Search for Components")
-
-    # Input fields for search
-    col1, col2, col3 = st.columns(3)
-    part_number_query = col1.text_input("Enter Part Number")
-    value_query = col2.text_input(
-        "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
-    footprint_query = col3.text_input("Enter Footprint")
-
-    # Suggestion dropdown for component name/value
-    if value_query:  # Trigger suggestions when typing in the value field
-        inventory_text = fetch_file_content()
-        if not inventory_text.startswith("Failed to fetch file"):
-            suggestions = get_suggestions(value_query, inventory_text)
-            if suggestions:
-                selected_suggestion = st.selectbox(
-                    "Suggestions:", options=suggestions, index=0)
-                st.success(f"You selected: {selected_suggestion}")
+        if st.button("🔎 Search"):
+            file_content = fetch_file_content()
+            if file_content.startswith("Failed to fetch file"):
+                st.error(file_content)
             else:
-                st.warning("No suggestions found.")
+                blocks = file_content.split("Image:")
+                search_patterns = []
 
-    # Search button functionality
-    if st.button("🔎 Search"):
-        file_content = fetch_file_content()
-        if file_content.startswith("Failed to fetch file"):
-            st.error(file_content)
-        else:
-            blocks = file_content.split("Image:")
-            search_patterns = []
+                if part_number_query:
+                    search_patterns.append(re.compile(
+                        rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
+                if value_query:
+                    value_query_cleaned = value_query.replace(" ", "")
+                    value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
+                        value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
+                    search_patterns.append(re.compile(
+                        fr'\b{value_query_pattern}\b', re.IGNORECASE))
+                if footprint_query:
+                    search_patterns.append(re.compile(
+                        rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
 
-            if part_number_query:
-                search_patterns.append(re.compile(
-                    rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
-            if value_query:
-                value_query_cleaned = value_query.replace(" ", "")
-                value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
-                    value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
-                search_patterns.append(re.compile(
-                    fr'\b{value_query_pattern}\b', re.IGNORECASE))
-            if footprint_query:
-                search_patterns.append(re.compile(
-                    rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
-
-            results = []
-            for block in blocks:
-                if all(pattern.search(block) for pattern in search_patterns):
-                    part_number_match = re.search(
-                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
-                    desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE)
-                    if not desc_match:
-                        block_lines = block.splitlines()
-                        for i, line in enumerate(block_lines):
-                            if is_description(line):
-                                desc_match = line.strip()
-                                if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-                                    desc_match += " " + \
-                                        block_lines[i + 1].strip() + \
-                                        " " + block_lines[i + 2].strip()
+                results = []
+                for block in blocks:
+                    if all(pattern.search(block) for pattern in search_patterns):
+                        part_number_match = re.search(
+                            r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                        desc_match = re.search(
+                            r'DESC:\s*(.*)', block, re.IGNORECASE)
+                        if not desc_match:
+                            block_lines = block.splitlines()
+                            for i, line in enumerate(block_lines):
+                                if is_description(line):
+                                    desc_match = line.strip()
+                                    if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                        desc_match += " " + \
+                                            block_lines[i + 1].strip() + \
+                                            " " + block_lines[i + 2].strip()
                                     break
-                    location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE)
-                    part_number = part_number_match.group(
-                        0) if part_number_match else "P/N not detected"
-                    description = desc_match.group(1) if isinstance(
-                        desc_match, re.Match) else desc_match or "Description not available"
-                    location = location_match.group(
-                        1) if location_match else "Location not available"
-                    results.append((part_number, description, location))
+                        location_match = re.search(
+                            r'Location:\s*(.*)', block, re.IGNORECASE)
+                        part_number = part_number_match.group(
+                            0) if part_number_match else "P/N not detected"
+                        description = desc_match.group(1) if isinstance(
+                            desc_match, re.Match) else desc_match or "Description not available"
+                        location = location_match.group(
+                            1) if location_match else "Location not available"
+                        results.append((part_number, description, location))
 
-            if results:
-                st.write("### Search Results")
-                df_results = pd.DataFrame(
-                    results, columns=["Part Number", "Description", "Location"])
-                df_results.index = df_results.index + 1
-                st.table(df_results)
-            else:
-                st.warning("No items found matching the search criteria.")
+                if results:
+                    st.write("### Search Results")
+                    df_results = pd.DataFrame(
+                        results, columns=["Part Number", "Description", "Location"])
+                    df_results.index = df_results.index + 1
+                    st.table(df_results)
+                else:
+                    st.warning("No items found matching the search criteria.")
+
+    st.write("### Re-Order Missing Parts")
+    with st.expander("Click here to reorder parts", expanded=False):
+        with st.form("manual_reorder_form"):
+            col1, col2, col3 = st.columns(3)
+
+            part_number = col1.text_input("Part Number for Reorder")
+            description = col2.text_input("Description for Reorder")
+            requester_name = col3.text_input("Requester Name")
+
+            submit_reorder = st.form_submit_button("Submit Re-Order")
+
+            if submit_reorder:
+                if part_number and description and requester_name:
+                    reorder_item(part_number, description, requester_name)
+                else:
+                    st.warning("Please fill in all fields before submitting.")
