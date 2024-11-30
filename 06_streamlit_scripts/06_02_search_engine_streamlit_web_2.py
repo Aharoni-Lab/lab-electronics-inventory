@@ -388,11 +388,11 @@ with st.container():
         "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
     footprint_query = col3.text_input("Enter Footprint")
 
-    # Suggestion box for part number
-    if part_number_query:  # When user starts typing
+    # Suggestion box for component name/value
+    if value_query:  # Trigger suggestions when typing in the value field
         inventory_text = fetch_file_content()
         if not inventory_text.startswith("Failed to fetch file"):
-            suggestions = get_suggestions(part_number_query, inventory_text)
+            suggestions = get_suggestions(value_query, inventory_text)
             if suggestions:
                 st.info(f"Did you mean: {', '.join(suggestions)}?")
             else:
