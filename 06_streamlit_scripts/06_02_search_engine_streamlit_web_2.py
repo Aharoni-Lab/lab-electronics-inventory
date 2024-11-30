@@ -291,7 +291,8 @@ else:
             for block in inventory_items:
                 if value_pattern.search(block):
                     part_number_match = re.search(
-                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                        r'(?:(?:P/N|Part Number|/N)[:\s]*)?([A-Za-z0-9\-]+(?:-ND)?)', block, re.IGNORECASE)
+
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
 
