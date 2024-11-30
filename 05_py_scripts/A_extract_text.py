@@ -146,7 +146,7 @@ def upload_text_file(local_path, firebase_path):
 
 # Specify the local path and Firebase path
 # Local path to extracted_texts.txt
-local_text_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
+local_text_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_texts.txt'
 firebase_file_path = 'extracted_texts.txt'  # File path in Firebase Storage
 
 # Run the upload function
