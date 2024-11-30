@@ -294,11 +294,13 @@ else:
                         r'(?:P/N:|Part Number:)\s*([\w\-]+)|([\w\-]+-ND)',
                         block, re.IGNORECASE
                     )
-                if not part_number_match:
-                    part_number_match = re.search(
-                        r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b',
-                        block, re.IGNORECASE
-                    )
+                    if not part_number_match:
+                        part_number_match = re.search(
+                            # General part number format like ABC-12345
+                            r'\b([A-Z0-9]{2,5}-\d{2,6})\b',
+                            block, re.IGNORECASE
+                        )
+
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
 
