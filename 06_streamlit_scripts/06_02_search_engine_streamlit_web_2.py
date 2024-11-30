@@ -391,11 +391,20 @@ else:
                 results = []
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
+                        # Match part number and its description contextually
                         part_number_match = re.search(
-                            r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
+                            r'P/N[:\s]*([A-Za-z0-9\-]+)', block, re.IGNORECASE)
+
+                        # Fallback to match standalone part numbers
+                        if not part_number_match:
+                            part_number_match = re.search(
+                                r'\b[A-Za-z0-9\-]+(?:-ND)?\b', block, re.IGNORECASE)
+
                         desc_match = re.search(
-                            r'DESC:\s*(.*)', block, re.IGNORECASE)
+                            r'DESC[:\s]*(.*?)(?:\n|$)', block, re.IGNORECASE)
+
                         if not desc_match:
+                            # If `DESC` not found, search for lines resembling descriptions
                             block_lines = block.splitlines()
                             for i, line in enumerate(block_lines):
                                 if is_description(line):
@@ -405,15 +414,23 @@ else:
                                             block_lines[i + 1].strip() + \
                                             " " + block_lines[i + 2].strip()
                                     break
+
+                        # Match locations
                         location_match = re.search(
-                            r'Location:\s*(.*)', block, re.IGNORECASE)
+                            r'Location[:\s]*(.*)', block, re.IGNORECASE)
+
+                        # Extract values from matches
                         part_number = part_number_match.group(
-                            0) if part_number_match else "P/N not detected"
+                            1) if part_number_match else "P/N not detected"
                         description = desc_match.group(1) if isinstance(
                             desc_match, re.Match) else desc_match or "Description not available"
                         location = location_match.group(
                             1) if location_match else "Location not available"
-                        results.append((part_number, description, location))
+
+                        # Validate description to ensure it matches the query
+                        if value_query.lower() in description.lower():
+                            results.append(
+                                (part_number, description, location))
 
                 if results:
                     st.write("### Search Results")
