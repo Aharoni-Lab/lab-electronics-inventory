@@ -291,16 +291,16 @@ else:
             for block in inventory_items:
                 if value_pattern.search(block):
                     part_number_match = re.search(
-                        r'(?:P/N:|Part Number:)\s*([\w\-]+)|([\w\-]+-ND)',
+                        r'(?:P/N:|N:|Part Number)\s*([\w\-]+)|([\w\-]+-ND)',
                         block, re.IGNORECASE
                     )
                     if not part_number_match:
+                        # Fallback regex for valid part numbers like 1727-2301-1-ND
                         part_number_match = re.search(
-                            # General part number format like ABC-12345
-                            r'\b([A-Z0-9]{2,5}-\d{2,6})\b',
+                            # Match part numbers like GRM31A5C2J220JW01D or 488-NOIP1SN0480A-STICT-ND
+                            r'\b[\w\-]+(-ND)?\b',
                             block, re.IGNORECASE
                         )
-
                     desc_match = re.search(
                         r'DESC:\s*(.*)', block, re.IGNORECASE)
 
