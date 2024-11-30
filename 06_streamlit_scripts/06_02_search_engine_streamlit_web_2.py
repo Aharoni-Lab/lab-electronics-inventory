@@ -363,15 +363,17 @@ def get_suggestions(query, inventory_text):
     suggestions = set()
 
     for block in inventory_items:
+        # Check if the query matches any value in the block
         if query.lower() in block.lower():
-            part_number_match = re.findall(
-                r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
-            desc_match = re.findall(
-                r'DESC:\s*(.*)', block, re.IGNORECASE)
-            if part_number_match:
-                suggestions.update(part_number_match)
+            # Extract component values (e.g., capacitance, resistance, etc.)
+            value_match = re.findall(
+                r'\b\d+(\.\d+)?[A-Z]*[uUnNpPmMfFkKΩohm]\b', block, re.IGNORECASE)
+            if value_match:
+                suggestions.update(value_match)
+            # Extract descriptions (if no specific value found)
+            desc_match = re.findall(r'DESC:\s*(.*)', block, re.IGNORECASE)
             if desc_match:
-                suggestions.update([desc[0] for desc in desc_match])
+                suggestions.update(desc_match)
 
     return sorted(suggestions)[:10]  # Limit to top 10 suggestions
 
@@ -388,13 +390,15 @@ with st.container():
         "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
     footprint_query = col3.text_input("Enter Footprint")
 
-    # Suggestion box for component name/value
+    # Suggestion dropdown for component name/value
     if value_query:  # Trigger suggestions when typing in the value field
         inventory_text = fetch_file_content()
         if not inventory_text.startswith("Failed to fetch file"):
             suggestions = get_suggestions(value_query, inventory_text)
             if suggestions:
-                st.info(f"Did you mean: {', '.join(suggestions)}?")
+                selected_suggestion = st.selectbox(
+                    "Suggestions:", options=suggestions, index=0)
+                st.success(f"You selected: {selected_suggestion}")
             else:
                 st.warning("No suggestions found.")
 
