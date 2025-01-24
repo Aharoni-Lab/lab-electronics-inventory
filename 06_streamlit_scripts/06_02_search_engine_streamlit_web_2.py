@@ -158,6 +158,9 @@ else:
 
     # Main Interface
     st.title("Inventory Search & Management")
+    st.markdown("<h5 style='color: gray;'>Aharoni Lab, CHS 74-134</h5>",
+                unsafe_allow_html=True)
+
     with st.container():
         st.header("Search for Components")
 
