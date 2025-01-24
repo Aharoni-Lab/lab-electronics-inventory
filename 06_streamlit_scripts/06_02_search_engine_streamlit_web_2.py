@@ -73,137 +73,137 @@ else:
         })
 
     # DigiKey Quote to Order Form Filler functions
-    def extract_quote_data(quote_pdf):
-        data = []
-        quote_number = None
-        with pdfplumber.open(quote_pdf) as pdf:
-            for page in pdf.pages:
-                text = page.extract_text()
-                quote_match = re.search(r'Quote #\s*(\d+)', text)
-                if quote_match:
-                    quote_number = quote_match.group(0)
-                matches = re.findall(
-                    r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
-                    text, re.DOTALL
-                )
-                for match in matches:
-                    part_number, description, quantity, unit_price, extended_price = match
-                    data.append({
-                        "Catalog #": part_number.strip(),
-                        "Description": description.strip(),
-                        "Quantity": quantity,
-                        "Unit Price": unit_price,
-                        "Total Price": extended_price
-                    })
-        return data, quote_number
+    # def extract_quote_data(quote_pdf):
+    #     data = []
+    #     quote_number = None
+    #     with pdfplumber.open(quote_pdf) as pdf:
+    #         for page in pdf.pages:
+    #             text = page.extract_text()
+    #             quote_match = re.search(r'Quote #\s*(\d+)', text)
+    #             if quote_match:
+    #                 quote_number = quote_match.group(0)
+    #             matches = re.findall(
+    #                 r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
+    #                 text, re.DOTALL
+    #             )
+    #             for match in matches:
+    #                 part_number, description, quantity, unit_price, extended_price = match
+    #                 data.append({
+    #                     "Catalog #": part_number.strip(),
+    #                     "Description": description.strip(),
+    #                     "Quantity": quantity,
+    #                     "Unit Price": unit_price,
+    #                     "Total Price": extended_price
+    #                 })
+    #     return data, quote_number
 
-    def fill_pdf(data, template_pdf_path, quote_number):
-        pdf_reader = PdfReader(template_pdf_path)
-        pdf_writer = PdfWriter()
-        today_date = datetime.today().strftime("%m/%d/%y")
-        tax_rate = 0.095
+    # def fill_pdf(data, template_pdf_path, quote_number):
+    #     pdf_reader = PdfReader(template_pdf_path)
+    #     pdf_writer = PdfWriter()
+    #     today_date = datetime.today().strftime("%m/%d/%y")
+    #     tax_rate = 0.095
 
-        for page_num, page in enumerate(pdf_reader.pages):
-            if page_num == 0:
-                if page.Annots:
-                    for i, item in enumerate(data[:10]):
-                        for annot in page.Annots:
-                            if annot.T:
-                                field_name = annot.T[1:-1]
-                                value = None
-                                font_size = 10
-                                if field_name == f"QUAN{i+1}":
-                                    value = item["Quantity"]
-                                elif field_name == f"UNIT{i+1}":
-                                    value = "1"
-                                elif field_name == f"PRICE{i+1}":
-                                    value = item["Unit Price"]
-                                elif field_name == f"CATALOG {i+1}":
-                                    value = item["Catalog #"]
-                                elif field_name == f"DESCRIPTION{i+1}":
-                                    value = item["Description"]
-                                    font_size = 8
-                                elif field_name == f"Text{39 + i}":
-                                    value = item["Total Price"]
+    #     for page_num, page in enumerate(pdf_reader.pages):
+    #         if page_num == 0:
+    #             if page.Annots:
+    #                 for i, item in enumerate(data[:10]):
+    #                     for annot in page.Annots:
+    #                         if annot.T:
+    #                             field_name = annot.T[1:-1]
+    #                             value = None
+    #                             font_size = 10
+    #                             if field_name == f"QUAN{i+1}":
+    #                                 value = item["Quantity"]
+    #                             elif field_name == f"UNIT{i+1}":
+    #                                 value = "1"
+    #                             elif field_name == f"PRICE{i+1}":
+    #                                 value = item["Unit Price"]
+    #                             elif field_name == f"CATALOG {i+1}":
+    #                                 value = item["Catalog #"]
+    #                             elif field_name == f"DESCRIPTION{i+1}":
+    #                                 value = item["Description"]
+    #                                 font_size = 8
+    #                             elif field_name == f"Text{39 + i}":
+    #                                 value = item["Total Price"]
 
-                                if value:
-                                    annot.update(
-                                        PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
-                                    if field_name.startswith("DESCRIPTION"):
-                                        annot.update(
-                                            PdfDict(DA=f"/Helvetica {font_size} Tf 0 g"))
+    #                             if value:
+    #                                 annot.update(
+    #                                     PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
+    #                                 if field_name.startswith("DESCRIPTION"):
+    #                                     annot.update(
+    #                                         PdfDict(DA=f"/Helvetica {font_size} Tf 0 g"))
 
-                    subtotal = sum(float(item["Total Price"]) for item in data)
-                    tax = subtotal * tax_rate
-                    total = subtotal + tax
+    #                 subtotal = sum(float(item["Total Price"]) for item in data)
+    #                 tax = subtotal * tax_rate
+    #                 total = subtotal + tax
 
-                    for annot in page.Annots:
-                        if annot.T:
-                            field_name = annot.T[1:-1]
-                            if field_name == "Text12":
-                                annot.update(
-                                    PdfDict(V=today_date, AP=PdfDict(N=today_date)))
-                            elif field_name == "Text49":
-                                annot.update(
-                                    PdfDict(V=f"{subtotal:.2f}", AP=PdfDict(N=f"{subtotal:.2f}")))
-                            elif field_name == "Text3":
-                                annot.update(
-                                    PdfDict(V=f"{tax:.2f}", AP=PdfDict(N=f"{tax:.2f}")))
-                            elif field_name == "Text50":
-                                annot.update(
-                                    PdfDict(V=f"{total:.2f}", AP=PdfDict(N=f"{total:.2f}")))
+    #                 for annot in page.Annots:
+    #                     if annot.T:
+    #                         field_name = annot.T[1:-1]
+    #                         if field_name == "Text12":
+    #                             annot.update(
+    #                                 PdfDict(V=today_date, AP=PdfDict(N=today_date)))
+    #                         elif field_name == "Text49":
+    #                             annot.update(
+    #                                 PdfDict(V=f"{subtotal:.2f}", AP=PdfDict(N=f"{subtotal:.2f}")))
+    #                         elif field_name == "Text3":
+    #                             annot.update(
+    #                                 PdfDict(V=f"{tax:.2f}", AP=PdfDict(N=f"{tax:.2f}")))
+    #                         elif field_name == "Text50":
+    #                             annot.update(
+    #                                 PdfDict(V=f"{total:.2f}", AP=PdfDict(N=f"{total:.2f}")))
 
-                    for annot in page.Annots:
-                        if annot.T:
-                            field_name = annot.T[1:-1]
-                            if field_name == "Text1":
-                                annot.update(PdfDict(V="", AP=PdfDict(N="")))
-                            elif field_name == "Text2":
-                                annot.update(PdfDict(V="", AP=PdfDict(
-                                    N="Fund Manager Approval Signature Here")))
-                            elif field_name == "FAU":
-                                annot.update(PdfDict(V="", AP=PdfDict(N="")))
-                            elif field_name == "PO#":
-                                annot.update(
-                                    PdfDict(V=quote_number, AP=PdfDict(N=quote_number)))
+    #                 for annot in page.Annots:
+    #                     if annot.T:
+    #                         field_name = annot.T[1:-1]
+    #                         if field_name == "Text1":
+    #                             annot.update(PdfDict(V="", AP=PdfDict(N="")))
+    #                         elif field_name == "Text2":
+    #                             annot.update(PdfDict(V="", AP=PdfDict(
+    #                                 N="Fund Manager Approval Signature Here")))
+    #                         elif field_name == "FAU":
+    #                             annot.update(PdfDict(V="", AP=PdfDict(N="")))
+    #                         elif field_name == "PO#":
+    #                             annot.update(
+    #                                 PdfDict(V=quote_number, AP=PdfDict(N=quote_number)))
 
-        pdf_writer.addpage(page)
-        if '/AcroForm' in pdf_reader.Root:
-            pdf_reader.Root.AcroForm.update(
-                PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
-        result_pdf_path = "/tmp/Filled_Order_Form.pdf"
-        with open(result_pdf_path, "wb") as f:
-            pdf_writer.write(f)
-        return result_pdf_path
+    #     pdf_writer.addpage(page)
+    #     if '/AcroForm' in pdf_reader.Root:
+    #         pdf_reader.Root.AcroForm.update(
+    #             PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
+    #     result_pdf_path = "/tmp/Filled_Order_Form.pdf"
+    #     with open(result_pdf_path, "wb") as f:
+    #         pdf_writer.write(f)
+    #     return result_pdf_path
 
     # Sidebar for DigiKey Quote to Order Form Filler
-    with st.sidebar.expander("📄 DigiKey Quote to Order Form Filler"):
-        quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
-        order_form_pdf = st.file_uploader(
-            "Upload Order Form PDF Template", type="pdf")
+    # with st.sidebar.expander("📄 DigiKey Quote to Order Form Filler"):
+    #     quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
+    #     order_form_pdf = st.file_uploader(
+    #         "Upload Order Form PDF Template", type="pdf")
 
-        if quote_pdf:
-            data, quote_number = extract_quote_data(quote_pdf)
-            if not data:
-                st.error("No data found in the quote. Please check the format.")
+    #     if quote_pdf:
+    #         data, quote_number = extract_quote_data(quote_pdf)
+    #         if not data:
+    #             st.error("No data found in the quote. Please check the format.")
 
-        if quote_pdf and order_form_pdf:
-            if len(data) > 0:
-                filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
-                st.success("Order form filled successfully!")
-                with open(filled_pdf_path, "rb") as f:
-                    st.download_button(
-                        label="Download Filled Order Form",
-                        data=f,
-                        file_name="Filled_Order_Form.pdf",
-                        mime="application/pdf"
-                    )
-                if st.button("Open in Safari"):
-                    safari_path = "/Applications/Safari.app"
-                    os.system(f"open -a {safari_path} {filled_pdf_path}")
+    #     if quote_pdf and order_form_pdf:
+    #         if len(data) > 0:
+    #             filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
+    #             st.success("Order form filled successfully!")
+    #             with open(filled_pdf_path, "rb") as f:
+    #                 st.download_button(
+    #                     label="Download Filled Order Form",
+    #                     data=f,
+    #                     file_name="Filled_Order_Form.pdf",
+    #                     mime="application/pdf"
+    #                 )
+    #             if st.button("Open in Safari"):
+    #                 safari_path = "/Applications/Safari.app"
+    #                 os.system(f"open -a {safari_path} {filled_pdf_path}")
 
-            else:
-                st.error("No data found in the quote. Please check the format.")
+    #         else:
+    #             st.error("No data found in the quote. Please check the format.")
 
     # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
