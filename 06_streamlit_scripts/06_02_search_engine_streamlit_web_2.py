@@ -48,7 +48,6 @@ def login():
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.success("Logged in successfully!")
-                st.experimental_rerun()  # Trigger a rerun to reflect authentication
             else:
                 st.error("Invalid username or password")
 
@@ -74,6 +73,7 @@ def upload_files(files, uploader_name):
 
 
 # Display login screen if not authenticated
+
 if not login():
     st.stop()
 else:
