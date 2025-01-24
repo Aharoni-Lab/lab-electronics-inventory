@@ -48,6 +48,7 @@ def login():
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.success("Logged in successfully!")
+                st.experimental_rerun()  # Trigger a rerun to reflect authentication
             else:
                 st.error("Invalid username or password")
 
