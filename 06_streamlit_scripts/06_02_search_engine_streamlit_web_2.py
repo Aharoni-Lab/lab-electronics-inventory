@@ -11,10 +11,30 @@ import time
 from pdfrw import PdfReader, PdfWriter, PdfDict
 import pdfplumber
 import os
+import threading
+
+
+# Self-ping function to keep the app awake
+def keep_awake():
+    while True:
+        try:
+            url = "https://inventory-aharonilab.streamlit.app"  # Your app URL
+            response = requests.get(url)
+            if response.status_code == 200:
+                print("Self-ping successful!")
+            else:
+                print(
+                    f"Self-ping failed with status code {response.status_code}")
+        except Exception as e:
+            print(f"Error during self-ping: {e}")
+        time.sleep(2 * 60 * 60)  # Wait for 2 hours before the next ping
+
+
+# Start the self-ping thread
+threading.Thread(target=keep_awake, daemon=True).start()
+
 
 # Authentication setup using Streamlit secrets
-
-
 def login():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
@@ -71,139 +91,6 @@ else:
         firebase_admin.initialize_app(cred, {
             'storageBucket': 'aharonilabinventory.appspot.com'
         })
-
-    # DigiKey Quote to Order Form Filler functions
-    # def extract_quote_data(quote_pdf):
-    #     data = []
-    #     quote_number = None
-    #     with pdfplumber.open(quote_pdf) as pdf:
-    #         for page in pdf.pages:
-    #             text = page.extract_text()
-    #             quote_match = re.search(r'Quote #\s*(\d+)', text)
-    #             if quote_match:
-    #                 quote_number = quote_match.group(0)
-    #             matches = re.findall(
-    #                 r'PART:\s*([\w\-]+)\s*DESC:\s*(.*?)\s+(\d+)\s+\d+\s+\d+\s+([\d.]+)\s+([\d.]+)',
-    #                 text, re.DOTALL
-    #             )
-    #             for match in matches:
-    #                 part_number, description, quantity, unit_price, extended_price = match
-    #                 data.append({
-    #                     "Catalog #": part_number.strip(),
-    #                     "Description": description.strip(),
-    #                     "Quantity": quantity,
-    #                     "Unit Price": unit_price,
-    #                     "Total Price": extended_price
-    #                 })
-    #     return data, quote_number
-
-    # def fill_pdf(data, template_pdf_path, quote_number):
-    #     pdf_reader = PdfReader(template_pdf_path)
-    #     pdf_writer = PdfWriter()
-    #     today_date = datetime.today().strftime("%m/%d/%y")
-    #     tax_rate = 0.095
-
-    #     for page_num, page in enumerate(pdf_reader.pages):
-    #         if page_num == 0:
-    #             if page.Annots:
-    #                 for i, item in enumerate(data[:10]):
-    #                     for annot in page.Annots:
-    #                         if annot.T:
-    #                             field_name = annot.T[1:-1]
-    #                             value = None
-    #                             font_size = 10
-    #                             if field_name == f"QUAN{i+1}":
-    #                                 value = item["Quantity"]
-    #                             elif field_name == f"UNIT{i+1}":
-    #                                 value = "1"
-    #                             elif field_name == f"PRICE{i+1}":
-    #                                 value = item["Unit Price"]
-    #                             elif field_name == f"CATALOG {i+1}":
-    #                                 value = item["Catalog #"]
-    #                             elif field_name == f"DESCRIPTION{i+1}":
-    #                                 value = item["Description"]
-    #                                 font_size = 8
-    #                             elif field_name == f"Text{39 + i}":
-    #                                 value = item["Total Price"]
-
-    #                             if value:
-    #                                 annot.update(
-    #                                     PdfDict(V=f"{value}", AP=PdfDict(N=f"{value}")))
-    #                                 if field_name.startswith("DESCRIPTION"):
-    #                                     annot.update(
-    #                                         PdfDict(DA=f"/Helvetica {font_size} Tf 0 g"))
-
-    #                 subtotal = sum(float(item["Total Price"]) for item in data)
-    #                 tax = subtotal * tax_rate
-    #                 total = subtotal + tax
-
-    #                 for annot in page.Annots:
-    #                     if annot.T:
-    #                         field_name = annot.T[1:-1]
-    #                         if field_name == "Text12":
-    #                             annot.update(
-    #                                 PdfDict(V=today_date, AP=PdfDict(N=today_date)))
-    #                         elif field_name == "Text49":
-    #                             annot.update(
-    #                                 PdfDict(V=f"{subtotal:.2f}", AP=PdfDict(N=f"{subtotal:.2f}")))
-    #                         elif field_name == "Text3":
-    #                             annot.update(
-    #                                 PdfDict(V=f"{tax:.2f}", AP=PdfDict(N=f"{tax:.2f}")))
-    #                         elif field_name == "Text50":
-    #                             annot.update(
-    #                                 PdfDict(V=f"{total:.2f}", AP=PdfDict(N=f"{total:.2f}")))
-
-    #                 for annot in page.Annots:
-    #                     if annot.T:
-    #                         field_name = annot.T[1:-1]
-    #                         if field_name == "Text1":
-    #                             annot.update(PdfDict(V="", AP=PdfDict(N="")))
-    #                         elif field_name == "Text2":
-    #                             annot.update(PdfDict(V="", AP=PdfDict(
-    #                                 N="Fund Manager Approval Signature Here")))
-    #                         elif field_name == "FAU":
-    #                             annot.update(PdfDict(V="", AP=PdfDict(N="")))
-    #                         elif field_name == "PO#":
-    #                             annot.update(
-    #                                 PdfDict(V=quote_number, AP=PdfDict(N=quote_number)))
-
-    #     pdf_writer.addpage(page)
-    #     if '/AcroForm' in pdf_reader.Root:
-    #         pdf_reader.Root.AcroForm.update(
-    #             PdfDict(NeedAppearances=PdfDict(NeedAppearances=True)))
-    #     result_pdf_path = "/tmp/Filled_Order_Form.pdf"
-    #     with open(result_pdf_path, "wb") as f:
-    #         pdf_writer.write(f)
-    #     return result_pdf_path
-
-    # Sidebar for DigiKey Quote to Order Form Filler
-    # with st.sidebar.expander("📄 DigiKey Quote to Order Form Filler"):
-    #     quote_pdf = st.file_uploader("Upload DigiKey Quote PDF", type="pdf")
-    #     order_form_pdf = st.file_uploader(
-    #         "Upload Order Form PDF Template", type="pdf")
-
-    #     if quote_pdf:
-    #         data, quote_number = extract_quote_data(quote_pdf)
-    #         if not data:
-    #             st.error("No data found in the quote. Please check the format.")
-
-    #     if quote_pdf and order_form_pdf:
-    #         if len(data) > 0:
-    #             filled_pdf_path = fill_pdf(data, order_form_pdf, quote_number)
-    #             st.success("Order form filled successfully!")
-    #             with open(filled_pdf_path, "rb") as f:
-    #                 st.download_button(
-    #                     label="Download Filled Order Form",
-    #                     data=f,
-    #                     file_name="Filled_Order_Form.pdf",
-    #                     mime="application/pdf"
-    #                 )
-    #             if st.button("Open in Safari"):
-    #                 safari_path = "/Applications/Safari.app"
-    #                 os.system(f"open -a {safari_path} {filled_pdf_path}")
-
-    #         else:
-    #             st.error("No data found in the quote. Please check the format.")
 
     # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
@@ -268,101 +155,6 @@ else:
                 time.sleep(2)
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
-
-    # # Enhanced BOM inventory search function with DNL check
-    # def search_bom_in_inventory(bom_df, inventory_text):
-    #     inventory_items = inventory_text.split("Image:")
-    #     results = []
-
-    #     for index, row in bom_df.iterrows():
-    #         value = row.get("Value", "N/A").strip().upper()
-
-    #         # Skip rows where Value is marked as "DNL" (Do Not Load)
-    #         if value == "DNL":
-    #             continue
-
-    #         found_location = "X"
-    #         found_description = "X"
-    #         status = "Missing"
-
-    #         value_pattern = re.compile(
-    #             r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
-
-    #         for block in inventory_items:
-    #             if value_pattern.search(block):
-    #                 part_number_match = re.search(
-    #                     r'(?:P/N:|N:|Part Number)\s*([\w\-]+)|([\w\-]+-ND)',
-    #                     block, re.IGNORECASE
-    #                 )
-    #                 if not part_number_match:
-    #                     # Fallback regex for valid part numbers like 1727-2301-1-ND
-    #                     part_number_match = re.search(
-    #                         # Match part numbers like GRM31A5C2J220JW01D or 488-NOIP1SN0480A-STICT-ND
-    #                         r'\b[\w\-]+(-ND)?\b',
-    #                         block, re.IGNORECASE
-    #                     )
-    #                 desc_match = re.search(
-    #                     r'DESC:\s*(.*)', block, re.IGNORECASE)
-
-    #                 if not desc_match:
-    #                     block_lines = block.splitlines()
-    #                     for i, line in enumerate(block_lines):
-    #                         if is_description(line):
-    #                             desc_match = line.strip()
-    #                             if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-    #                                 desc_match += " " + \
-    #                                     block_lines[i + 1].strip() + \
-    #                                     " " + block_lines[i + 2].strip()
-    #                             break
-
-    #                 location_match = re.search(
-    #                     r'Location:\s*(.*)', block, re.IGNORECASE)
-    #                 part_number = part_number_match.group(
-    #                     0) if part_number_match else "P/N not detected"
-    #                 description = desc_match.group(1) if isinstance(
-    #                     desc_match, re.Match) else desc_match or "Description not available"
-    #                 location = location_match.group(
-    #                     1) if location_match else "Location not available"
-
-    #                 found_description = description
-    #                 found_location = location
-    #                 status = "Available"
-    #                 break
-
-    #         results.append({
-    #             "Value": value,
-    #             "Status": status,
-    #             "Description": found_description,
-    #             "Location": found_location
-    #         })
-
-    #     result_df = pd.DataFrame(results)
-
-    #     def highlight_status(val):
-    #         color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-    #         return color
-
-    #     styled_df = result_df.style.applymap(
-    #         highlight_status, subset=['Status'])
-    #     return styled_df
-
-    # # Sidebar for BOM upload and inventory check
-    # with st.sidebar.expander("📋 BOM Inventory Check"):
-    #     bom_file = st.file_uploader(
-    #         "Upload your BOM (CSV format)", type=["csv"])
-    #     check_inventory_button = st.button("Check Inventory")
-
-    # # Main section for displaying BOM results
-    # if bom_file and check_inventory_button:
-    #     bom_df = pd.read_csv(bom_file)
-    #     st.write("Uploaded BOM:")
-    #     st.dataframe(bom_df)
-
-    #     inventory_text = fetch_file_content()
-    #     bom_results = search_bom_in_inventory(bom_df, inventory_text)
-
-    #     st.write("### BOM Inventory Check Results")
-    #     st.table(bom_results)
 
     # Main Interface
     st.title("Inventory Search & Management")
