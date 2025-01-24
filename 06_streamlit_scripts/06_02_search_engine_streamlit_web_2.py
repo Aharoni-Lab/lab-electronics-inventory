@@ -39,19 +39,23 @@ def login():
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
+    # If user is not authenticated, display login form
     if not st.session_state["authenticated"]:
         st.title("Login")
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", key="username_input")
+        password = st.text_input(
+            "Password", type="password", key="password_input")
 
         if st.button("Login"):
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.success("Logged in successfully!")
+                st.experimental_rerun()  # Trigger an immediate app rerun to reflect the state change
             else:
                 st.error("Invalid username or password")
-
         return False
+
+    # User is authenticated
     return True
 
 
