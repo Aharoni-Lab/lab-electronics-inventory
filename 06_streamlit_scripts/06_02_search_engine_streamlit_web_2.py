@@ -269,100 +269,100 @@ else:
             except Exception as e:
                 st.error(f"Failed to upload file '{file.name}': {e}")
 
-    # Enhanced BOM inventory search function with DNL check
-    def search_bom_in_inventory(bom_df, inventory_text):
-        inventory_items = inventory_text.split("Image:")
-        results = []
+    # # Enhanced BOM inventory search function with DNL check
+    # def search_bom_in_inventory(bom_df, inventory_text):
+    #     inventory_items = inventory_text.split("Image:")
+    #     results = []
 
-        for index, row in bom_df.iterrows():
-            value = row.get("Value", "N/A").strip().upper()
+    #     for index, row in bom_df.iterrows():
+    #         value = row.get("Value", "N/A").strip().upper()
 
-            # Skip rows where Value is marked as "DNL" (Do Not Load)
-            if value == "DNL":
-                continue
+    #         # Skip rows where Value is marked as "DNL" (Do Not Load)
+    #         if value == "DNL":
+    #             continue
 
-            found_location = "X"
-            found_description = "X"
-            status = "Missing"
+    #         found_location = "X"
+    #         found_description = "X"
+    #         status = "Missing"
 
-            value_pattern = re.compile(
-                r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
+    #         value_pattern = re.compile(
+    #             r'\b' + re.escape(value) + r'\b', re.IGNORECASE)
 
-            for block in inventory_items:
-                if value_pattern.search(block):
-                    part_number_match = re.search(
-                        r'(?:P/N:|N:|Part Number)\s*([\w\-]+)|([\w\-]+-ND)',
-                        block, re.IGNORECASE
-                    )
-                    if not part_number_match:
-                        # Fallback regex for valid part numbers like 1727-2301-1-ND
-                        part_number_match = re.search(
-                            # Match part numbers like GRM31A5C2J220JW01D or 488-NOIP1SN0480A-STICT-ND
-                            r'\b[\w\-]+(-ND)?\b',
-                            block, re.IGNORECASE
-                        )
-                    desc_match = re.search(
-                        r'DESC:\s*(.*)', block, re.IGNORECASE)
+    #         for block in inventory_items:
+    #             if value_pattern.search(block):
+    #                 part_number_match = re.search(
+    #                     r'(?:P/N:|N:|Part Number)\s*([\w\-]+)|([\w\-]+-ND)',
+    #                     block, re.IGNORECASE
+    #                 )
+    #                 if not part_number_match:
+    #                     # Fallback regex for valid part numbers like 1727-2301-1-ND
+    #                     part_number_match = re.search(
+    #                         # Match part numbers like GRM31A5C2J220JW01D or 488-NOIP1SN0480A-STICT-ND
+    #                         r'\b[\w\-]+(-ND)?\b',
+    #                         block, re.IGNORECASE
+    #                     )
+    #                 desc_match = re.search(
+    #                     r'DESC:\s*(.*)', block, re.IGNORECASE)
 
-                    if not desc_match:
-                        block_lines = block.splitlines()
-                        for i, line in enumerate(block_lines):
-                            if is_description(line):
-                                desc_match = line.strip()
-                                if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
-                                    desc_match += " " + \
-                                        block_lines[i + 1].strip() + \
-                                        " " + block_lines[i + 2].strip()
-                                break
+    #                 if not desc_match:
+    #                     block_lines = block.splitlines()
+    #                     for i, line in enumerate(block_lines):
+    #                         if is_description(line):
+    #                             desc_match = line.strip()
+    #                             if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+    #                                 desc_match += " " + \
+    #                                     block_lines[i + 1].strip() + \
+    #                                     " " + block_lines[i + 2].strip()
+    #                             break
 
-                    location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE)
-                    part_number = part_number_match.group(
-                        0) if part_number_match else "P/N not detected"
-                    description = desc_match.group(1) if isinstance(
-                        desc_match, re.Match) else desc_match or "Description not available"
-                    location = location_match.group(
-                        1) if location_match else "Location not available"
+    #                 location_match = re.search(
+    #                     r'Location:\s*(.*)', block, re.IGNORECASE)
+    #                 part_number = part_number_match.group(
+    #                     0) if part_number_match else "P/N not detected"
+    #                 description = desc_match.group(1) if isinstance(
+    #                     desc_match, re.Match) else desc_match or "Description not available"
+    #                 location = location_match.group(
+    #                     1) if location_match else "Location not available"
 
-                    found_description = description
-                    found_location = location
-                    status = "Available"
-                    break
+    #                 found_description = description
+    #                 found_location = location
+    #                 status = "Available"
+    #                 break
 
-            results.append({
-                "Value": value,
-                "Status": status,
-                "Description": found_description,
-                "Location": found_location
-            })
+    #         results.append({
+    #             "Value": value,
+    #             "Status": status,
+    #             "Description": found_description,
+    #             "Location": found_location
+    #         })
 
-        result_df = pd.DataFrame(results)
+    #     result_df = pd.DataFrame(results)
 
-        def highlight_status(val):
-            color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
-            return color
+    #     def highlight_status(val):
+    #         color = 'background-color: green; color: white;' if val == "Available" else 'background-color: red; color: white;'
+    #         return color
 
-        styled_df = result_df.style.applymap(
-            highlight_status, subset=['Status'])
-        return styled_df
+    #     styled_df = result_df.style.applymap(
+    #         highlight_status, subset=['Status'])
+    #     return styled_df
 
-    # Sidebar for BOM upload and inventory check
-    with st.sidebar.expander("📋 BOM Inventory Check"):
-        bom_file = st.file_uploader(
-            "Upload your BOM (CSV format)", type=["csv"])
-        check_inventory_button = st.button("Check Inventory")
+    # # Sidebar for BOM upload and inventory check
+    # with st.sidebar.expander("📋 BOM Inventory Check"):
+    #     bom_file = st.file_uploader(
+    #         "Upload your BOM (CSV format)", type=["csv"])
+    #     check_inventory_button = st.button("Check Inventory")
 
-    # Main section for displaying BOM results
-    if bom_file and check_inventory_button:
-        bom_df = pd.read_csv(bom_file)
-        st.write("Uploaded BOM:")
-        st.dataframe(bom_df)
+    # # Main section for displaying BOM results
+    # if bom_file and check_inventory_button:
+    #     bom_df = pd.read_csv(bom_file)
+    #     st.write("Uploaded BOM:")
+    #     st.dataframe(bom_df)
 
-        inventory_text = fetch_file_content()
-        bom_results = search_bom_in_inventory(bom_df, inventory_text)
+    #     inventory_text = fetch_file_content()
+    #     bom_results = search_bom_in_inventory(bom_df, inventory_text)
 
-        st.write("### BOM Inventory Check Results")
-        st.table(bom_results)
+    #     st.write("### BOM Inventory Check Results")
+    #     st.table(bom_results)
 
     # Main Interface
     st.title("Inventory Search & Management")
