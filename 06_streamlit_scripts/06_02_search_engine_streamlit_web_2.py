@@ -36,13 +36,11 @@ threading.Thread(target=keep_awake, daemon=True).start()
 
 # Authentication setup using Streamlit secrets
 def login():
-    # Initialize session state variables
+    # Initialize session state variables if not already set
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
-    if "just_logged_in" not in st.session_state:
-        st.session_state["just_logged_in"] = False
 
-    # If user is not authenticated, show the login form
+    # If the user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
         st.title("Login")
         username = st.text_input("Username", key="username_input")
@@ -52,19 +50,13 @@ def login():
         if st.button("Login"):
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
-                st.session_state["just_logged_in"] = True
-                st.success("Logged in successfully! Redirecting...")
-                st.experimental_rerun()  # Rerun the app to refresh the state
+                st.success("Logged in successfully!")
             else:
                 st.error("Invalid username or password")
+        # Return False to indicate user is still on the login page
         return False
 
-    # Handle the transition after a successful login
-    if st.session_state["just_logged_in"]:
-        st.session_state["just_logged_in"] = False
-        st.experimental_rerun()  # Trigger one final rerun to clear transition state
-
-    # User is authenticated
+    # If authenticated, return True to proceed to the app
     return True
 
 
@@ -86,10 +78,14 @@ def upload_files(files, uploader_name):
 
 
 # Display login screen if not authenticated
-
+# Main application logic
 if not login():
-    st.stop()
+    st.stop()  # Stop further execution until the user logs in
 else:
+    # Main content of the app
+    st.title("Welcome to the Inventory Management System")
+    st.write("You are now logged in!")
+
     # Firebase initialization using Streamlit secrets
     if not firebase_admin._apps:
         cred = credentials.Certificate({
