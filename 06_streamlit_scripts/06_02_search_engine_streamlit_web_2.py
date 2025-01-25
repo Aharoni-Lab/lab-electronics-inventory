@@ -36,9 +36,11 @@ threading.Thread(target=keep_awake, daemon=True).start()
 
 # Authentication setup using Streamlit secrets
 def login():
-    # Initialize session state for authentication if not already set
+    # Initialize session state variables
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
+    if "just_logged_in" not in st.session_state:
+        st.session_state["just_logged_in"] = False
 
     # If user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
@@ -49,16 +51,20 @@ def login():
 
         if st.button("Login"):
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                # Set authenticated to True
                 st.session_state["authenticated"] = True
-                st.success("Logged in successfully! Please wait...")
+                st.session_state["just_logged_in"] = True
+                st.success("Logged in successfully! Redirecting...")
+                st.experimental_rerun()  # Rerun the app to refresh the state
             else:
                 st.error("Invalid username or password")
-
-        # Stop the app here until the session state updates
         return False
 
-    # If the user is authenticated, return True
+    # Handle the transition after a successful login
+    if st.session_state["just_logged_in"]:
+        st.session_state["just_logged_in"] = False
+        st.experimental_rerun()  # Trigger one final rerun to clear transition state
+
+    # User is authenticated
     return True
 
 
