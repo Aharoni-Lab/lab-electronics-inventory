@@ -35,6 +35,7 @@ threading.Thread(target=keep_awake, daemon=True).start()
 
 
 # Authentication setup using Streamlit secrets
+# Authentication setup using Streamlit secrets
 def login():
     # Initialize authentication state
     if "authenticated" not in st.session_state:
@@ -43,28 +44,21 @@ def login():
     # If user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
         st.title("Login")
-
         st.warning(
             "Note: You may need to press the Login button twice due to app state updates."
         )  # User-facing message
 
-        # Center-align the login form with narrower input fields
-        col1, col2, col3 = st.columns([1, 2, 1])  # Center-align form
-        with col2:
-            username = st.text_input(
-                "Username", max_chars=20, key="username_input")
-            password = st.text_input(
-                "Password", type="password", max_chars=20, key="password_input")
-            if st.button("Login"):
-                if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                    st.session_state["authenticated"] = True
-                    st.success("Logged in successfully!")
-                else:
-                    st.error("Invalid username or password")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+
+        if st.button("Login"):
+            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+                st.session_state["authenticated"] = True
+                st.success("Logged in successfully!")
+            else:
+                st.error("Invalid username or password")
 
         return False
-
-    # Return True if authenticated
     return True
 
 
