@@ -36,16 +36,13 @@ threading.Thread(target=keep_awake, daemon=True).start()
 
 # Authentication setup using Streamlit secrets
 def login():
-    # Initialize session state variables if not already set
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
-    # If the user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
         st.title("Login")
-        username = st.text_input("Username", key="username_input")
-        password = st.text_input(
-            "Password", type="password", key="password_input")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
         if st.button("Login"):
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
@@ -53,10 +50,8 @@ def login():
                 st.success("Logged in successfully!")
             else:
                 st.error("Invalid username or password")
-        # Return False to indicate user is still on the login page
-        return False
 
-    # If authenticated, return True to proceed to the app
+        return False
     return True
 
 
@@ -78,14 +73,10 @@ def upload_files(files, uploader_name):
 
 
 # Display login screen if not authenticated
-# Main application logic
-if not login():
-    st.stop()  # Stop further execution until the user logs in
-else:
-    # Main content of the app
-    st.title("Welcome to the Inventory Management System")
-    st.write("You are now logged in!")
 
+if not login():
+    st.stop()
+else:
     # Firebase initialization using Streamlit secrets
     if not firebase_admin._apps:
         cred = credentials.Certificate({
