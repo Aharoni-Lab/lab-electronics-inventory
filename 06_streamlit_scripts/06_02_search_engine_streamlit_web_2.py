@@ -35,12 +35,19 @@ threading.Thread(target=keep_awake, daemon=True).start()
 
 
 # Authentication setup using Streamlit secrets
+# Authentication setup using Streamlit secrets
 def login():
+    # Initialize authentication state
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
+    # If user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
         st.title("Login")
+        st.warning(
+            "Note: You may need to press the Login button twice due to app state updates."
+        )  # User-facing message
+
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
