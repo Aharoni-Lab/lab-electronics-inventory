@@ -14,24 +14,32 @@ import os
 import threading
 
 
-# Self-ping function to keep the app awake
-def keep_awake():
-    while True:
-        try:
-            url = "https://inventory-aharonilab.streamlit.app"  # Your app URL
-            response = requests.get(url)
-            if response.status_code == 200:
-                print("Self-ping successful!")
-            else:
-                print(
-                    f"Self-ping failed with status code {response.status_code}")
-        except Exception as e:
-            print(f"Error during self-ping: {e}")
-        time.sleep(2 * 60 * 60)  # Wait for 2 hours before the next ping
+import streamlit as st
+
+# Add this at the top of your app
+if "healthcheck" in st.experimental_get_query_params():
+    st.write("App is awake")
+    st.stop()
 
 
-# Start the self-ping thread
-threading.Thread(target=keep_awake, daemon=True).start()
+# # Self-ping function to keep the app awake
+# def keep_awake():
+#     while True:
+#         try:
+#             url = "https://inventory-aharonilab.streamlit.app"  # Your app URL
+#             response = requests.get(url)
+#             if response.status_code == 200:
+#                 print("Self-ping successful!")
+#             else:
+#                 print(
+#                     f"Self-ping failed with status code {response.status_code}")
+#         except Exception as e:
+#             print(f"Error during self-ping: {e}")
+#         time.sleep(2 * 60 * 60)  # Wait for 2 hours before the next ping
+
+
+# # Start the self-ping thread
+# threading.Thread(target=keep_awake, daemon=True).start()
 
 
 # Authentication setup using Streamlit secrets
