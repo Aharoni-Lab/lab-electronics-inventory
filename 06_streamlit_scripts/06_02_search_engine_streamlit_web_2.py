@@ -14,14 +14,6 @@ import os
 import threading
 
 
-import streamlit as st
-
-# Add this at the top of your app
-if "healthcheck" in st.experimental_get_query_params():
-    st.write("App is awake")
-    st.stop()
-
-
 # # Self-ping function to keep the app awake
 # def keep_awake():
 #     while True:
