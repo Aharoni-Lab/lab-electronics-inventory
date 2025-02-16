@@ -75,41 +75,16 @@ def ai_search(query):
         # Fetch file content from Firebase Storage
         file_content = fetch_file_content()
 
-        if file_content:
-            matches = []
-            lines = file_content.split("\n")
+        if not file_content:
+            return "Error: Could not fetch inventory data."
 
-            for line in lines:
-                if re.search(re.escape(query), line, re.IGNORECASE):
-                    # Extract structured information
-                    part_match = re.search(
-                        r'P/N:\s*(\S+)', line, re.IGNORECASE)
-                    desc_match = re.search(
-                        r'DESC:\s*(.*)', line, re.IGNORECASE)
-                    loc_match = re.search(
-                        r'Location:\s*(.*)', line, re.IGNORECASE)
-
-                    part_number = part_match.group(
-                        1) if part_match else "Not Found"
-                    description = desc_match.group(
-                        1) if desc_match else "No Description"
-                    location = loc_match.group(
-                        1) if loc_match else "Unknown Location"
-
-                    matches.append(
-                        f"🔹 **Part Number:** {part_number}\n📄 **Description:** {description}\n📍 **Location:** {location}")
-
-            if matches:
-                # Return all found matches in a structured format
-                return "\n\n".join(matches)
-
-        # If no matches found, use OpenAI AI Search as a fallback
+        # Send extracted text along with query to OpenAI
         client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
-                {"role": "system", "content": "You help users find electronic components based on descriptions."},
-                {"role": "user", "content": f"Find the best matching component for: {query}"}
+                {"role": "system", "content": "You are an expert in electronic components and inventory management. Your task is to find the best matching component from the provided inventory data. Return the part number, description, and location."},
+                {"role": "user", "content": f"Find the best matching component for: {query}. Here is the inventory data:\n\n{file_content}"}
             ]
         )
         # Return AI-generated result
