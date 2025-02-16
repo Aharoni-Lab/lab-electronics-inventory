@@ -81,10 +81,27 @@ def ai_search(query):
 
             for line in lines:
                 if re.search(re.escape(query), line, re.IGNORECASE):
-                    matches.append(line)
+                    # Extract structured information
+                    part_match = re.search(
+                        r'P/N:\s*(\S+)', line, re.IGNORECASE)
+                    desc_match = re.search(
+                        r'DESC:\s*(.*)', line, re.IGNORECASE)
+                    loc_match = re.search(
+                        r'Location:\s*(.*)', line, re.IGNORECASE)
+
+                    part_number = part_match.group(
+                        1) if part_match else "Not Found"
+                    description = desc_match.group(
+                        1) if desc_match else "No Description"
+                    location = loc_match.group(
+                        1) if loc_match else "Unknown Location"
+
+                    matches.append(
+                        f"🔹 **Part Number:** {part_number}\n📄 **Description:** {description}\n📍 **Location:** {location}")
 
             if matches:
-                return "\n".join(matches)  # Return all found matches
+                # Return all found matches in a structured format
+                return "\n\n".join(matches)
 
         # If no matches found, use OpenAI AI Search as a fallback
         client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
@@ -95,7 +112,8 @@ def ai_search(query):
                 {"role": "user", "content": f"Find the best matching component for: {query}"}
             ]
         )
-        return response.choices[0].message.content  # Return AI result
+        # Return AI-generated result
+        return response.choices[0].message.content
 
     except Exception as e:
         return f"Error: {e}"
