@@ -5,19 +5,29 @@ import re
 import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, storage
+from PIL import Image
+import io
 import time
+from pdfrw import PdfReader, PdfWriter, PdfDict
+import pdfplumber
+import os
+import threading
+import openai
+
 
 # Authentication setup using Streamlit secrets
-
-
 def login():
+    # Initialize authentication state
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
+    # If user is not authenticated, show the login form
     if not st.session_state["authenticated"]:
         st.title("Login")
         st.warning(
-            "Note: You may need to press the Login button twice due to app state updates.")
+            "Note: You may need to press the Login button twice due to app state updates."
+        )  # User-facing message
+
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
@@ -27,10 +37,12 @@ def login():
                 st.success("Logged in successfully!")
             else:
                 st.error("Invalid username or password")
+
         return False
     return True
 
-# Function to upload multiple files to Firebase
+
+# Function to upload multiple files (images and PDFs) to Firebase in a specific folder
 
 
 def upload_files(files, uploader_name):
@@ -48,10 +60,11 @@ def upload_files(files, uploader_name):
 
 
 # Display login screen if not authenticated
+
 if not login():
     st.stop()
 else:
-    # Firebase initialization
+    # Firebase initialization using Streamlit secrets
     if not firebase_admin._apps:
         cred = credentials.Certificate({
             "type": st.secrets["firebase"]["type"],
@@ -65,20 +78,22 @@ else:
             "auth_provider_x509_cert_url": st.secrets["firebase"]["auth_provider_x509_cert_url"],
             "client_x509_cert_url": st.secrets["firebase"]["client_x509_cert_url"]
         })
-        firebase_admin.initialize_app(
-            cred, {'storageBucket': 'aharonilabinventory.appspot.com'})
+        firebase_admin.initialize_app(cred, {
+            'storageBucket': 'aharonilabinventory.appspot.com'
+        })
 
-    # Sidebar for uploads
+    # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
-        uploader_name = st.text_input("Your Name")
+        uploader_name = st.text_input("Your Name")  # Uploader's name input
         uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
-                                          "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+            "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
         if uploader_name and uploaded_files and st.button("Upload Files"):
             upload_files(uploaded_files, uploader_name)
         elif not uploader_name:
             st.warning("Please enter your name before uploading.")
 
-    # Function to fetch file content from Firebase
+    # Function to fetch file content from Firebase Storage
+
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
         response = requests.get(url)
@@ -87,14 +102,18 @@ else:
         else:
             return f"Failed to fetch file: {response.status_code}"
 
-    # Function to detect if a line is a description
+    # Function to check if a line is a description
     def is_description(line):
         description_patterns = [
-            r'\bDESC\b', r'\bPart Description\b', r'\bCAP\b', r'\bRES\b', r'\bIC\b',
-            r'\bLED\b', r'\bDIODE\b', r'\bMOSFET\b', r'\bTEST POINT\b', r'\bSCHOTTKY\b',
-            r'\bREG LINEAR\b', r'\bPOS ADJ\b', r'\bLENS\b', r'\bCHROMA\b', r'\bOPTICS\b'
+            r'\bDESC\b', r'\bPart Description\b', r'\bCIC\b', r'\bESC\b',
+            r'\bSC\b', r'\bCAP\b', r'\bRES\b', r'\bIC\b', r'\bLED\b',
+            r'\bDIODE\b', r'\bMOSFET\b', r'\bREF DES\b', r'\bTEST POINT\b',
+            r'\bSCHOTTKY\b', r'\bARRAY\b', r'\bREG LINEAR\b', r'\bPOS ADJ\b',
+            r'\bLENS\b', r'\bCHROMA\b', r'\bASPHERE\b', r'\bPRISM\b', r'\bOPTICS\b',
         ]
-        return bool(re.search('|'.join(description_patterns), line, re.IGNORECASE))
+        description_regex = re.compile(
+            '|'.join(description_patterns), re.IGNORECASE)
+        return bool(description_regex.search(line))
 
     # Function to save reorder request to Firebase
     def reorder_item(part_number, description, requester_name):
@@ -112,6 +131,20 @@ else:
             time.sleep(2)
         except Exception as e:
             st.error(f"Failed to save re-order request: {e}")
+
+    # Function to upload multiple files to Firebase
+    def upload_files(files, uploader_name):
+        bucket = storage.bucket()
+        for file in files:
+            file_name = f"component_images/{uploader_name}/{file.name}"
+            blob = bucket.blob(file_name)
+            try:
+                blob.upload_from_string(file.read(), content_type=file.type)
+                st.success(
+                    f"File '{file.name}' uploaded successfully to folder '{uploader_name}'.")
+                time.sleep(2)
+            except Exception as e:
+                st.error(f"Failed to upload file '{file.name}': {e}")
 
     # Main Interface
     st.title("Inventory Search & Management")
@@ -137,10 +170,13 @@ else:
 
                 if part_number_query:
                     search_patterns.append(re.compile(
-                        rf'\b{re.escape(part_number_query)}\b', re.IGNORECASE))
+                        rf'{re.escape(part_number_query)}(-ND)?', re.IGNORECASE))
                 if value_query:
+                    value_query_cleaned = value_query.replace(" ", "")
+                    value_query_pattern = "".join([ch + r"\s*" if (i < len(value_query_cleaned) - 1 and ((value_query_cleaned[i].isdigit() and value_query_cleaned[i + 1].isalpha()) or (
+                        value_query_cleaned[i].isalpha() and value_query_cleaned[i + 1].isdigit()))) else ch for i, ch in enumerate(value_query_cleaned)])
                     search_patterns.append(re.compile(
-                        rf'\b{re.escape(value_query)}\b', re.IGNORECASE))
+                        fr'\b{value_query_pattern}\b', re.IGNORECASE))
                 if footprint_query:
                     search_patterns.append(re.compile(
                         rf'\b{re.escape(footprint_query)}\b', re.IGNORECASE))
@@ -149,23 +185,31 @@ else:
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
                         part_number_match = re.search(
-                            r'(Mouser P/N|MFG P/N|Part Number)[:\s]+([\w\-/.]+)', block, re.IGNORECASE)
-                        part_number = part_number_match.group(
-                            2) if part_number_match else "P/N not detected"
-
+                            r'\b[A-Za-z]*\d{3,12}[-/]\d{2,5}[a-zA-Z]?\b', block, re.IGNORECASE)
                         desc_match = re.search(
-                            r'(Desc|Description)[:\s]+([\w\s\d%/-]+)', block, re.IGNORECASE)
-                        description = desc_match.group(
-                            2) if desc_match else "Description not available"
-
+                            r'DESC:\s*(.*)', block, re.IGNORECASE)
+                        if not desc_match:
+                            block_lines = block.splitlines()
+                            for i, line in enumerate(block_lines):
+                                if is_description(line):
+                                    desc_match = line.strip()
+                                    if "CHROMA" in desc_match.upper() and i + 2 < len(block_lines):
+                                        desc_match += " " + \
+                                            block_lines[i + 1].strip() + \
+                                            " " + block_lines[i + 2].strip()
+                                    break
                         location_match = re.search(
                             r'Location:\s*(.*)', block, re.IGNORECASE)
+                        part_number = part_number_match.group(
+                            0) if part_number_match else "P/N not detected"
+                        description = desc_match.group(1) if isinstance(
+                            desc_match, re.Match) else desc_match or "Description not available"
                         location = location_match.group(
                             1) if location_match else "Location not available"
-
                         results.append((part_number, description, location))
 
                 if results:
+                    st.write("### Search Results")
                     df_results = pd.DataFrame(
                         results, columns=["Part Number", "Description", "Location"])
                     df_results.index = df_results.index + 1
@@ -173,14 +217,15 @@ else:
                 else:
                     st.warning("No items found matching the search criteria.")
 
-    # Re-order Section
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
             col1, col2, col3 = st.columns(3)
+
             part_number = col1.text_input("Part Number for Reorder")
             description = col2.text_input("Description for Reorder")
             requester_name = col3.text_input("Requester Name")
+
             submit_reorder = st.form_submit_button("Submit Re-Order")
 
             if submit_reorder:
