@@ -12,29 +12,9 @@ from pdfrw import PdfReader, PdfWriter, PdfDict
 import pdfplumber
 import os
 import threading
+import openai
 
 
-# # Self-ping function to keep the app awake
-# def keep_awake():
-#     while True:
-#         try:
-#             url = "https://inventory-aharonilab.streamlit.app"  # Your app URL
-#             response = requests.get(url)
-#             if response.status_code == 200:
-#                 print("Self-ping successful!")
-#             else:
-#                 print(
-#                     f"Self-ping failed with status code {response.status_code}")
-#         except Exception as e:
-#             print(f"Error during self-ping: {e}")
-#         time.sleep(2 * 60 * 60)  # Wait for 2 hours before the next ping
-
-
-# # Start the self-ping thread
-# threading.Thread(target=keep_awake, daemon=True).start()
-
-
-# Authentication setup using Streamlit secrets
 # Authentication setup using Streamlit secrets
 def login():
     # Initialize authentication state
