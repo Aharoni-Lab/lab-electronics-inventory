@@ -72,7 +72,8 @@ def upload_files(files, uploader_name):
 
 def ai_search(query):
     try:
-        client = openai.OpenAI()  # Ensure you are using the new API client
+        # Explicitly set API key
+        client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
         response = client.chat.completions.create(
             model="gpt-4",
             messages=[
@@ -80,8 +81,7 @@ def ai_search(query):
                 {"role": "user", "content": f"Find the best matching component for: {query}"}
             ]
         )
-        # Corrected response parsing
-        return response.choices[0].message.content
+        return response.choices[0].message.content  # Correct response parsing
     except Exception as e:
         return f"Error: {e}"
 
