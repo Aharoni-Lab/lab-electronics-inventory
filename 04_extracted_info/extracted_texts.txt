@@ -22378,3 +22378,9 @@ XGT
 864880224
 Location: Hemal
 
+Image: Screenshot 2024-12-07 at 12.14.32 AM.png
+Extracted Text:
+THIS IS A TEST
+A TRAINING AND EXERCISE SIMULATION TOOL
+Location: Test
+

@@ -22,7 +22,7 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/ah
 # Directories and output file
 heic_source_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/01_inventory_original_files'
 converted_image_directory = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/03_converted_to_jpeg'
-output_txt_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
+output_txt_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_texts.txt'
 
 
 def load_all_processed_files(output_txt_file):
