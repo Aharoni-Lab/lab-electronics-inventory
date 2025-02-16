@@ -72,7 +72,21 @@ def upload_files(files, uploader_name):
 
 def ai_search(query):
     try:
-        # Explicitly set API key
+        # Fetch file content from Firebase Storage
+        file_content = fetch_file_content()
+
+        if file_content:
+            matches = []
+            lines = file_content.split("\n")
+
+            for line in lines:
+                if re.search(re.escape(query), line, re.IGNORECASE):
+                    matches.append(line)
+
+            if matches:
+                return "\n".join(matches)  # Return all found matches
+
+        # If no matches found, use OpenAI AI Search as a fallback
         client = openai.OpenAI(api_key=st.secrets["openai"]["api_key"])
         response = client.chat.completions.create(
             model="gpt-4",
@@ -81,12 +95,10 @@ def ai_search(query):
                 {"role": "user", "content": f"Find the best matching component for: {query}"}
             ]
         )
-        return response.choices[0].message.content  # Correct response parsing
+        return response.choices[0].message.content  # Return AI result
+
     except Exception as e:
         return f"Error: {e}"
-
-
-# Fetch text file from Firebase Storage
 
 
 def fetch_file_content():
