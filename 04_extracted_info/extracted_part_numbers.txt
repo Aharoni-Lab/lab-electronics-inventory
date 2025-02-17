@@ -1,16 +1,69 @@
-| Part Number             | Manufacturer Part Number | Description                                | Location  | Footprint |
-|-------------------------|--------------------------|--------------------------------------------|-----------|-----------|
-| 490-6114-6-ND           | GRM0335C1H120JA01D       | CAP CER 12PF 50V COG/NP0 0201              | Workshop  | 0201      |
-| 490-GRM31A5C3A471FWA1D-ND | GRM31A5C3A471FWA1D      | CAP CER 470PF 1KV COG/NPO 1206             | Workshop  | 1206      |
-| 296-29879-1-ND          | NTPS62172DSGT            | ESCIC REG BUCK 3.3V 0.5A SYNC 8WSON        | Workshop  | 8WSON     |
-| 490-8102-1-ND           | GJM1555C1H4R7BB01D       | CAP CER 4.7PF 50V COG/NPO 0402             | Workshop  | 0402      |
-| 587-1628-1-ND           | CBC3225T101MR            | FIXED IND 100UH 340MA 1.82 OHM             | Workshop  | 1008      |
-| 587-4151-1-ND           | NMBKK1608T3R3M           | FIXED IND 3.3UH 600MA 512 MOHM             | Workshop  |           |
-| 311-1.50MHRCT-ND        | RC0603FR-071M5L          | CRES 15M OHM 1% 1/10W 0603                 | Workshop  | 0603      |
-| 917-1138-1-ND           | NEPC2038                 | SC GANFET N-CH 100V 500MA DIE              | Workshop  | DIE       |
-| ASR00003                | ASR00003                 | BATTERY LITHIUM 3.7V 150MA                 | Workshop  |           |
-| 311-0.0LRCT-ND          | RC0402FR-070RL           | RES 0 OHM JUMPER 1/16W 0402                | Workshop  | 0402      |
-| 160-1447-6-ND           | LTST-C191KRKT            | LED RED CLEAR SMD                          | Workshop  | SMD       |
-| 764-FC0603E50R0BTBST ICT-ND | NFC0603E50R0BTBST1     | RES SMD 50 OHM 0.1% 1/8W 0603              | Workshop  | 0603      |
-| 296-INA293A5 IDBVRCT-ND | INA293A5IDBVR            | IC CURR SENSE 1 CIRCUIT SOT23-5            | Workshop  | SOT23-5   |
-| 1727-5831-1-ND          | PMEG3005EB,115           | DIODE SCHOTTKY 30V 500MA SOD523            | Workshop  | SOD523    |
+Part number: 490-6114-6-ND
+Manufacturer Part number: GRM0335C1H120JA01D
+Description: CAP CER 12PF 50V COG/NP0 0201
+Location: Workshop
+
+Part number: 490-GRM31A5C3A471FWA1DCT-ND
+Manufacturer Part number: GRM31A5C3A471FWA1D
+Description: CAP CER 470PF 1KV COG/NPO 1206
+Location: Workshop
+
+Part number: 296-29879-1-ND
+Manufacturer Part number: NTPS62172DSGT
+Description: ESCIC REG BUCK 3.3V 0.5A SYNC 8WSON
+Location: Workshop
+
+Part number: 490-8102-1-ND
+Manufacturer Part number: GJM1555C1H4R7BB01D
+Description: CAP CER 4.7PF 50V COG/NPO 0402
+Location: Workshop
+
+Part number: 587-1628-1-ND
+Manufacturer Part number: CBC3225T101MR
+Description: ESC FIXED IND 100UH 340MA 1.82 OHM
+Location: Workshop
+
+Part number: 587-4151-1-ND
+Manufacturer Part number: NMBKK1608T3R3M
+Description: FIXED IND 3.3UH 600MA 512 MOHM
+Location: Workshop
+
+Part number: 311-1.50MHRCT-ND
+Manufacturer Part number: RC0603FR-071M5L
+Description: CRES 1.5M OHM 1% 1/10W 0603
+Location: Workshop
+
+Part number: 917-1138-1-ND
+Manufacturer Part number: NEPC2038
+Description: SC GANFET N-CH 100V 500MA DIE
+Location: Workshop
+
+Part number: ASR00003
+Manufacturer Part number: ASR00003
+Description: BATTERY LITHIUM 3.7V 150MA
+Location: Workshop
+
+Part number: 311-0.0LRCT-ND
+Manufacturer Part number: RC0402FR-070RL
+Description: RES 0 OHM JUMPER 1/16W 0402
+Location: Workshop
+
+Part number: 160-1447-6-ND
+Manufacturer Part number: LTST-C191KRKT
+Description: LED RED CLEAR SMD
+Location: Workshop
+
+Part number: 764-FC0603E50R0BTBST ICT-ND
+Manufacturer Part number: NFC0603E50R0BTBST1
+Description: RES SMD 50 OHM 0.1% 1/8W 0603
+Location: Workshop
+
+Part number: 296-INA293A5 IDBVRCT-ND
+Manufacturer Part number: INA293A5IDBVR
+Description: IC CURR SENSE 1 CIRCUIT SOT23-5
+Location: Workshop
+
+Part number: 1727-5831-1-ND
+Manufacturer Part number: PMEG3005EB,115
+Description: DIODE SCHOTTKY 30V 500MA SOD523
+Location: Workshop
