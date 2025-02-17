@@ -117,37 +117,3 @@ def process_all_subfolders(base_source_directory, output_txt_file):
 
 # Start processing all subfolders
 process_all_subfolders(heic_source_directory, output_txt_file)
-
-
-# ================== ================== ================== ==================
-# Here I will push the "extracted_texts.txt" file to Firebase
-
-# Path to your Firebase service account key JSON file
-cred_path = '/Users/abasaltbahrami/Desktop/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
-
-# Initialize Firebase Admin SDK with the service account
-if not firebase_admin._apps:
-    cred = credentials.Certificate(cred_path)
-    firebase_admin.initialize_app(cred, {
-        'storageBucket': 'aharonilabinventory.appspot.com'  # Your Firebase Storage bucket
-    })
-
-
-def upload_text_file(local_path, firebase_path):
-    """Upload a file to Firebase Storage, overwriting any existing file at the path."""
-    # Access the Firebase Storage bucket
-    bucket = storage.bucket()
-    blob = bucket.blob(firebase_path)
-
-    # Upload and overwrite the file
-    blob.upload_from_filename(local_path)
-    print(f"Uploaded {local_path} to Firebase at {firebase_path}")
-
-
-# Specify the local path and Firebase path
-# Local path to extracted_texts.txt
-local_text_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_texts.txt'
-firebase_file_path = 'extracted_texts.txt'  # File path in Firebase Storage
-
-# Run the upload function
-upload_text_file(local_text_file, firebase_file_path)

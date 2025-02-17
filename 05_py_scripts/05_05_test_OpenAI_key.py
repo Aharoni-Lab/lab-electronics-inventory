@@ -1,8 +1,7 @@
 import openai
 
 
-openai_client = openai.OpenAI(api_key="OpenAI secret key"
-                              )
+openai_client = openai.OpenAI(api_key="OpenAI secret key")
 
 try:
     response = openai_client.chat.completions.create(

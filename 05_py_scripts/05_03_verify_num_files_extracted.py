@@ -2,8 +2,8 @@ import os
 import re
 
 # Define the paths to the text files and the main directory
-processed_text_file_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/extracted_texts.txt'
-directory_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/files'
+processed_text_file_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_texts.txt'
+directory_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/01_inventory_original_files'
 
 # Function to get processed image filenames from the text file
 
