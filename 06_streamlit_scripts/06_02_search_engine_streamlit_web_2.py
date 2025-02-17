@@ -148,15 +148,19 @@ else:
                     location_match = re.search(
                         r'Location:\s*(.+)', block, re.IGNORECASE)
 
-                    manufacturer_pn = manufacturer_match.group(1).strip() if manufacturer_match else (
-                        part_number_match.group(1).strip(
-                        ) if part_number_match else "MF P/N not found"
-                    )
-                    description = description_match.group(1).strip(
-                    ) if description_match else "Description not found"
+                    manufacturer_pn = manufacturer_match.group(
+                        1).strip() if manufacturer_match else ""
+                    part_number = part_number_match.group(
+                        1).strip() if part_number_match else ""
+                    description = description_match.group(
+                        1).strip() if description_match else ""
+                    location = location_match.group(
+                        1).strip() if location_match else ""
 
-                    location = location_match.group(1).strip(
-                    ) if location_match else "Location not found"
+                    # Ensure no empty values
+                    manufacturer_pn = manufacturer_pn if manufacturer_pn else part_number if part_number else "Not found"
+                    description = description if description else "Not found"
+                    location = location if location else "Not found"
 
                     # Normalize extracted text
                     normalized_manufacturer_pn = normalize_text(
@@ -173,22 +177,6 @@ else:
 
                 if results:
                     st.write("### Search Results")
-
-                    # Apply CSS to ensure full text visibility
-                    st.markdown(
-                        """
-                        <style>
-                            table { width: 100%; }
-                            thead th { text-align: center !important; }
-                            tbody td {
-                                white-space: normal;
-                                overflow-wrap: break-word;
-                                word-break: break-word;
-                            }
-                        </style>
-                        """,
-                        unsafe_allow_html=True
-                    )
 
                     df_results = pd.DataFrame(
                         results, columns=["Manufacturer P/N", "Description", "Location"])
