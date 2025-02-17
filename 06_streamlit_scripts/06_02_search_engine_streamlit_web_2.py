@@ -10,26 +10,43 @@ import time
 # Authentication setup using Streamlit secrets
 
 
+import streamlit as st
+
+
 def login():
+    # Create a placeholder to hold the login form
+    login_placeholder = st.empty()
+
+    # Initialize authentication state if not already set
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
-    if not st.session_state["authenticated"]:
+    # If already authenticated, clear the login container and return True
+    if st.session_state["authenticated"]:
+        login_placeholder.empty()
+        return True
+
+    # Display the login form inside the placeholder
+    with login_placeholder.container():
         st.title("Login")
-        st.warning(
-            "Note: You may need to press the Login button twice due to app state updates.")
+        st.warning("Please enter your credentials.")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
-
         if st.button("Login"):
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.success("Logged in successfully!")
-                st.experimental_rerun()  # Immediately rerun the script so the state is updated
+                # The next rerun will see the authenticated state and skip this form.
             else:
                 st.error("Invalid username or password")
-        return False
-    return True
+    return st.session_state["authenticated"]
+
+
+if not login():
+    st.stop()
+
+# Main app code starts here
+# st.write("Welcome to the main app!")
 
 
 # Function to normalize text (removes extra spaces for consistent searches)
