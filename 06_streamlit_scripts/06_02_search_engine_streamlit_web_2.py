@@ -140,18 +140,23 @@ else:
                 results = []
                 for block in blocks:
                     manufacturer_match = re.search(
-                        r'Manufacturer Part number:\s*(.*)', block, re.IGNORECASE)
+                        r'Manufacturer Part number:\s*(.+)', block, re.IGNORECASE)
+                    part_number_match = re.search(
+                        r'Part number:\s*(.+)', block, re.IGNORECASE)
                     description_match = re.search(
-                        r'Description:\s*(.*)', block, re.IGNORECASE)
+                        r'Description:\s*(.+)', block, re.IGNORECASE)
                     location_match = re.search(
-                        r'Location:\s*(.*)', block, re.IGNORECASE)
+                        r'Location:\s*(.+)', block, re.IGNORECASE)
 
-                    manufacturer_pn = manufacturer_match.group(
-                        1) if manufacturer_match else "Manufacturer P/N not available"
-                    description = description_match.group(
-                        1) if description_match else "Description not available"
-                    location = location_match.group(
-                        1) if location_match else "Location not available"
+                    manufacturer_pn = manufacturer_match.group(1).strip() if manufacturer_match else (
+                        part_number_match.group(1).strip(
+                        ) if part_number_match else "MF P/N not found"
+                    )
+                    description = description_match.group(1).strip(
+                    ) if description_match else "Description not found"
+
+                    location = location_match.group(1).strip(
+                    ) if location_match else "Location not found"
 
                     # Normalize extracted text
                     normalized_manufacturer_pn = normalize_text(
