@@ -88,9 +88,9 @@ else:
             return f"Failed to fetch file: {response.status_code}"
 
     # Function to save reorder request to Firebase
-    def reorder_item(part_number, description, requester_name):
+    def reorder_item(manufacturer_pn, description, requester_name):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        re_order_text = f"Date and Time: {current_time}, Part Number: {part_number}, Description: {description}, Requester Name: {requester_name}\n"
+        re_order_text = f"Date and Time: {current_time}, Manufacturer Part Number: {manufacturer_pn}, Description: {description}, Requester Name: {requester_name}\n"
         bucket = storage.bucket()
         blob = bucket.blob('to_be_ordered.txt')
 
@@ -123,7 +123,7 @@ else:
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
-                # Assume each entry is separated by double newlines
+                # Assume entries are separated by double newlines
                 blocks = file_content.split("\n\n")
                 search_patterns = []
 
@@ -140,8 +140,6 @@ else:
                 results = []
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
-                        part_number = re.search(
-                            r'Part number:\s*(.*)', block, re.IGNORECASE)
                         manufacturer = re.search(
                             r'Manufacturer Part number:\s*(.*)', block, re.IGNORECASE)
                         description = re.search(
@@ -150,8 +148,6 @@ else:
                             r'Location:\s*(.*)', block, re.IGNORECASE)
 
                         results.append((
-                            part_number.group(
-                                1) if part_number else "P/N not detected",
                             manufacturer.group(
                                 1) if manufacturer else "Manufacturer P/N not available",
                             description.group(
@@ -180,8 +176,8 @@ else:
                         unsafe_allow_html=True
                     )
 
-                    df_results = pd.DataFrame(results, columns=[
-                                              "Part Number", "Manufacturer Part Number", "Description", "Location"])
+                    df_results = pd.DataFrame(
+                        results, columns=["Manufacturer Part Number", "Description", "Location"])
                     df_results.index = df_results.index + 1
 
                     st.markdown(df_results.to_html(
@@ -194,14 +190,15 @@ else:
         with st.form("manual_reorder_form"):
             col1, col2, col3 = st.columns(3)
 
-            part_number = col1.text_input("Part Number for Reorder")
+            manufacturer_pn = col1.text_input(
+                "Manufacturer Part Number for Reorder")
             description = col2.text_input("Description for Reorder")
             requester_name = col3.text_input("Requester Name")
 
             submit_reorder = st.form_submit_button("Submit Re-Order")
 
             if submit_reorder:
-                if part_number and description and requester_name:
-                    reorder_item(part_number, description, requester_name)
+                if manufacturer_pn and description and requester_name:
+                    reorder_item(manufacturer_pn, description, requester_name)
                 else:
                     st.warning("Please fill in all fields before submitting.")
