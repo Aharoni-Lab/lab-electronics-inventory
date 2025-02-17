@@ -17,7 +17,6 @@ import pyheif
 CHUNK_SIZE = 5000  # Number of characters per chunk
 MAX_CHUNKS = None  # Set to None to process all chunks
 
-
 # Load API key
 api_key = os.getenv("OPENAI_API_KEY")
 
@@ -64,6 +63,7 @@ def extract_part_numbers_in_chunks(text, chunk_size=CHUNK_SIZE, max_chunks=MAX_C
         Manufacturer Part number: <value>
         Description: <value>
         Location: <value>
+        Footprint: <value>
         
         Repeat this structure for each entry without any additional formatting like tables or dashes.
         If a manufacturer part number or footprint does not exist, leave it blank.
@@ -93,13 +93,44 @@ def extract_part_numbers_in_chunks(text, chunk_size=CHUNK_SIZE, max_chunks=MAX_C
 # Extract data using configured chunk settings
 extracted_data = extract_part_numbers_in_chunks(extracted_text)
 
-# Save the extracted data
-if extracted_data:
-    output_file = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_part_numbers.txt"
-    with open(output_file, "w") as f:
-        f.write(extracted_data)
+# File path for output
+output_file = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_part_numbers.txt"
 
-    print(f"\nExtracted data saved to: {output_file}")
+# Read existing file and extract recorded part numbers
+existing_entries = set()
+if os.path.exists(output_file):
+    with open(output_file, "r") as f:
+        for line in f.readlines():
+            match = re.search(r"Part number: (\S+)", line)
+            if match:
+                # Store existing part numbers
+                existing_entries.add(match.group(1))
+
+# Process and append only new unique entries
+if extracted_data:
+    new_entries = []
+    for entry in extracted_data.split("\n\n"):  # Split by entries
+        part_match = re.search(r"Part number: (\S+)", entry)
+        mfg_part_match = re.search(r"Manufacturer Part number: (\S*)", entry)
+        footprint_match = re.search(r"Footprint: (\S*)", entry)
+
+        part_number = part_match.group(1) if part_match else None
+        mfg_part_number = mfg_part_match.group(1) if mfg_part_match else None
+        footprint = footprint_match.group(1) if footprint_match else ""
+
+        # Check if part number or manufacturer part number is already recorded
+        if part_number and part_number not in existing_entries:
+            new_entries.append(entry)
+            existing_entries.add(part_number)  # Avoid duplicates
+
+    # Append only new unique data
+    if new_entries:
+        with open(output_file, "a") as f:  # Use "a" to append
+            f.write("\n\n".join(new_entries) + "\n\n")
+
+        print(f"\nNew unique entries appended to: {output_file}")
+    else:
+        print("\nNo new unique part numbers found. Nothing appended.")
 else:
     print("\nNo data extracted.")
 
@@ -127,7 +158,7 @@ def upload_text_file(local_path, firebase_path):
 
 
 # Specify the local path and Firebase path
-local_text_file = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_part_numbers.txt'
+local_text_file = output_file
 firebase_file_path = 'extracted_texts.txt'  # File path in Firebase Storage
 
 # Run the upload function

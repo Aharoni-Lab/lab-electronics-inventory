@@ -1,102 +1,77 @@
 import streamlit as st
-from datetime import datetime
 import requests
+import re
 import pandas as pd
+from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, storage
 import time
 
-# Authentication setup using Streamlit secrets
-
-
-def login():
-    if "authenticated" not in st.session_state:
-        st.session_state["authenticated"] = False
-
-    if not st.session_state["authenticated"]:
-        st.title("Login")
-        st.warning(
-            "Note: You may need to press the Login button twice due to app state updates.")
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-
-        if st.button("Login"):
-            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                st.session_state["authenticated"] = True
-                st.success("Logged in successfully!")
-            else:
-                st.error("Invalid username or password")
-        return False
-    return True
-
-
-if not login():
-    st.stop()
-
-# Firebase initialization
-if not firebase_admin._apps:
-    cred = credentials.Certificate({
-        "type": st.secrets["firebase"]["type"],
-        "project_id": st.secrets["firebase"]["project_id"],
-        "private_key_id": st.secrets["firebase"]["private_key_id"],
-        "private_key": st.secrets["firebase"]["private_key"].replace("\\n", "\n"),
-        "client_email": st.secrets["firebase"]["client_email"],
-        "client_id": st.secrets["firebase"]["client_id"],
-        "auth_uri": st.secrets["firebase"]["auth_uri"],
-        "token_uri": st.secrets["firebase"]["token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["firebase"]["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["firebase"]["client_x509_cert_url"]
-    })
-    firebase_admin.initialize_app(
-        cred, {"storageBucket": "aharonilabinventory.appspot.com"})
-
-# Fetch file content from Firebase
+# Function to fetch file content from Firebase Storage
 
 
 def fetch_file_content():
     url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
     response = requests.get(url)
-    return response.text if response.status_code == 200 else f"Failed to fetch file: {response.status_code}"
+    if response.status_code == 200:
+        return response.text
+    else:
+        return f"Failed to fetch file: {response.status_code}"
 
-# Extract structured data
-
-
-def extract_data(content):
-    entries = []
-    # Splitting by double newlines assumes blocks are separated properly
-    blocks = content.split("\n\n")
-    for block in blocks:
-        data = {}
-        lines = block.split("\n")
-        for line in lines:
-            parts = line.split(":", 1)  # Split only at the first colon
-            if len(parts) == 2:
-                key, value = parts[0].strip(), parts[1].strip()
-                data[key] = value
-        if data:
-            entries.append(data)
-    return entries
-
-# Display search results
+# Function to extract data fields from text
 
 
-def display_results(entries):
-    if not entries:
-        st.warning("No data found.")
-        return
-    df = pd.DataFrame(entries)
-    st.write("### Search Results")
-    st.table(df)
+def extract_data(block):
+    part_number_match = re.search(
+        r'Part number:\s*(\S+)', block, re.IGNORECASE)
+    mf_part_number_match = re.search(
+        r'Manufacturer Part number:\s*(\S+)', block, re.IGNORECASE)
+    description_match = re.search(r'Description:\s*(.*)', block, re.IGNORECASE)
+    location_match = re.search(r'Location:\s*(.*)', block, re.IGNORECASE)
+
+    part_number = part_number_match.group(1) if part_number_match else "N/A"
+    mf_part_number = mf_part_number_match.group(
+        1) if mf_part_number_match else "N/A"
+    description = description_match.group(1) if description_match else "N/A"
+    location = location_match.group(1) if location_match else "N/A"
+
+    return part_number, mf_part_number, description, location
 
 
+# Streamlit UI Setup
 st.title("Inventory Search & Management")
 st.markdown("<h5 style='color: gray;'>Aharoni Lab, CHS 74-134</h5>",
             unsafe_allow_html=True)
 
-if st.button("🔄 Load Inventory Data"):
-    file_content = fetch_file_content()
-    if file_content.startswith("Failed to fetch file"):
-        st.error(file_content)
-    else:
-        inventory_data = extract_data(file_content)
-        display_results(inventory_data)
+with st.container():
+    st.header("Search for Components")
+
+    col1, col2 = st.columns(2)
+    part_number_query = col1.text_input("Enter Part Number (P/N)")
+    mf_part_number_query = col2.text_input(
+        "Enter Manufacturer Part Number (MF P/N)")
+
+    if st.button("🔎 Search"):
+        file_content = fetch_file_content()
+        if file_content.startswith("Failed to fetch file"):
+            st.error(file_content)
+        else:
+            # Assuming each entry is separated by two newlines
+            blocks = file_content.split("\n\n")
+            search_results = []
+
+            for block in blocks:
+                part_number, mf_part_number, description, location = extract_data(
+                    block)
+                if (part_number_query and part_number_query.lower() in part_number.lower()) or \
+                   (mf_part_number_query and mf_part_number_query.lower() in mf_part_number.lower()):
+                    search_results.append(
+                        (part_number, mf_part_number, description, location))
+
+            if search_results:
+                df_results = pd.DataFrame(search_results, columns=[
+                                          "P/N", "MF P/N", "Description", "Location"])
+                st.write("### Search Results")
+                st.dataframe(df_results)
+            else:
+                st.warning("No matching components found.")

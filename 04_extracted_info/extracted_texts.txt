@@ -17834,6 +17834,28 @@ CA3
 22U19
 Location: Federico
 
+Image: IMG_4152.heic
+Extracted Text:
+M
+MOUSER
+ELECTRONICS
+Cust PO: Test
+Line Item: 001
+2D BARCODE
+www.mouser.com
+Mouser P/N: Test
+MFG P/N: Test
+Desc: Low Noise, 1A Synch
+TI Switching Voltage Regulators
+RoHS: compliant
+QTY: 5
+COO: CN
+Invoice No.: 080192483
+CA3
+29N356
+22U19
+Location: Test
+
 Image: IMG_4294.heic
 Extracted Text:
 25-AUG-2020 20:33 DIGI-KEY 800 344-4539
