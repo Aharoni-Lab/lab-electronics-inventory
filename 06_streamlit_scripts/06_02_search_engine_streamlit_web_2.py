@@ -25,10 +25,12 @@ def login():
             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
                 st.session_state["authenticated"] = True
                 st.success("Logged in successfully!")
+                st.experimental_rerun()  # Immediately rerun the script so the state is updated
             else:
                 st.error("Invalid username or password")
         return False
     return True
+
 
 # Function to normalize text (removes extra spaces for consistent searches)
 
