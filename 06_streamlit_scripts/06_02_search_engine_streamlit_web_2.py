@@ -13,40 +13,38 @@ import time
 import streamlit as st
 
 
-def login():
-    # Create a placeholder to hold the login form
-    login_placeholder = st.empty()
+import streamlit as st
 
-    # Initialize authentication state if not already set
+
+def login():
+    # 1. Initialize 'authenticated' to False in session_state if it doesn't exist
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
-    # If already authenticated, clear the login container and return True
+    # 2. If already authenticated, just return True (skip the login form)
     if st.session_state["authenticated"]:
-        login_placeholder.empty()
         return True
 
-    # Display the login form inside the placeholder
-    with login_placeholder.container():
-        st.title("Login")
-        st.warning("Please enter your credentials.")
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        if st.button("Login"):
-            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                st.session_state["authenticated"] = True
-                st.success("Logged in successfully!")
-                # The next rerun will see the authenticated state and skip this form.
-            else:
-                st.error("Invalid username or password")
+    # 3. Otherwise, show the login form
+    st.title("Login")
+    st.warning("Please enter your credentials.")
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    if st.button("Login"):
+        if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+            st.session_state["authenticated"] = True
+            st.success("Logged in successfully!")
+            # Streamlit will automatically rerun the script now.
+        else:
+            st.error("Invalid username or password")
+
+    # 4. Return the authentication state
     return st.session_state["authenticated"]
 
 
+# Use the login function at the top of your script
 if not login():
     st.stop()
-
-# Main app code starts here
-# st.write("Welcome to the main app!")
 
 
 # Function to normalize text (removes extra spaces for consistent searches)
