@@ -3,7 +3,7 @@ Manufacturer Part number: GRM0335C1H120JA01D
 Description: CAP CER 12PF 50V COG/NP0 0201
 Location: Workshop
 
-Part number: 490-GRM31A5C3A471FWA1DCT-ND
+Part number: 490-GRM31A5C3A471FWA1D-ND
 Manufacturer Part number: GRM31A5C3A471FWA1D
 Description: CAP CER 470PF 1KV COG/NPO 1206
 Location: Workshop
