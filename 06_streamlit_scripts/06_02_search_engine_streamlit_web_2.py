@@ -178,17 +178,17 @@ else:
 
                 if results:
                     st.write("### Search Results")
-
                     df_results = pd.DataFrame(
                         results, columns=["Manufacturer P/N", "Description", "Location"])
                     df_results.index = df_results.index + 1
 
+                    # Print the table with all cells left aligned
                     st.markdown(df_results.to_html(
-                        index=False, escape=False), unsafe_allow_html=True)
+                        index=False, escape=False, justify='left'), unsafe_allow_html=True)
                 else:
                     st.warning("No items found matching the search criteria.")
 
-# Reorder Section
+    # Reorder Section
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
