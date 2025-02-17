@@ -1,3 +1,0 @@
-
-OPENAI_API_KEY = "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"
-GOOGLE_APPLICATION_CREDENTIALS = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/aharonilab-9410614763f1.json"
