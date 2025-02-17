@@ -15,7 +15,7 @@ import pyheif
 # GLOBAL PARAMETERS
 # ================================================================================================
 CHUNK_SIZE = 5000  # Number of characters per chunk
-MAX_CHUNKS = 1  # Set to None to process all chunks
+MAX_CHUNKS = None  # Set to None to process all chunks
 
 
 # Load API key
@@ -103,9 +103,9 @@ if extracted_data:
 else:
     print("\nNo data extracted.")
 
-# ================================
-# Push the "extracted_texts.txt" file to Firebase
-# ================================
+# ================================================================================================
+# Push the "extracted_part_numbers.txt" file to Firebase
+# ================================================================================================
 
 # Path to your Firebase service account key JSON file
 cred_path = '/Users/abasaltbahrami/Desktop/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
