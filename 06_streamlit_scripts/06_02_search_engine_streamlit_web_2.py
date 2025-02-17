@@ -129,44 +129,63 @@ else:
 
                 if part_number_query:
                     search_patterns.append(re.compile(
-                        rf'Part number:\s*{re.escape(part_number_query)}', re.IGNORECASE))
+                        r'Part number:\s*' + re.escape(part_number_query), re.IGNORECASE))
                 if value_query:
                     search_patterns.append(re.compile(
-                        rf'Description:\s*.*{re.escape(value_query)}.*', re.IGNORECASE))
+                        r'Description:\s*.*' + re.escape(value_query) + '.*', re.IGNORECASE))
                 if footprint_query:
                     search_patterns.append(re.compile(
-                        rf'Location:\s*{re.escape(footprint_query)}', re.IGNORECASE))
+                        r'Location:\s*' + re.escape(footprint_query), re.IGNORECASE))
 
                 results = []
                 for block in blocks:
                     if all(pattern.search(block) for pattern in search_patterns):
-                        part_number_match = re.search(
+                        part_number = re.search(
                             r'Part number:\s*(.*)', block, re.IGNORECASE)
-                        manufacturer_match = re.search(
+                        manufacturer = re.search(
                             r'Manufacturer Part number:\s*(.*)', block, re.IGNORECASE)
-                        description_match = re.search(
+                        description = re.search(
                             r'Description:\s*(.*)', block, re.IGNORECASE)
-                        location_match = re.search(
+                        location = re.search(
                             r'Location:\s*(.*)', block, re.IGNORECASE)
 
-                        part_number = part_number_match.group(
-                            1) if part_number_match else "P/N not detected"
-                        manufacturer = manufacturer_match.group(
-                            1) if manufacturer_match else "Manufacturer P/N not available"
-                        description = description_match.group(
-                            1) if description_match else "Description not available"
-                        location = location_match.group(
-                            1) if location_match else "Location not available"
-
-                        results.append(
-                            (part_number, manufacturer, description, location))
+                        results.append((
+                            part_number.group(
+                                1) if part_number else "P/N not detected",
+                            manufacturer.group(
+                                1) if manufacturer else "Manufacturer P/N not available",
+                            description.group(
+                                1) if description else "Description not available",
+                            location.group(
+                                1) if location else "Location not available"
+                        ))
 
                 if results:
                     st.write("### Search Results")
+
+                    # Apply CSS to prevent text wrapping
+                    st.markdown(
+                        """
+                        <style>
+                            thead th { text-align: center !important; }
+                            tbody td {
+                                white-space: nowrap;
+                                text-overflow: ellipsis;
+                                overflow: hidden;
+                                max-width: 200px; /* Adjust column width */
+                            }
+                            .dataframe { table-layout: fixed; width: 100%; }
+                        </style>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
                     df_results = pd.DataFrame(results, columns=[
                                               "Part Number", "Manufacturer Part Number", "Description", "Location"])
                     df_results.index = df_results.index + 1
-                    st.table(df_results)
+
+                    st.markdown(df_results.to_html(
+                        index=False, escape=False), unsafe_allow_html=True)
                 else:
                     st.warning("No items found matching the search criteria.")
 
