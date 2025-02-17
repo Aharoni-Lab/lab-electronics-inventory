@@ -172,7 +172,7 @@ else:
                     )
 
                     df_results = pd.DataFrame(
-                        results, columns=["Manufacturer Part Number", "Description", "Location"])
+                        results, columns=["Manufacturer P/N", "Description", "Location"])
                     df_results.index = df_results.index + 1
 
                     st.markdown(df_results.to_html(
@@ -186,8 +186,8 @@ else:
             col1, col2, col3 = st.columns(3)
 
             manufacturer_pn = col1.text_input(
-                "Manufacturer Part Number for Reorder")
-            description = col2.text_input("Description for Reorder")
+                "Manufacturer P/N")
+            description = col2.text_input("Description")
             requester_name = col3.text_input("Requester Name")
 
             submit_reorder = st.form_submit_button("Submit Re-Order")
