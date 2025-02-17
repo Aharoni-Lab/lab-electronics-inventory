@@ -155,18 +155,17 @@ else:
                 if results:
                     st.write("### Search Results")
 
-                    # Apply CSS to prevent text wrapping
+                    # Apply CSS to ensure full text visibility
                     st.markdown(
                         """
                         <style>
+                            table { width: 100%; }
                             thead th { text-align: center !important; }
                             tbody td {
-                                white-space: nowrap;
-                                text-overflow: ellipsis;
-                                overflow: hidden;
-                                max-width: 200px; /* Adjust column width */
+                                white-space: normal;
+                                overflow-wrap: break-word;
+                                word-break: break-word;
                             }
-                            .dataframe { table-layout: fixed; width: 100%; }
                         </style>
                         """,
                         unsafe_allow_html=True
