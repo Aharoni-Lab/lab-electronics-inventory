@@ -112,11 +112,10 @@ else:
     with st.container():
         st.header("Search for Components")
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         part_number_query = col1.text_input("Enter Part Number")
         value_query = col2.text_input(
             "Enter Component Name / Value", placeholder="e.g., 4.7uF, 100 OHM, ... XOR")
-        footprint_query = col3.text_input("Enter Footprint")
 
         if st.button("🔎 Search"):
             file_content = fetch_file_content()
@@ -133,9 +132,6 @@ else:
                 if value_query:
                     search_patterns.append(re.compile(
                         r'Description:\s*.*' + re.escape(value_query) + '.*', re.IGNORECASE))
-                if footprint_query:
-                    search_patterns.append(re.compile(
-                        r'Location:\s*' + re.escape(footprint_query), re.IGNORECASE))
 
                 results = []
                 for block in blocks:
