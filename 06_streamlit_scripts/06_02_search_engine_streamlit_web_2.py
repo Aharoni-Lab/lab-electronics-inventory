@@ -13,41 +13,34 @@ import time
 import streamlit as st
 
 
-import streamlit as st
+# 1. Initialize session state on first run
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
 
 
-def login():
-    # 1. Initialize 'authenticated' to False in session_state if it doesn't exist
-    if "authenticated" not in st.session_state:
-        st.session_state["authenticated"] = False
-
-    # 2. If already authenticated, just return True (skip the login form)
-    if st.session_state["authenticated"]:
-        return True
-
-    # 3. Otherwise, show the login form
+def show_login_form():
+    """Displays the login form and sets 'authenticated' to True if credentials match."""
     st.title("Login")
     st.warning("Please enter your credentials.")
+
+    # User input fields
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
+
+    # Pressing this button triggers a re-run of the script
     if st.button("Login"):
+        # Compare with your secrets (or any other method)
         if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
             st.session_state["authenticated"] = True
             st.success("Logged in successfully!")
-            # Streamlit will automatically rerun the script now.
         else:
             st.error("Invalid username or password")
 
-    # 4. Return the authentication state
-    return st.session_state["authenticated"]
 
-
-# Use the login function at the top of your script
-if not login():
+# 2. If not logged in, show the login form, then stop the script
+if not st.session_state["authenticated"]:
+    show_login_form()
     st.stop()
-
-
-# Function to normalize text (removes extra spaces for consistent searches)
 
 
 def normalize_text(text):
