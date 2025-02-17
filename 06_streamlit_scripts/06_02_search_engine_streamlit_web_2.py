@@ -30,6 +30,12 @@ def login():
         return False
     return True
 
+# Function to normalize text (removes extra spaces for consistent searches)
+
+
+def normalize_text(text):
+    return re.sub(r'\s+', '', text.strip().lower())
+
 # Function to upload multiple files (images and PDFs) to Firebase
 
 
@@ -122,35 +128,43 @@ else:
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
+                # Normalize search queries
+                normalized_part_query = normalize_text(
+                    part_number_query) if part_number_query else None
+                normalized_value_query = normalize_text(
+                    value_query) if value_query else None
+
                 # Assume entries are separated by double newlines
                 blocks = file_content.split("\n\n")
-                search_patterns = []
-
-                if part_number_query:
-                    search_patterns.append(re.compile(
-                        r'Part number:\s*' + re.escape(part_number_query), re.IGNORECASE))
-                if value_query:
-                    search_patterns.append(re.compile(
-                        r'Description:\s*.*' + re.escape(value_query) + '.*', re.IGNORECASE))
 
                 results = []
                 for block in blocks:
-                    if all(pattern.search(block) for pattern in search_patterns):
-                        manufacturer = re.search(
-                            r'Manufacturer Part number:\s*(.*)', block, re.IGNORECASE)
-                        description = re.search(
-                            r'Description:\s*(.*)', block, re.IGNORECASE)
-                        location = re.search(
-                            r'Location:\s*(.*)', block, re.IGNORECASE)
+                    manufacturer_match = re.search(
+                        r'Manufacturer Part number:\s*(.*)', block, re.IGNORECASE)
+                    description_match = re.search(
+                        r'Description:\s*(.*)', block, re.IGNORECASE)
+                    location_match = re.search(
+                        r'Location:\s*(.*)', block, re.IGNORECASE)
 
-                        results.append((
-                            manufacturer.group(
-                                1) if manufacturer else "Manufacturer P/N not available",
-                            description.group(
-                                1) if description else "Description not available",
-                            location.group(
-                                1) if location else "Location not available"
-                        ))
+                    manufacturer_pn = manufacturer_match.group(
+                        1) if manufacturer_match else "Manufacturer P/N not available"
+                    description = description_match.group(
+                        1) if description_match else "Description not available"
+                    location = location_match.group(
+                        1) if location_match else "Location not available"
+
+                    # Normalize extracted text
+                    normalized_manufacturer_pn = normalize_text(
+                        manufacturer_pn)
+                    normalized_description = normalize_text(description)
+
+                    # Check if both queries match
+                    match_part = normalized_part_query in normalized_manufacturer_pn if normalized_part_query else True
+                    match_value = normalized_value_query in normalized_description if normalized_value_query else True
+
+                    if match_part and match_value:
+                        results.append(
+                            (manufacturer_pn, description, location))
 
                 if results:
                     st.write("### Search Results")
@@ -185,8 +199,7 @@ else:
         with st.form("manual_reorder_form"):
             col1, col2, col3 = st.columns(3)
 
-            manufacturer_pn = col1.text_input(
-                "Manufacturer P/N")
+            manufacturer_pn = col1.text_input("Manufacturer P/N")
             description = col2.text_input("Description")
             requester_name = col3.text_input("Requester Name")
 
