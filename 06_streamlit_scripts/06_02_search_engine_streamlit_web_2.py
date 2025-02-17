@@ -10,37 +10,27 @@ import time
 # Authentication setup using Streamlit secrets
 
 
-import streamlit as st
+def login():
+    if "authenticated" not in st.session_state:
+        st.session_state["authenticated"] = False
 
+    if not st.session_state["authenticated"]:
+        st.title("Login")
+        st.warning(
+            "Note: You may need to press the Login button twice due to app state updates.")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
-# 1. Initialize session state on first run
-if "authenticated" not in st.session_state:
-    st.session_state["authenticated"] = False
+        if st.button("Login"):
+            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+                st.session_state["authenticated"] = True
+                st.success("Logged in successfully!")
+            else:
+                st.error("Invalid username or password")
+        return False
+    return True
 
-
-def show_login_form():
-    """Displays the login form and sets 'authenticated' to True if credentials match."""
-    st.title("Login")
-    st.warning("Please enter your credentials.")
-
-    # User input fields
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-
-    # Pressing this button triggers a re-run of the script
-    if st.button("Login"):
-        # Compare with your secrets (or any other method)
-        if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-            st.session_state["authenticated"] = True
-            st.success("Logged in successfully!")
-        else:
-            st.error("Invalid username or password")
-
-
-# 2. If not logged in, show the login form, then stop the script
-if not st.session_state["authenticated"]:
-    show_login_form()
-    st.stop()
+# Function to normalize text (removes extra spaces for consistent searches)
 
 
 def normalize_text(text):
