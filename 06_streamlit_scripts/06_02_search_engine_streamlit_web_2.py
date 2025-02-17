@@ -140,40 +140,41 @@ else:
                 results = []
                 for block in blocks:
                     manufacturer_match = re.search(
-                        r'Manufacturer Part number:\s*(.+)', block, re.IGNORECASE)
+                        r'Manufacturer Part number:\s*(\S.*)', block, re.IGNORECASE)
                     part_number_match = re.search(
-                        r'Part number:\s*(.+)', block, re.IGNORECASE)
+                        r'Part number:\s*(\S.*)', block, re.IGNORECASE)
                     description_match = re.search(
-                        r'Description:\s*(.+)', block, re.IGNORECASE)
+                        r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
-                        r'Location:\s*(.+)', block, re.IGNORECASE)
+                        r'Location:\s*(\S.*)', block, re.IGNORECASE)
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
                     part_number = part_number_match.group(
                         1).strip() if part_number_match else ""
                     description = description_match.group(
-                        1).strip() if description_match else ""
+                        1).strip() if description_match else "Not available"
                     location = location_match.group(
-                        1).strip() if location_match else ""
+                        1).strip() if location_match else "Not available"
 
-                    # Ensure Manufacturer P/N is only returned if it's not empty
-                    final_pn = manufacturer_pn if manufacturer_pn else (
-                        part_number if part_number else "Not available")
-                    final_description = description if description else "Not available"
-                    final_location = location if location else "Not available"
+                    # Ensure Manufacturer P/N is only set if it's not empty
+                    if manufacturer_pn:
+                        final_pn = manufacturer_pn
+                    elif part_number:
+                        final_pn = part_number
+                    else:
+                        final_pn = "Not available"
 
                     # Normalize extracted text
                     normalized_final_pn = normalize_text(final_pn)
-                    normalized_description = normalize_text(final_description)
+                    normalized_description = normalize_text(description)
 
                     # Check if both queries match
                     match_part = normalized_part_query in normalized_final_pn if normalized_part_query else True
                     match_value = normalized_value_query in normalized_description if normalized_value_query else True
 
                     if match_part and match_value:
-                        results.append(
-                            (final_pn, final_description, final_location))
+                        results.append((final_pn, description, location))
 
                 if results:
                     st.write("### Search Results")
@@ -187,7 +188,7 @@ else:
                 else:
                     st.warning("No items found matching the search criteria.")
 
-    # Reorder Section
+# Reorder Section
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
