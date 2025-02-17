@@ -34,7 +34,7 @@ def login():
 
 
 def normalize_text(text):
-    return re.sub(r'\s+', '', text.strip().lower())
+    return re.sub(r'\s+', '', text.strip().lower()) if text else ""
 
 # Function to upload multiple files (images and PDFs) to Firebase
 
@@ -157,23 +157,23 @@ else:
                     location = location_match.group(
                         1).strip() if location_match else ""
 
-                    # Ensure no empty values
-                    manufacturer_pn = manufacturer_pn if manufacturer_pn else part_number if part_number else "Not found"
-                    description = description if description else "Not found"
-                    location = location if location else "Not found"
+                    # Ensure Manufacturer P/N is only returned if it's not empty
+                    final_pn = manufacturer_pn if manufacturer_pn else (
+                        part_number if part_number else "Not available")
+                    final_description = description if description else "Not available"
+                    final_location = location if location else "Not available"
 
                     # Normalize extracted text
-                    normalized_manufacturer_pn = normalize_text(
-                        manufacturer_pn)
-                    normalized_description = normalize_text(description)
+                    normalized_final_pn = normalize_text(final_pn)
+                    normalized_description = normalize_text(final_description)
 
                     # Check if both queries match
-                    match_part = normalized_part_query in normalized_manufacturer_pn if normalized_part_query else True
+                    match_part = normalized_part_query in normalized_final_pn if normalized_part_query else True
                     match_value = normalized_value_query in normalized_description if normalized_value_query else True
 
                     if match_part and match_value:
                         results.append(
-                            (manufacturer_pn, description, location))
+                            (final_pn, final_description, final_location))
 
                 if results:
                     st.write("### Search Results")
@@ -187,6 +187,7 @@ else:
                 else:
                     st.warning("No items found matching the search criteria.")
 
+    # Reorder Section
     st.write("### Re-Order Missing Parts")
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
