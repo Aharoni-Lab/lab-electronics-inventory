@@ -1,0 +1,126 @@
+Image: IMG_8482.heic
+Part number: 160-1446-1-ND
+Manufacturer Part number: LTST-C191KGKT
+Fabricated Company: ELITE-ON INC
+Description: LED GREEN CLEAR 0603 SMD
+Footprint: 0603
+Component Type: LED
+Location: L1
+
+Image: IMG_8483.heic
+Part number: ATSAMU71021B-AABTCT-ND
+Manufacturer Part number: ATSAMV71021B-AABT
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC MCU 32BIT 2MB FLASH 144LQFP
+Footprint: 144LQFP
+Component Type: IC MCU
+Location: I1
+
+Image: IMG_8492.heic
+Part number: TPS62231DRYT
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: SIERRA CIRCUITS, INC.
+Description: UCLA DESERIALIZER SYSTEM
+Footprint: Not specified
+Component Type: IC
+Location: I2
+
+Image: IMG_8484.heic
+Part number: 296-51764-1-ND
+Manufacturer Part number: TLV74233PDQNR
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC REG LINEAR 3.3V 200MA 4X2SON
+Footprint: 4X2SON
+Component Type: Voltage Regulator
+Location: V1
+
+Image: IMG_8488.heic
+Part number: VLMS1500-GS08CT-ND
+Manufacturer Part number: VLMS 1500-GS08
+Fabricated Company: VISHAY SEMICONDUCTOR OPTO
+Description: LED RED 0402 SMD
+Footprint: 0402
+Component Type: LED
+Location: L2
+
+Image: IMG_8489.heic
+Part number: DS90LV018ATMX/NOPBCT-ND
+Manufacturer Part number: DS90LV018ATMX/NOPB
+Fabricated Company: TEXAS INSTRUMENTS
+Description: RECEIVER 0/1 8SOIC
+Footprint: 8SOIC
+Component Type: IC
+Location: I3
+
+Image: IMG_8485.heic
+Part number: DS90LV017ATM/NOPB-ND
+Manufacturer Part number: DS90LV017ATM/NOPB
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC DRIVER SINGLE HS DIFF 8-SOIC
+Footprint: 8-SOIC
+Component Type: IC Driver
+Location: I4
+
+Image: IMG_8486.heic
+Part number: 641-1332-1-ND
+Manufacturer Part number: CDBU0520
+Fabricated Company: COMCHIP TECHNOLOGY
+Description: DIODE SCHOTTKY 20V 500MA 0603
+Footprint: 0603
+Component Type: Diode
+Location: D1
+
+Image: IMG_8490.heic
+Part number: NTK3134NT160SCT-ND
+Manufacturer Part number: NTK3134NT1G
+Fabricated Company: ON SEMICONDUCTOR
+Description: MOSFET N-CH 20V 750MA SOT-723
+Footprint: SOT-723
+Component Type: MOSFET
+Location: M1
+
+Image: IMG_8491.heic
+Part number: 490-5441-6-ND
+Manufacturer Part number: BLM15AX601SN1D
+Fabricated Company: MURATA ELECTRONICS
+Description: FERRITE BEAD 600 OHM 0402 1LN
+Footprint: 0402
+Component Type: Ferrite Bead
+Location: F1
+
+Image: IMG_8487.heic
+Part number: NATSAME 70N21A-CN-ND
+Manufacturer Part number: NATSAME70N21A-CN
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC MCU 32BIT 2MB FLASH 100TFBGA
+Footprint: 100TFBGA
+Component Type: IC MCU
+Location: I5
+
+Image: IMG_8480.heic
+Part number: DS90LV017ATM/NOPB-ND
+Manufacturer Part number: DS90LV017ATM/NOPB
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC DRIVER 1/0 8SOIC
+Footprint: 8SOIC
+Component Type: IC Driver
+Location: I6
+
+Image: IMG_8479.heic
+Part number: 1473-30659-6-ND
+Manufacturer Part number: SIT8008BI-12-18E-90.000000G
+Fabricated Company: SITIME
+Description: MEMS OSC XO 90.0000MHZ H/LV-CMOS
+Footprint: Not specified
+Component Type: Oscillator
+Location: O1
+
+Image: IMG_8481.heic
+Part number: 478-8646-1-ND
+Manufacturer Part number: NF981A106MMA
+Fabricated Company: AVX CORPORATION
+Description: CAP TANT 10UF 10V 20% 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C1
+
