@@ -124,3 +124,579 @@ Footprint: 0603
 Component Type: Capacitor
 Location: C1
 
+Image: IMG_8532.heic
+Part number: 490-10901-1-ND
+Manufacturer Part number: GRJ188R72A104KE11D
+Fabricated Company: Murata Electronics
+Description: CAP CER 0.1UF 100V X7R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C2
+
+Image: IMG_8498.heic
+Part number: ATSAMU71021B-AABTCT-ND
+Manufacturer Part number: ATSAMV71Q21B-AABT
+Fabricated Company: Microchip Technology
+Description: IC MCU 32BIT 2MB FLASH 144LQFP
+Footprint: 144LQFP
+Component Type: Microcontroller
+Location: M2
+
+Image: IMG_8524.heic
+Part number: 296-13107-1-ND
+Manufacturer Part number: PCF8574APWR
+Fabricated Company: Texas Instruments
+Description: IC I/O EXPANDER I2C 8B 20TSSOP
+Footprint: 20TSSOP
+Component Type: IC
+Location: I7
+
+Image: IMG_8508.heic
+Part number: NTK3134NTIGOSCT-ND
+Manufacturer Part number: NTK3134NT 1G
+Fabricated Company: ON Semiconductor
+Description: MOSFET N-CH 20V 750MA SOT-723
+Footprint: SOT-723
+Component Type: MOSFET
+Location: M3
+
+Image: IMG_8549.heic
+Part number: WM9731CT-ND
+Manufacturer Part number: 0475710001
+Fabricated Company: Molex, LLC
+Description: CONN MICRO SD CARD PUSH-PULL R/A
+Footprint: Not specified
+Component Type: Connector
+Location: C3
+
+Image: IMG_8494.heic
+Part number: ATSAME70N21A-CN-ND
+Manufacturer Part number: NATSAME70N21A-CN
+Fabricated Company: Microchip Technology
+Description: IC MCU 32BIT 2MB FLASH 100TFBGA
+Footprint: 100TFBGA
+Component Type: Microcontroller
+Location: M4
+
+Image: IMG_8528.heic
+Part number: 1276-1005-1-ND
+Manufacturer Part number: CL10B104K08NNNC
+Fabricated Company: Samsung Electro-Mechanics
+Description: CAP CER 0.1UF 16V 10% X7R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C4
+
+Image: IMG_8553.heic
+Part number: TSOP57438TT1CT-ND
+Manufacturer Part number: NTSOP57438TT1
+Fabricated Company: Vishay Semiconductor Opto
+Description: SENSOR REMOTE REC 38.0KHZ 40M
+Footprint: Not specified
+Component Type: Sensor
+Location: S1
+
+Image: IMG_8504.heic
+Part number: WM1399CT-ND
+Manufacturer Part number: 1050170001
+Fabricated Company: Molex, LLC
+Description: CONN RCPT USB2.0 MICRO B SMD R/A
+Footprint: SMD
+Component Type: Connector
+Location: C5
+
+Image: IMG_8512.heic
+Part number: NTK3134NT1GOSCT-ND
+Manufacturer Part number: NTK3134NT1G
+Fabricated Company: ON Semiconductor
+Description: MOSFET N-CH 20V 750MA SOT-723
+Footprint: SOT-723
+Component Type: MOSFET
+Location: M5
+
+Image: IMG_8545.heic
+Part number: ADM00931-ND
+Manufacturer Part number: ADM00931
+Fabricated Company: Microchip Technology
+Description: HV892DB1 LIQUID LENS DRIVER DEMO
+Footprint: Not specified
+Component Type: Development Tool
+Location: D2
+
+Image: IMG_8544.heic
+Part number: 754-2021-1-ND
+Manufacturer Part number: APG0603CGC-TT
+Fabricated Company: Kingbright America LLC
+Description: LED GREEN CLEAR 2SMD
+Footprint: 2SMD
+Component Type: LED
+Location: L3
+
+Image: IMG_8513.heic
+Part number: 296-9568-1-ND
+Manufacturer Part number: LMV321IDCKR
+Fabricated Company: Texas Instruments
+Description: IC OPAMP GP 1 CIRCUIT SC70-5
+Footprint: SC70-5
+Component Type: IC
+Location: I8
+
+Image: IMG_8505.heic
+Part number: DS90UB914ATRHSTQ1
+Manufacturer Part number: 296-38936-1-ND
+Fabricated Company: Texas Instruments
+Description: IC SER/DES 25-100MHZ FPD 48WQFN
+Footprint: 48WQFN
+Component Type: IC
+Location: I9
+
+Image: IMG_8552.heic
+Part number: MT9P031112STM-DP-ND
+Manufacturer Part number: MT9P031112STM-DP
+Fabricated Company: ON Semiconductor
+Description: SENSOR IMAGE 5MP MONO CMOS 48LCC
+Footprint: 48LCC
+Component Type: Sensor
+Location: S2
+
+Image: IMG_8529.heic
+Part number: 490-7203-1-ND
+Manufacturer Part number: GRM188R61E475KE11D
+Fabricated Company: Not specified
+Description: CAP CER 4.7UF 25V X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C6
+
+Image: IMG_8495.heic
+Part number: 296-24485-1-ND
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: CIC REG BUCK 1.8V 0.5A SYNC 6SON
+Footprint: 6SON
+Component Type: Voltage Regulator
+Location: V2
+
+Image: IMG_8548.heic
+Part number: BAS316-TPMSCT-ND
+Manufacturer Part number: BAS316-TP
+Fabricated Company: MICRO COMMERCIAL CO (VA)
+Description: DIODE GEN PURP 100V 250MA SOD323
+Footprint: SOD323
+Component Type: Diode
+Location: D3
+
+Image: IMG_8509.heic
+Part number: 160-1172-1-ND
+Manufacturer Part number: LTST-C155GEKT
+Fabricated Company: ELITE-ON INC (VA)
+Description: LED GREEN/RED CLEAR CHIP SMD
+Footprint: Chip SMD
+Component Type: LED
+Location: L4
+
+Image: IMG_8525.heic
+Part number: 490-12737-1-ND
+Manufacturer Part number: GRM188R61E106MA73J
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 10UF 25V X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C7
+
+Image: IMG_8533.heic
+Part number: 490-10730-1-ND
+Manufacturer Part number: GRM188R61C475KE11D
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 4.7UF 16V X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C8
+
+Image: IMG_8499.heic
+Part number: 428-3181-ND
+Manufacturer Part number: CYUSB3013-BZXC
+Fabricated Company: CYPRESS SEMICONDUCTOR CORP
+Description: IC ARM9 USB3 CONTROLLER 121FBGA
+Footprint: 121FBGA
+Component Type: Microcontroller
+Location: M6
+
+Image: IMG_8538.heic
+Part number: 604-APHBM2012QBDCGKC
+Manufacturer Part number: APHBM2012QBDCGKC
+Fabricated Company: Kingbright
+Description: Blue/Grn 470/570nm Standard LEDs - SMD
+Footprint: SMD
+Component Type: LED
+Location: L5
+
+Image: IMG_8555.heic
+Part number: LTC3218EDDB#TRMPBF-ND
+Manufacturer Part number: LTC3218EDDB#TRMPBF
+Fabricated Company: LINEAR TECHNOLOGY
+Description: IC LED DRIVER RGLTR 150MA 10DFN
+Footprint: 10DFN
+Component Type: LED Driver
+Location: L6
+
+Image: IMG_8502.heic
+Part number: 497-14005-1-ND
+Manufacturer Part number: M24M02-DRCS6TP/K
+Fabricated Company: STMICROELECTRONICS (VA)
+Description: IC EEPROM 2M I2C 1MHZ 8WLCSP
+Footprint: 8WLCSP
+Component Type: EEPROM
+Location: E1
+
+Image: IMG_8514.heic
+Part number: 296-47324-1-ND
+Manufacturer Part number: DS90UB933TRTVTQ1
+Fabricated Company: TEXAS INSTRUMENTS (VR)
+Description: IC SERIALIZER FPD-LINK 32WQFN
+Footprint: 32WQFN
+Component Type: Serializer
+Location: S3
+
+Image: IMG_8543.heic
+Part number: 859-LTSTC195TBKSKT5A
+Manufacturer Part number: LTST-C195TBKSKT-5A
+Fabricated Company: Lite-On
+Description: SMD LED Bi-Color Standard LEDS - SMD
+Footprint: SMD
+Component Type: LED
+Location: L7
+
+Image: IMG_8534.heic
+Part number: 490-1545-1-ND
+Manufacturer Part number: GRM188R61A225KE34D
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 2.2UF 10V 10% X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C9
+
+Image: IMG_8522.heic
+Part number: ATSAMS70N21B-CFN-ND
+Manufacturer Part number: ATSAMS70N21B-CFN
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC MCU 32BIT 2MB FLASH 100VFBGA
+Footprint: 100VFBGA
+Component Type: Microcontroller
+Location: M7
+
+Image: IMG_8518.heic
+Part number: 1516-1312-ND
+Manufacturer Part number: 6N135
+Fabricated Company: BRIGHTEK (QTB)
+Description: 8 PIN 1 MBITS HIGH SPEED PHOTOTR
+Footprint: -
+Component Type: Phototransistor
+Location: P1
+
+Image: IMG_8519.heic
+Part number: 296-48677-1-ND
+Manufacturer Part number: TCAN332GDCNR
+Fabricated Company: TEXAS INSTRUMENTS (V)
+Description: IC TXRX CAN 3.3V SOT23-8
+Footprint: SOT23-8
+Component Type: Transceiver
+Location: T1
+
+Image: IMG_8523.heic
+Part number: 587-1785-1-ND
+Manufacturer Part number: JMK107BJ475KA-T
+Fabricated Company: TAIYO YUDEN
+Description: CAP CER 4.7UF 6.3V 10% X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C10
+
+Image: IMG_8535.heic
+Part number: 311-1523-1-ND
+Manufacturer Part number: CC6603KRX7R0BB104
+Fabricated Company: YAGED
+Description: CAP CER 0.1UF 100V X7R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C11
+
+Image: IMG_8542.heic
+Part number: 604-APHB1608QBDCGKC
+Manufacturer Part number: APHB1608QBDCGKC
+Fabricated Company: Kingbright
+Description: Blue/Grn 90/50mcd Standard LEDs - SMD
+Footprint: SMD
+Component Type: LED
+Location: L8
+
+Image: IMG_8515.heic
+Part number: 1416-1028-1-ND
+Manufacturer Part number: LXML-PB01-0030
+Fabricated Company: LUMILEDS
+Description: LED LUXEON REBEL BLUE SMD
+Footprint: SMD
+Component Type: LED
+Location: L9
+
+Image: IMG_8503.heic
+Part number: 535-10901-1-ND
+Manufacturer Part number: ABM8G-12.000MHZ-4Y-T3
+Fabricated Company: ABRACON LLC
+Description: CRYSTAL 12.0000MHZ 10PF SMD
+Footprint: SMD
+Component Type: Crystal
+Location: C12
+
+Image: IMG_8554.heic
+Part number: 490-5258-1-ND
+Manufacturer Part number: BLM18KG601SN1D
+Fabricated Company: MURATA ELECTRONICS
+Description: FERRITE CHIP 600 OHM 1300MA 0603 high freq. supreme
+Footprint: 0603
+Component Type: Ferrite Chip
+Location: F2
+
+Image: IMG_8493.heic
+Part number: 428-3181-ND
+Manufacturer Part number: CYUSB3013-BZXC
+Fabricated Company: CYPRESS SEMICONDUCTOR CORP
+Description: IC ARM9 USB3 CONTROLLER 121FBGA
+Footprint: 121FBGA
+Component Type: Integrated Circuit
+Location: I10
+
+Image: IMG_8539.heic
+Part number: 1497-XZDG155W5MAVCT-ND
+Manufacturer Part number: XZDG155W5MAY
+Fabricated Company: SUNLED COMPANY LLC
+Description: LED GREEN CLEAR 2SMD
+Footprint: 2SMD
+Component Type: LED
+Location: L10
+
+Image: IMG_8541.heic
+Part number: 710-150141YB73100
+Manufacturer Part number: 150141YB73100
+Fabricated Company: Wurth
+Description: WL-SBTW SMDBiClr Top Standard LEDs - SMD
+Footprint: SMD
+Component Type: LED
+Location: L11
+
+Image: IMG_8516.heic
+Part number: 798-X.FL-PR-SMT1-280
+Manufacturer Part number: X.FL-PR-SMT1-2(80)
+Fabricated Company: Hirose
+Description: RF Connectors / Coaxial Connectors
+Footprint: SMT
+Component Type: Connector
+Location: C13
+
+Image: IMG_8500.heic
+Part number: 296-41255-1-ND
+Manufacturer Part number: DS90UB913QSQ/NOPB
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC SER/DES 10-100MHZ FPD 32WQFN
+Footprint: 32WQFN
+Component Type: Integrated Circuit
+Location: I11
+
+Image: IMG_8557.heic
+Part number: 490-7227-1-ND
+Manufacturer Part number: GRM033R61C473KE84D
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 0.047UF 16V X5R 0201
+Footprint: 0201
+Component Type: Capacitor
+Location: C14
+
+Image: IMG_8520.heic
+Part number: 296-43777-1-ND
+Manufacturer Part number: TLV333IDBVR
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC OP AMP ZERO-DRIFT CMOS SOT-23
+Footprint: SOT-23
+Component Type: Integrated Circuit
+Location: I12
+
+Image: IMG_8536.heic
+Part number: 490-6439-1-ND
+Manufacturer Part number: GRM188R72A104KA35J
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 0.1UF 100V X7R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C15
+
+Image: IMG_8537.heic
+Part number: 399-1096-1-ND
+Manufacturer Part number: C0603C104K4RACTU
+Fabricated Company: KEMET
+Description: CAP CER 0.1UF 16V 10% X7R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C16
+
+Image: IMG_8521.heic
+Part number: 296-48678-1-ND
+Manufacturer Part number: NTCAN332GDR
+Fabricated Company: Unknown 
+Description: IC TRANSCEIVER 1/1 8SOIC
+Footprint: 8SOIC
+Component Type: Integrated Circuit
+Location: I13
+
+Image: IMG_8556.heic
+Part number: NCP361SNT1G0SCT-ND
+Manufacturer Part number: NCP361SNT1G
+Fabricated Company: BON SEMICONDUCTOR
+Description: IC USB POS OVP/OCP 5TSOP
+Footprint: 5TSOP
+Component Type: IC
+Location: I14
+
+Image: IMG_8501.heic
+Part number: 296-38918-1-ND
+Manufacturer Part number: DAC5571IDBVR
+Fabricated Company: TEXAS INSTRUMENTS
+Description: 8 BIT 12C SNGL CHNL DAC SOT23-6
+Footprint: SOT23-6
+Component Type: DAC
+Location: D4
+
+Image: IMG_8517.heic
+Part number: ATSAME70N21A-CN-ND
+Manufacturer Part number: NATSAME70N21A-CN
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC MCU 32BIT 2MB FLASH 100TFBGA
+Footprint: 100TFBGA
+Component Type: MCU
+Location: M8
+
+Image: IMG_8540.heic
+Part number: 1497-1294-1-ND
+Manufacturer Part number: XZBBR155W5MAV
+Fabricated Company: SUNLED COMPANY LLC
+Description: LED BLUE CLEAR 2SMD
+Footprint: 2SMD
+Component Type: LED
+Location: L12
+
+Image: IMG_8526.heic
+Part number: 490-4516-1-ND
+Manufacturer Part number: GRM155R71H103KA88D
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 10000PF 50V 10% X7R 0402
+Footprint: 0402
+Component Type: CAP
+Location: C17
+
+Image: IMG_8530.heic
+Part number: 490-1543-1-ND
+Manufacturer Part number: GRM188R61A105KA61D
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 1UF 10V 10% X5R 0603
+Footprint: 0603
+Component Type: CAP
+Location: C18
+
+Image: IMG_8547.heic
+Part number: SER3890-ND
+Manufacturer Part number: SG-210STF 16.6665ML
+Fabricated Company: EPSON
+Description: XTAL OSC XO 16.6665MHZ CMOS SMD
+Footprint: CMOS SMD
+Component Type: OSC
+Location: O2
+
+Image: IMG_8510.heic
+Part number: 828-1058-1-ND
+Manufacturer Part number: BN0055
+Fabricated Company: BOSCH SENSORTEC
+Description: IMU ACCEL/GYRO/MAG I2C 28LGA
+Footprint: 28LGA
+Component Type: IMU
+Location: I15
+
+Image: IMG_8506.heic
+Part number: 296-47771-1-ND
+Manufacturer Part number: DS90UB934TRGZTQ1
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC DESERIALIZER 12 BIT 48-VQFN
+Footprint: 48-VQFN
+Component Type: IC
+Location: I16
+
+Image: IMG_8551.heic
+Part number: WM9731CT-ND
+Manufacturer Part number: 0475710001
+Fabricated Company: MOLEX, LLC
+Description: CONN MICRO SD CARD PUSH-PULL R/A
+Footprint: R/A
+Component Type: CONN
+Location: C19
+
+Image: IMG_8496.heic
+Part number: 428-3181-ND
+Manufacturer Part number: PERCYUSB3013-BZXCh
+Fabricated Company: CYPRESS SEMICONDUCTOR CORP
+Description: IC ARM9 USB3 CONTROLLER 121FBGA
+Footprint: 121FBGA
+Component Type: IC
+Location: I17
+
+Image: IMG_8497.heic
+Part number: MAX13030EETE+-ND
+Manufacturer Part number: MAX13030EETE+
+Fabricated Company: MAXIM INTEGRATED
+Description: IC TRNSLTR BIDIRECTIONAL 16TQFN
+Footprint: 16TQFN
+Component Type: IC
+Location: I18
+
+Image: IMG_8550.heic
+Part number: MT9P031112STC-DPOS-ND
+Manufacturer Part number: MT9P031112STC-DP
+Fabricated Company: ON SEMICONDUCTOR
+Description: SENSOR IMAGE COLOR CMOS 48-LCC
+Footprint: 48-LCC
+Component Type: SENSOR
+Location: S4
+
+Image: IMG_8507.heic
+Part number: MBT3904TPHSCT-ND
+Manufacturer Part number: PMMBT3904-TP
+Fabricated Company: MICRO COMMERCIAL CO
+Description: TRANS NPN 40V 0.2A SOT23
+Footprint: SOT23
+Component Type: TRANS
+Location: T2
+
+Image: IMG_8511.heic
+Part number: 160-1436-1-ND
+Manufacturer Part number: LTST-C190KRKT
+Fabricated Company: LITE-ON INC
+Description: LED RED CLEAR CHIP SMD
+Footprint: CHIP SMD
+Component Type: LED
+Location: L13
+
+Image: IMG_8531.heic
+Part number: 490-12315-1-ND
+Manufacturer Part number: GRT 188R61C105KE13D
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 1UF 16V X5R 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C20
+
+Image: IMG_8527.heic
+Part number: 490-7173-1-ND
+Manufacturer Part number: GQM1875C2E101JB12D
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 100PF 250V C0G/NP0 0603
+Footprint: 0603
+Component Type: Capacitor
+Location: C21
+

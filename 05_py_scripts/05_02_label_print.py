@@ -10,8 +10,7 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 INPUT_FILE = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/organized_texts.txt"
 OUTPUT_PDF = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/labels.pdf"
 
-
-LABEL_WIDTH_MM = 50.0   # label width (mm)
+LABEL_WIDTH_MM = 53.0   # label width (mm)
 LABEL_HEIGHT_MM = 20.0  # label height (mm)
 
 # Convert mm to points
@@ -42,6 +41,22 @@ MIN_MPN_FONT_SIZE = 6
 # -------------------------------------------------------------------------
 
 
+def parse_location(loc):
+    """
+    Parses a location string like 'C10' into (prefix, number) = ('C', 10).
+    If no match, returns (loc, 999999) so that unparsed strings go last.
+    This allows us to sort in a natural 'alphabet + numeric' manner.
+    """
+    match = re.match(r"^([A-Za-z]+)(\d+)$", loc.strip())
+    if match:
+        prefix = match.group(1).upper()
+        number = int(match.group(2))
+        return (prefix, number)
+    else:
+        # fallback if the location doesn't match <letters><digits>
+        return (loc.strip().upper(), 999999)
+
+
 def single_line_centered_truncate(c, text, x, y, box_width, font_name, font_size):
     """
     Draw 'text' in one line, centered within box_width at (x, y).
@@ -70,9 +85,9 @@ def single_line_centered_fit(c, text, x, y, box_width,
                              font_name, initial_font_size, min_font_size=6):
     """
     Draw 'text' in one line, centered, ensuring it fits horizontally.
-    - We start from 'initial_font_size' and keep reducing by 1 until it fits
-      or we reach 'min_font_size'.
-    - If we reach 'min_font_size' and it still doesn't fit, truncate with "...".
+    - Start from 'initial_font_size' and keep reducing by 1 until it fits
+      or 'min_font_size'.
+    - If it still doesn't fit at min_font_size, truncate with "...".
     """
     size = initial_font_size
     max_width = box_width - 4  # small margin
@@ -86,7 +101,7 @@ def single_line_centered_fit(c, text, x, y, box_width,
             return
         size -= 1
 
-    # If we get here, we must truncate at min_font_size
+    # Must truncate at min_font_size
     c.setFont(font_name, min_font_size)
     ell = TRUNCATE_ELLIPSIS
     while text and c.stringWidth(text + ell, font_name, min_font_size) > max_width:
@@ -177,7 +192,13 @@ for entry in entries:
     labels.append((location, mfgpn, description))
 
 # -------------------------------------------------------------------------
-# STEP 2: CREATE THE PDF
+# STEP 2: SORT THE LABELS
+# -------------------------------------------------------------------------
+# Sort by parsed location: e.g., "C1" < "C2" < "C10" < "R1" < "R2" < ...
+labels.sort(key=lambda x: parse_location(x[0]))
+
+# -------------------------------------------------------------------------
+# STEP 3: CREATE THE PDF AND LAY OUT THE LABELS
 # -------------------------------------------------------------------------
 c = canvas.Canvas(OUTPUT_PDF, pagesize=A4)
 
@@ -192,13 +213,14 @@ for (location, mfgpn, description) in labels:
     x = x_start + col * LABEL_WIDTH
     y = y_start - row * LABEL_HEIGHT
 
-    # Optional: draw the label outline
+    # Draw the label outline (optional)
     c.rect(x, y, LABEL_WIDTH, LABEL_HEIGHT)
 
     # 1) LOCATION at top (centered, single line, truncated if needed)
     loc_y = y + LABEL_HEIGHT - (LOCATION_FONT[1] + 2)
     single_line_centered_truncate(
-        c, location, x, loc_y, LABEL_WIDTH, LOCATION_FONT[0], LOCATION_FONT[1])
+        c, location, x, loc_y, LABEL_WIDTH, LOCATION_FONT[0], LOCATION_FONT[1]
+    )
 
     # 2) MFG/PN: shrink font if needed, then truncate if still too wide
     mpn_y = loc_y - (MPN_FONT_SIZE + 4)
@@ -222,15 +244,16 @@ for (location, mfgpn, description) in labels:
             DESC_LINE_SPACING
         )
 
-    # Move to next label cell
-    col += 1
-    if col >= cols_per_page:
-        col = 0
-        row += 1
-        if row >= rows_per_page:
+    # Move to the next label position
+    row += 1
+    if row >= rows_per_page:
+        row = 0
+        col += 1
+        if col >= cols_per_page:
+            # Start a new page
             c.showPage()
-            row = 0
             col = 0
+            row = 0
             x_start = MARGIN
             y_start = PAGE_HEIGHT - MARGIN - LABEL_HEIGHT
 
