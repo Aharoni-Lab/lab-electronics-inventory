@@ -3331,3 +3331,15 @@ Description: CAP CER 4.7UF 10V X5R 0402
 Location: Hemal
 Footprint: 0402
 
+Part number: 490-GRM31A5C3A471FWA1DCT-ND
+Manufacturer Part number: GRM31A5C3A471FWA1D
+Description: CAP CER 470PF 1KV COG/NPO 1206
+Location: Workshop
+Footprint: 1206
+
+Part number: WR04X1004FTLCT-ND
+Manufacturer Part number: WR04X1004FTL
+Description: RES 1M OHM 1% 1/16W 0402
+Location: Workshop
+Footprint: 
+

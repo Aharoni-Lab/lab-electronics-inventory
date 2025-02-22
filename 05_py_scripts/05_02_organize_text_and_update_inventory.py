@@ -1,3 +1,12 @@
+# ================================================================================================
+# NOTE:
+# The OpenAI API key is retrieved from an environment variable named "OPENAI_API_KEY".
+# This means the key isn't hardcoded in the script, but is expected to be set in your system's
+# environment before running the code.
+# Author: Abasalt Bahrami
+# ================================================================================================
+
+
 import os
 import openai
 import re
@@ -15,7 +24,7 @@ import pyheif
 # GLOBAL PARAMETERS
 # ================================================================================================
 CHUNK_SIZE = 5000  # Number of characters per chunk
-MAX_CHUNKS = None  # Set to None to process all chunks
+MAX_CHUNKS = 1  # Set to None to process all chunks
 
 # Load API key
 api_key = os.getenv("OPENAI_API_KEY")
