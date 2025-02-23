@@ -1,17 +1,11 @@
-# lab-electronics-inventory
 
-This project automates the process of extracting and organizing text from images of electronic components, such as resistors, capacitors, and other small parts commonly found in electronics. The idea is to take pictures of these components and use this tool to extract relevant information from the images and sort the data into an Excel file.
+# Lab Electronics Inventory
 
-<div align="center">
-  <img src="extra_files/schematic.png" alt="lab-electronics-inventory" width="600" height="150">
-</div>
+This project automates the extraction and organization of text from images of electronic components, such as resistors, capacitors, and other small parts commonly used in electronics. By capturing images of these components, the tool extracts key information and organizes it into an Excel file for easy access and management.
 
-The main steps involved are:
+### Key Features:
 
-**Image Processing:** The project can handle component photos in different formats, converting them if needed (e.g., from .heic to .jpg). 
-
-**Text Extraction:** Using Google's Cloud Vision API, the tool reads the text labels from images, which often contain key information like part numbers, values, and tolerances.
-
-**Data Parsing:** The extracted text is processed to identify important details such as component type (resistor, capacitor), part number, value (e.g., 10K ohm), tolerance (e.g., 5%), and manufacturer (e.g., Murata, Panasonic).
-
-**Data Organization:** The parsed data is sorted and stored in an Excel file for easy access and reference. This organized data includes fields like component type, value, manufacturer, and tolerance, making it easy to keep track of your component inventory.
+* **Image Processing:** Supports various image formats, converting them when necessary (e.g., .heic to .jpg).
+* **Text Extraction:** Utilizes Google's Cloud Vision API to read labels on components, capturing essential details like part numbers, values, and tolerances.
+* **Data Parsing:** Uses OpenAI’s API to process extracted text, identifying component types (resistors, capacitors), part numbers, values (e.g., 10K ohm), tolerances (e.g., 5%), and manufacturers (e.g., Murata, Panasonic).
+* **Data Organization:** Stores parsed data in Firebase and provides a user-friendly Streamlit web app for searching components, uploading photos, and reordering missing items.
