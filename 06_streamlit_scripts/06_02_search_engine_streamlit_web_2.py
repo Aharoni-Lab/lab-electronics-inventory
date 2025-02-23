@@ -2,9 +2,10 @@ import streamlit as st
 from datetime import datetime
 import requests
 import re
-import time
+import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, storage
+import time
 
 # Authentication setup using Streamlit secrets
 
@@ -135,55 +136,55 @@ else:
 
                 # Assume entries are separated by double newlines
                 blocks = file_content.split("\n\n")
+
                 results = []
                 for block in blocks:
-                    # Extract each field using regex
-                    part_number_match = re.search(
-                        r'Part number:\s*(\S.*)', block, re.IGNORECASE)
                     manufacturer_match = re.search(
                         r'Manufacturer Part number:\s*(\S.*)', block, re.IGNORECASE)
-                    fabricated_company_match = re.search(
-                        r'Fabricated Company:\s*(\S.*)', block, re.IGNORECASE)
+                    part_number_match = re.search(
+                        r'Part number:\s*(\S.*)', block, re.IGNORECASE)
                     description_match = re.search(
                         r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
 
-                    part_number = part_number_match.group(
-                        1).strip() if part_number_match else "Not available"
                     manufacturer_pn = manufacturer_match.group(
-                        1).strip() if manufacturer_match else "Not available"
-                    fabricated_company = fabricated_company_match.group(
-                        1).strip() if fabricated_company_match else "Not available"
+                        1).strip() if manufacturer_match else ""
+                    part_number = part_number_match.group(
+                        1).strip() if part_number_match else ""
                     description = description_match.group(
                         1).strip() if description_match else "Not available"
                     location = location_match.group(
                         1).strip() if location_match else "Not available"
 
-                    # For matching, check if the query is in either the part number or manufacturer part number
-                    normalized_part = normalize_text(part_number)
-                    normalized_manufacturer = normalize_text(manufacturer_pn)
-                    match_part = (
-                        normalized_part_query in normalized_part or normalized_part_query in normalized_manufacturer) if normalized_part_query else True
+                    # Ensure Manufacturer P/N is only set if it's not empty
+                    if manufacturer_pn:
+                        final_pn = manufacturer_pn
+                    elif part_number:
+                        final_pn = part_number
+                    else:
+                        final_pn = "Not available"
+
+                    # Normalize extracted text
+                    normalized_final_pn = normalize_text(final_pn)
                     normalized_description = normalize_text(description)
+
+                    # Check if both queries match
+                    match_part = normalized_part_query in normalized_final_pn if normalized_part_query else True
                     match_value = normalized_value_query in normalized_description if normalized_value_query else True
 
                     if match_part and match_value:
-                        results.append(
-                            (part_number, manufacturer_pn, fabricated_company, description, location))
+                        results.append((final_pn, description, location))
 
                 if results:
                     st.write("### Search Results")
-                    # Display each result as a block with the desired format
-                    for idx, result in enumerate(results, start=1):
-                        part_num, manuf_pn, fab_company, desc, loc = result
-                        st.write(f"**Result {idx}:**")
-                        st.write(f"Part number: {part_num}")
-                        st.write(f"Manufacturer Part number: {manuf_pn}")
-                        st.write(f"Fabricated Company: {fab_company}")
-                        st.write(f"Description: {desc}")
-                        st.write(f"Location: {loc}")
-                        st.markdown("---")
+                    df_results = pd.DataFrame(
+                        results, columns=["Manufacturer P/N", "Description", "Location"])
+                    df_results.index = df_results.index + 1
+
+                    # Print the table with all cells left aligned
+                    st.markdown(df_results.to_html(
+                        index=False, escape=False, justify='left'), unsafe_allow_html=True)
                 else:
                     st.warning("No items found matching the search criteria.")
 
@@ -192,11 +193,13 @@ else:
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
             col1, col2, col3 = st.columns(3)
+
             manufacturer_pn = col1.text_input("Manufacturer P/N")
             description = col2.text_input("Description")
             requester_name = col3.text_input("Requester Name")
 
             submit_reorder = st.form_submit_button("Submit Re-Order")
+
             if submit_reorder:
                 if manufacturer_pn and description and requester_name:
                     reorder_item(manufacturer_pn, description, requester_name)
