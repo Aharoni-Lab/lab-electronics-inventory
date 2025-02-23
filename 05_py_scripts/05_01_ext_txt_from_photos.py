@@ -1,11 +1,11 @@
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 # NOTE:
 # This script processes HEIC image files by converting them to JPEG and then extracting text from them
 # using the Google Cloud Vision API. It checks for previously processed files via an output log file,
 # converts any new HEIC files to JPEG, extracts text from the converted images, and appends the results
 # to the output file.
 # Author: Abasalt Bahrami
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 
 
 import os

@@ -19,7 +19,7 @@ scripts = [
 
 for script in scripts:
     # Define divider line
-    divider = "============================================================================="
+    divider = "----------------------------------------------------------------------------------------"
 
     # Print divider and header in green
     print(f"{GREEN}{divider}")

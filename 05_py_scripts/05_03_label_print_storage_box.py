@@ -4,9 +4,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # CONFIGURATION
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 INPUT_FILE = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/organized_texts.txt"
 OUTPUT_PDF = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/labels.pdf"
 
@@ -39,9 +39,9 @@ TRUNCATE_ELLIPSIS = "..."
 # Minimum font size for MFG/PN before truncation
 MIN_MPN_FONT_SIZE = 6
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # HELPER FUNCTIONS
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 
 def parse_location(loc):
@@ -161,9 +161,9 @@ def draw_wrapped_centered(c, text, x, y, box_width, box_height, font_name, font_
     return draw_y
 
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # STEP 1: READ AND PARSE INPUT
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 with open(INPUT_FILE, "r") as f:
     content = f.read().strip()
 
@@ -187,9 +187,9 @@ for entry in entries:
 
     labels.append((location, mfgpn, description))
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # STEP 2: SORT THE LABELS
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Sort by parsed location: e.g., "C1" < "C2" < "C10" < "R1" < "R2" < ...
 labels.sort(key=lambda x: parse_location(x[0]))
 
@@ -197,9 +197,9 @@ labels.sort(key=lambda x: parse_location(x[0]))
 distinct_locations = set(location for location, _, _ in labels)
 total_distinct = len(distinct_locations)
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # STEP 3: CREATE THE PDF AND LAY OUT THE LABELS
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 c = canvas.Canvas(OUTPUT_PDF, pagesize=A4)
 
 # Draw header on the first page with the total distinct locations assigned

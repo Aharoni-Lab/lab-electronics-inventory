@@ -1,4 +1,4 @@
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 # NOTE:
 # This script organizes previously extracted text entries by processing them in chunks,
 # using the OpenAI API to extract structured fields (Image, Part number, Manufacturer Part number,
@@ -6,7 +6,7 @@
 # entry based on the component type, and appending new unique entries to an output file.
 # Finally, it uploads the output file to Firebase Storage.
 # Author: Abasalt Bahrami (Modified by You)
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 
 import os
 import openai
@@ -21,17 +21,17 @@ import io
 from PIL import Image
 import pyheif
 
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 # GLOBAL PARAMETERS
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 CHUNK_SIZE = 5000       # Number of characters per chunk for processing
 # Set to None to process all chunks; otherwise, limit to a specific number
 MAX_CHUNKS = None
 TOTAL_LOCATIONS = 128   # Total available box locations (numbered 1 to 128)
 
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Load API Key for OpenAI from environment variable.
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise ValueError(
@@ -40,15 +40,15 @@ if not api_key:
 # Initialize the OpenAI client with the API key.
 client = openai.OpenAI(api_key=api_key)
 
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # File paths for input (extracted texts) and output (organized texts) files.
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 input_file = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/extracted_texts.txt"
 output_file = "/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/organized_texts.txt"
 
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Step 1. Read the output file to get already processed image names and assigned locations.
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 existing_images = set()      # Set of already processed image file names
 # Dictionary mapping prefix (e.g., 'C', 'R') to a set of assigned numbers
 used_locations = {}
@@ -76,9 +76,9 @@ if os.path.exists(output_file):
 print(f"Found {len(existing_images)} already processed images.")
 print(f"Used locations: {used_locations}")
 
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Step 2. Read and filter the input file so that only new entries are processed.
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 try:
     with open(input_file, "r") as file:
         full_text = file.read().strip()
@@ -240,10 +240,10 @@ Text:
 else:
     print("No new entries to process.")
 
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Duplicate Check: Scan the entire output file for duplicate Part numbers or Manufacturer Part numbers.
 # If duplicates are found, update their locations to be the same.
-# --------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 print("\nChecking for duplicate entries in the entire output file:")
 
 with open(output_file, "r") as f:
@@ -314,9 +314,9 @@ else:
         f.write("\n\n".join(all_output_entries) + "\n\n")
     print("\nDuplicate locations updated in the output file.")
 
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 # Push the "extracted_texts.txt" file to Firebase Storage.
-# ================================================================================================
+# ----------------------------------------------------------------------------------------
 cred_path = '/Users/abasaltbahrami/Desktop/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
 
 if not firebase_admin._apps:

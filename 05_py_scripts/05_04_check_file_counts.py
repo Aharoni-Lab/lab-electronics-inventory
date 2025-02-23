@@ -8,15 +8,15 @@
 import os
 import re
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Define paths for the processed text file and the inventory directory.
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 processed_text_file_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/04_extracted_info/organized_texts.txt'
 directory_path = '/Users/abasaltbahrami/Desktop/lab-electronics-inventory/01_inventory_original_files'
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Function to extract processed image filenames from the text file.
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 
 def get_processed_images(file_path):
@@ -28,10 +28,10 @@ def get_processed_images(file_path):
                 processed_files.add(filename)
     return processed_files
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Function to retrieve all image files in the directory (and subdirectories)
 # with their relative paths.
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 
 def get_all_image_files(directory_path):
@@ -47,18 +47,18 @@ def get_all_image_files(directory_path):
     return all_files
 
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Run functions to collect data and compare processed images with available images.
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 all_image_files = get_all_image_files(directory_path)
 processed_image_files = get_processed_images(processed_text_file_path)
 
 print(f"Number of images in directory: {len(all_image_files)}")
 print(f"Number of images processed: {len(processed_image_files)}")
 
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # Identify and list missing image files.
-# -------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 missing_files = set(all_image_files.keys()) - processed_image_files
 if missing_files:
     print("Some files are missing in the processed text file.")
