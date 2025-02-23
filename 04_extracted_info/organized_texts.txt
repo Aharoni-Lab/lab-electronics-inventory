@@ -104,7 +104,7 @@ Fabricated Company: TEXAS INSTRUMENTS
 Description: IC DRIVER 1/0 8SOIC
 Footprint: 8SOIC
 Component Type: IC Driver
-Location: I6
+Location: I4
 
 Image: IMG_8479.heic
 Part number: 1473-30659-6-ND
@@ -140,7 +140,7 @@ Fabricated Company: Microchip Technology
 Description: IC MCU 32BIT 2MB FLASH 144LQFP
 Footprint: 144LQFP
 Component Type: Microcontroller
-Location: M2
+Location: I1
 
 Image: IMG_8524.heic
 Part number: 296-13107-1-ND
@@ -176,7 +176,7 @@ Fabricated Company: Microchip Technology
 Description: IC MCU 32BIT 2MB FLASH 100TFBGA
 Footprint: 100TFBGA
 Component Type: Microcontroller
-Location: M4
+Location: I5
 
 Image: IMG_8528.heic
 Part number: 1276-1005-1-ND
@@ -212,7 +212,7 @@ Fabricated Company: ON Semiconductor
 Description: MOSFET N-CH 20V 750MA SOT-723
 Footprint: SOT-723
 Component Type: MOSFET
-Location: M5
+Location: M1
 
 Image: IMG_8545.heic
 Part number: ADM00931-ND
@@ -275,7 +275,7 @@ Fabricated Company: TEXAS INSTRUMENTS (VA)
 Description: CIC REG BUCK 1.8V 0.5A SYNC 6SON
 Footprint: 6SON
 Component Type: Voltage Regulator
-Location: V2
+Location: I2
 
 Image: IMG_8548.heic
 Part number: BAS316-TPMSCT-ND
@@ -464,7 +464,7 @@ Fabricated Company: CYPRESS SEMICONDUCTOR CORP
 Description: IC ARM9 USB3 CONTROLLER 121FBGA
 Footprint: 121FBGA
 Component Type: Integrated Circuit
-Location: I10
+Location: M6
 
 Image: IMG_8539.heic
 Part number: 1497-XZDG155W5MAVCT-ND
@@ -572,7 +572,7 @@ Fabricated Company: MICROCHIP TECHNOLOGY
 Description: IC MCU 32BIT 2MB FLASH 100TFBGA
 Footprint: 100TFBGA
 Component Type: MCU
-Location: M8
+Location: I5
 
 Image: IMG_8540.heic
 Part number: 1497-1294-1-ND
@@ -635,7 +635,7 @@ Fabricated Company: MOLEX, LLC
 Description: CONN MICRO SD CARD PUSH-PULL R/A
 Footprint: R/A
 Component Type: CONN
-Location: C19
+Location: C3
 
 Image: IMG_8496.heic
 Part number: 428-3181-ND
@@ -644,7 +644,7 @@ Fabricated Company: CYPRESS SEMICONDUCTOR CORP
 Description: IC ARM9 USB3 CONTROLLER 121FBGA
 Footprint: 121FBGA
 Component Type: IC
-Location: I17
+Location: M6
 
 Image: IMG_8497.heic
 Part number: MAX13030EETE+-ND
@@ -708,4 +708,13 @@ Description: 3.2x2.4MM LOW CU, Standard LEDS - SMD
 Footprint: 3.2x2.4MM
 Component Type: LEDS - SMD
 Location: L14
+
+Image: IMG_8622.heic
+Part number: 490-3296-1-ND
+Manufacturer Part number: GRM188R61C225KE15D
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 2.2UF 16V X5R 0603
+Footprint: 0603
+Component Type: CAP CER
+Location: C22
 
