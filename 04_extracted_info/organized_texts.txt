@@ -700,3 +700,12 @@ Footprint: 0603
 Component Type: Capacitor
 Location: C21
 
+Image: IMG_8546.heic
+Part number: 604-APBD3224LQBDCGKC
+Manufacturer Part number: APBD3224LQBDCGKC
+Fabricated Company: Kingbright
+Description: 3.2x2.4MM LOW CU, Standard LEDS - SMD
+Footprint: 3.2x2.4MM
+Component Type: LEDS - SMD
+Location: L14
+
