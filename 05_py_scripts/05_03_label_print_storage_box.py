@@ -20,7 +20,7 @@ LABEL_HEIGHT = LABEL_HEIGHT_MM * mm
 PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN = 10 * mm
 
-# Reserve space at the top for the header that shows total locations
+# Reserve space at the top for the header that shows total distinct locations
 HEADER_SPACE = 20  # in points
 
 # Calculate how many columns/rows fit on one page (using the grid below the header)
@@ -70,11 +70,9 @@ def single_line_centered_truncate(c, text, x, y, box_width, font_name, font_size
     max_width = box_width - 4  # small side margin
 
     if text_width <= max_width:
-        # Fits without truncation
         text_x = x + (box_width - text_width) / 2
         c.drawString(text_x, y, text)
     else:
-        # Need to truncate
         ell = TRUNCATE_ELLIPSIS
         while text and c.stringWidth(text + ell, font_name, font_size) > max_width:
             text = text[:-1]
@@ -84,27 +82,23 @@ def single_line_centered_truncate(c, text, x, y, box_width, font_name, font_size
         c.drawString(text_x, y, text)
 
 
-def single_line_centered_fit(c, text, x, y, box_width,
-                             font_name, initial_font_size, min_font_size=6):
+def single_line_centered_fit(c, text, x, y, box_width, font_name, initial_font_size, min_font_size=6):
     """
     Draw 'text' in one line, centered, ensuring it fits horizontally.
-    - Start from 'initial_font_size' and keep reducing by 1 until it fits
-      or 'min_font_size'.
-    - If it still doesn't fit at min_font_size, truncate with "...".
+    Start from 'initial_font_size' and reduce until it fits or reaches 'min_font_size'.
+    If it still doesn't fit at min_font_size, truncate with "...".
     """
     size = initial_font_size
     max_width = box_width - 4  # small margin
     while size >= min_font_size:
         text_width = c.stringWidth(text, font_name, size)
         if text_width <= max_width:
-            # It fits at this size
             c.setFont(font_name, size)
             text_x = x + (box_width - text_width) / 2
             c.drawString(text_x, y, text)
             return
         size -= 1
 
-    # Must truncate at min_font_size
     c.setFont(font_name, min_font_size)
     ell = TRUNCATE_ELLIPSIS
     while text and c.stringWidth(text + ell, font_name, min_font_size) > max_width:
@@ -118,7 +112,7 @@ def single_line_centered_fit(c, text, x, y, box_width,
 def wrap_text(text, font_name, font_size, max_width):
     """
     Split 'text' into multiple lines so that no line exceeds 'max_width' in points.
-    Returns a list of lines (strings).
+    Returns a list of lines.
     """
     words = text.split()
     lines = []
@@ -141,17 +135,16 @@ def wrap_text(text, font_name, font_size, max_width):
 
 def draw_wrapped_centered(c, text, x, y, box_width, box_height, font_name, font_size, line_spacing):
     """
-    Draw 'text' center-aligned, wrapped within (x, y, box_width, box_height).
-    If it doesn't fit vertically, truncate with "...".
+    Draw 'text' center-aligned, wrapped within the given box.
+    If text overflows vertically, truncate with "...".
     Returns the final y position after drawing.
     """
     c.setFont(font_name, font_size)
     lines = wrap_text(text, font_name, font_size, box_width - 4)
-    draw_y = y + box_height - font_size - 2  # start near top
+    draw_y = y + box_height - font_size - 2  # start near the top
 
     for i, line in enumerate(lines):
         if draw_y < y + 4:  # no space left
-            # Truncate with ...
             if i > 0:
                 c.drawString(
                     x + (box_width - stringWidth(TRUNCATE_ELLIPSIS,
@@ -188,7 +181,7 @@ for entry in entries:
     description = desc_match.group(1).strip() if desc_match else ""
     mfgpn = mfgpn_match.group(1).strip() if mfgpn_match else ""
 
-    # Add "MFG/PN: " prefix
+    # Add "MFG/PN: " prefix if applicable
     if mfgpn:
         mfgpn = f"MFG/PN: {mfgpn}"
 
@@ -200,16 +193,19 @@ for entry in entries:
 # Sort by parsed location: e.g., "C1" < "C2" < "C10" < "R1" < "R2" < ...
 labels.sort(key=lambda x: parse_location(x[0]))
 
+# Count distinct location names (duplicates ignored)
+distinct_locations = set(location for location, _, _ in labels)
+total_distinct = len(distinct_locations)
+
 # -------------------------------------------------------------------------
 # STEP 3: CREATE THE PDF AND LAY OUT THE LABELS
 # -------------------------------------------------------------------------
 c = canvas.Canvas(OUTPUT_PDF, pagesize=A4)
 
-# Draw header on the first page with the total locations assigned
-total_locations = len(labels)
-header_text = f"Total locations assigned: {total_locations}"
+# Draw header on the first page with the total distinct locations assigned
+header_text = f"Total distinct locations assigned: {total_distinct}"
 c.setFont("Helvetica", 12)
-c.drawString(MARGIN, PAGE_HEIGHT - MARGIN - HEADER_SPACE/2, header_text)
+c.drawString(MARGIN, PAGE_HEIGHT - MARGIN - HEADER_SPACE / 2, header_text)
 
 # Adjust starting point for the label grid (below the header)
 x_start = MARGIN
@@ -226,33 +222,21 @@ for (location, mfgpn, description) in labels:
     # Draw the label outline (optional)
     c.rect(x, y, LABEL_WIDTH, LABEL_HEIGHT)
 
-    # 1) LOCATION at top (centered, single line, truncated if needed)
+    # 1) Draw LOCATION at top (centered, single line, truncated if needed)
     loc_y = y + LABEL_HEIGHT - (LOCATION_FONT[1] + 2)
     single_line_centered_truncate(
-        c, location, x, loc_y, LABEL_WIDTH, LOCATION_FONT[0], LOCATION_FONT[1]
-    )
+        c, location, x, loc_y, LABEL_WIDTH, LOCATION_FONT[0], LOCATION_FONT[1])
 
-    # 2) MFG/PN: shrink font if needed, then truncate if still too wide
+    # 2) Draw MFG/PN: shrink font if needed, then truncate if still too wide
     mpn_y = loc_y - (MPN_FONT_SIZE + 4)
-    single_line_centered_fit(
-        c, mfgpn, x, mpn_y, LABEL_WIDTH,
-        MPN_FONT_NAME, MPN_FONT_SIZE, min_font_size=MIN_MPN_FONT_SIZE
-    )
+    single_line_centered_fit(c, mfgpn, x, mpn_y, LABEL_WIDTH,
+                             MPN_FONT_NAME, MPN_FONT_SIZE, min_font_size=MIN_MPN_FONT_SIZE)
 
-    # 3) DESCRIPTION (centered, wrapped) below MFG/PN
+    # 3) Draw DESCRIPTION (centered, wrapped) below MFG/PN
     desc_top_space = mpn_y - (DESC_FONT[1] + 2) - y
     if desc_top_space > 0:
-        draw_wrapped_centered(
-            c,
-            description,
-            x,
-            y,
-            LABEL_WIDTH,
-            desc_top_space,
-            DESC_FONT[0],
-            DESC_FONT[1],
-            DESC_LINE_SPACING
-        )
+        draw_wrapped_centered(c, description, x, y, LABEL_WIDTH,
+                              desc_top_space, DESC_FONT[0], DESC_FONT[1], DESC_LINE_SPACING)
 
     # Move to the next label position
     row += 1
@@ -260,11 +244,10 @@ for (location, mfgpn, description) in labels:
         row = 0
         col += 1
         if col >= cols_per_page:
-            # Start a new page; note that header is added only on the first page.
+            # Start a new page; header is added only on the first page.
             c.showPage()
             col = 0
             row = 0
-            # If you want the header on subsequent pages, repeat the header drawing here.
             x_start = MARGIN
             y_start = PAGE_HEIGHT - MARGIN - HEADER_SPACE - LABEL_HEIGHT
 
