@@ -53,7 +53,6 @@ def get_all_image_files(directory_path):
 all_image_files = get_all_image_files(directory_path)
 processed_image_files = get_processed_images(processed_text_file_path)
 
-print("------------------------------------------------")
 print(f"Number of images in directory: {len(all_image_files)}")
 print(f"Number of images processed: {len(processed_image_files)}")
 

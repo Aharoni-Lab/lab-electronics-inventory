@@ -20,9 +20,12 @@ LABEL_HEIGHT = LABEL_HEIGHT_MM * mm
 PAGE_WIDTH, PAGE_HEIGHT = A4
 MARGIN = 10 * mm
 
-# Calculate how many columns/rows fit on one page
+# Reserve space at the top for the header that shows total locations
+HEADER_SPACE = 20  # in points
+
+# Calculate how many columns/rows fit on one page (using the grid below the header)
 cols_per_page = int((PAGE_WIDTH - 2 * MARGIN) // LABEL_WIDTH)
-rows_per_page = int((PAGE_HEIGHT - 2 * MARGIN) // LABEL_HEIGHT)
+rows_per_page = int((PAGE_HEIGHT - 2 * MARGIN - HEADER_SPACE) // LABEL_HEIGHT)
 
 # Fonts
 LOCATION_FONT = ("Helvetica-Bold", 14)  # large for Location
@@ -202,8 +205,15 @@ labels.sort(key=lambda x: parse_location(x[0]))
 # -------------------------------------------------------------------------
 c = canvas.Canvas(OUTPUT_PDF, pagesize=A4)
 
+# Draw header on the first page with the total locations assigned
+total_locations = len(labels)
+header_text = f"Total locations assigned: {total_locations}"
+c.setFont("Helvetica", 12)
+c.drawString(MARGIN, PAGE_HEIGHT - MARGIN - HEADER_SPACE/2, header_text)
+
+# Adjust starting point for the label grid (below the header)
 x_start = MARGIN
-y_start = PAGE_HEIGHT - MARGIN - LABEL_HEIGHT
+y_start = PAGE_HEIGHT - MARGIN - HEADER_SPACE - LABEL_HEIGHT
 
 col = 0
 row = 0
@@ -250,12 +260,13 @@ for (location, mfgpn, description) in labels:
         row = 0
         col += 1
         if col >= cols_per_page:
-            # Start a new page
+            # Start a new page; note that header is added only on the first page.
             c.showPage()
             col = 0
             row = 0
+            # If you want the header on subsequent pages, repeat the header drawing here.
             x_start = MARGIN
-            y_start = PAGE_HEIGHT - MARGIN - LABEL_HEIGHT
+            y_start = PAGE_HEIGHT - MARGIN - HEADER_SPACE - LABEL_HEIGHT
 
 c.save()
 print(f"Labels PDF saved as {OUTPUT_PDF}")

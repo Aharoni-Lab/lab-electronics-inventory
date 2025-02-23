@@ -718,3 +718,563 @@ Footprint: 0603
 Component Type: CAP CER
 Location: C22
 
+```
+Image: IMG_8565.heic
+Part number: NCV8154MW180280TBGOSCT-ND
+Manufacturer Part number: NCV8154MW180280TBG
+Fabricated Company: ON SEMICONDUCTOR
+Description: IC REG LINEAR 1.8V/2.8V 10DFN
+Footprint: 10DFN
+Component Type: IC REG LINEAR
+Location: I19
+
+Image: IMG_8573.heic
+Part number: LM3509SD/NOPBCT-ND
+Manufacturer Part number: LM3509SD/NOPB
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC LED DRVR RGLTR DIM 30MA 10SON
+Footprint: 10SON
+Component Type: IC LED DRVR RGLTR
+Location: I20
+
+Image: IMG_8621.heic
+Part number: 1276-2868-1-ND
+Manufacturer Part number: CL10A226MQ8NRNE
+Fabricated Company: SAMSUNG ELECTRO-MECHANICS
+Description: CAP CER 22UF 6.3V 20% X5R 0603
+Footprint: 0603
+Component Type: CAP CER
+Location: C23
+
+Image: IMG_8617.heic
+Part number: 490-5112-1-ND
+Manufacturer Part number: LQM2HPN1ROMGOL
+Fabricated Company: MURATA ELECTRONICS
+Description: FIXED IND 1UH 1.6A 69 MOHM SMD
+Footprint: SMD
+Component Type: FIXED IND
+Location: F3
+
+Image: IMG_8569.heic
+Part number: MCP1711T-301/5XCT-ND
+Manufacturer Part number: MCP1711T-301/5X
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC REG LINEAR 3V 150MA 4UQFN
+Footprint: 4UQFN
+Component Type: IC REG LINEAR
+Location: I21
+
+Image: IMG_8586.heic
+Part number: LTM80491Y#PBF
+Manufacturer Part number: LTM8049IY#PBF
+Fabricated Company: LINEAR TECHNOLOGY
+Description: DC DC CONVERTER +/-2.5 TO +/-24V
+Footprint: N/A
+Component Type: DC DC CONVERTER
+Location: D5
+
+Image: IMG_8590.heic
+Part number: 490-15635-1-ND
+Manufacturer Part number: LQM18PN3R3MGHD
+Fabricated Company: MURATA ELECTRONICS
+Description: FIXED IND 3.3UH 1.05A 250 MOHM
+Footprint: NOT SPECIFIED
+Component Type: FIXED IND
+Location: F4
+
+Image: IMG_8601.heic
+Part number: LT3092EDD PBF-ND
+Manufacturer Part number: LT3092EDD#PBF
+Fabricated Company: LINEAR TECHNOLOGY
+Description: IC CURRENT SOURCE 1% 8DFN
+Footprint: 8DFN
+Component Type: IC CURRENT SOURCE
+Location: I22
+
+Image: IMG_8600.heic
+Part number: MCP1711T-181/5XCT-ND
+Manufacturer Part number: MCP1711T-18I/5X
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC REG LINEAR 1.8V 150MA 4UQFN
+Footprint: 4UQFN
+Component Type: IC REG LINEAR
+Location: I23
+
+Image: IMG_8591.heic
+Part number: 445-174611-1-ND
+Manufacturer Part number: NADL3225V-470MT-TL000
+Fabricated Company: TDK CORPORATION
+Description: FIXED IND 47UH 500MA 900 MOHM
+Footprint: NOT SPECIFIED
+Component Type: FIXED IND
+Location: F5
+
+Image: IMG_8568.heic
+Part number: MCP73832T-2ACI/OTCT-ND
+Manufacturer Part number: MCP73832T-2ACI/OT
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC LI-ION/LI-POLY CTRLR SOT23-5
+Footprint: SOT23-5
+Component Type: IC LI-ION/LI-POLY CTRLR
+Location: I24
+
+Image: IMG_8587.heic
+Part number: 296-43671-1-ND
+Manufacturer Part number: TPS62162DSGR
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC REG BUCK 3.3V 1A SYNC 8WSON
+Footprint: 8WSON
+Component Type: IC REG BUCK
+Location: I25
+
+Image: IMG_8616.heic
+Part number: 490-15635-1-ND
+Manufacturer Part number: LQM18PN3R3MGHD
+Fabricated Company: MURATA ELECTRONICS
+Description: FIXED IND 3.3UH 1.05A 250 MOHM
+Footprint: NOT SPECIFIED
+Component Type: FIXED IND
+Location: F4
+
+Image: IMG_8620.heic
+Part number: 490-3296-1-ND
+Manufacturer Part number: GRM188R61C225KE15D
+Fabricated Company: MURATA ELECTRONICS
+Description: CAP CER 2.2UF 16V 10% X5R 0603
+Footprint: 0603
+Component Type: CAP CER
+Location: C22
+
+Image: IMG_8572.heic
+Part number: MCP73832T-2ACI/OTCT-ND
+Manufacturer Part number: MCP73832T-2ACI/OT
+Fabricated Company: MICROCHIP TECHNOLOGY
+Description: IC LI-ION/LI-POLY CTRLR SOT23-5
+Footprint: SOT23-5
+Component Type: IC LI-ION/LI-POLY CTRLR
+Location: I24
+
+Image: IMG_8564.heic
+Part number: NOT SPECIFIED
+Manufacturer Part number: NOT SPECIFIED
+Fabricated Company: NOT SPECIFIED
+Description: NOT SPECIFIED
+Footprint: NOT SPECIFIED
+Component Type: NOT SPECIFIED
+```
+Location: N1
+
+Image: IMG_8611.heic
+Part number: 296-24485-1-ND
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK 1.8V 0.5A SYNC 6SON
+Footprint: 6SON
+Component Type: IC REG BUCK
+Location: I2
+
+Image: IMG_8580.heic
+Part number: 296-12154-1-ND
+Manufacturer Part number: TPS79301DBVR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LIN POS ADJ 200MA SOT23-6
+Footprint: SOT23-6
+Component Type: IC REG LINEAR
+Location: I28
+
+Image: IMG_8579.heic
+Part number: 296-39893-1-ND
+Manufacturer Part number: ADS8885IDGSR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC ADC 18BIT 400KSPS 10VSSOP
+Footprint: 10VSSOP
+Component Type: IC ADC
+Location: I29
+
+Image: IMG_8596.heic
+Part number: 445-175069-1-ND
+Manufacturer Part number: VLS3012HBX-2R2M
+Fabricated Company: TDK CORPORATION (VA)
+Description: FIXED IND 2.2UH 3.15A 106 MOHM
+Footprint: Not specified
+Component Type: FIXED IND
+Location: F7
+
+Image: IMG_8607.heic
+Part number: 296-38918-1-ND
+Manufacturer Part number: DAC5571IDBVR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: 8 BIT 12C SNGL CHNL DAC SOT23-6
+Footprint: SOT23-6
+Component Type: IC DAC
+Location: D4
+
+Image: IMG_8563.heic
+Part number: 296-40844-1-ND
+Manufacturer Part number: TPS62402QDRCRQ1
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK FROG/3.3V DL 10VSON
+Footprint: 10VSON
+Component Type: IC REG BUCK
+Location: I31
+
+Image: IMG_8575.heic
+Part number: 296-46453-1-ND
+Manufacturer Part number: TLV7103318DSER
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LIN 3.3V/1.8V 200MA 6WSON
+Footprint: 6WSON
+Component Type: IC REG LINEAR
+Location: I32
+
+Image: IMG_8574.heic
+Part number: 296-12158-1-ND
+Manufacturer Part number: TPS79328DBVR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LINEAR 2.8V 200MA SOT23-5
+Footprint: SOT23-5
+Component Type: IC REG LINEAR
+Location: I33
+
+Image: IMG_8562.heic
+Part number: 296-51764-1-ND
+Manufacturer Part number: TLV74233PDQNR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LINEAR 3.3V 200MA 4X2SON
+Footprint: 4X2SON
+Component Type: IC REG LINEAR
+Location: V1
+
+Image: IMG_8606.heic
+Part number: 296-30229-1-ND
+Manufacturer Part number: TPS62170DSGT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK ADJ 0.5A SYNC 8WSON
+Footprint: 8WSON
+Component Type: IC REG BUCK
+Location: I35
+
+Image: IMG_8578.heic
+Part number: 296-40844-1-ND
+Manufacturer Part number: TPS62402QDRCRQ1
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK SYNC PROG DL
+Footprint: Not specified
+Component Type: IC REG BUCK
+Location: I31
+
+Image: IMG_8597.heic
+Part number: 1428-1019-1-ND
+Manufacturer Part number: MPU-9250
+Fabricated Company: TOK INVENSENSE (VA)
+Description: IMU ACCEL/GYRO/MAG I2C/SPI 24QFN
+Footprint: 24QFN
+Component Type: IMU
+Location: I37
+
+Image: IMG_8581.heic
+Part number: 296-27049-1-ND
+Manufacturer Part number: TPS72301DBVR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LIN NEG ADJ 200MA SOT23-5
+Footprint: SOT23-5
+Component Type: IC REG LINEAR
+Location: I38
+
+Image: IMG_8610.heic
+Part number: 445-174611-1-ND
+Manufacturer Part number: NADL3225V-470MT-TL000
+Fabricated Company: TOK CORPORATION (VA)
+Description: FIXED IND 47UH 500MA 900 MOHM
+Footprint: Not specified
+Component Type: FIXED IND
+Location: F5
+
+Image: IMG_8605.heic
+Part number: 296-24485-1-ND
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK 1.8V 0.5A SYNC 6SON
+Footprint: 6SON
+Component Type: IC REG BUCK
+Location: I2
+
+Image: IMG_8594.heic
+Part number: 587-2617-1-ND
+Manufacturer Part number: NR3015T1R5N
+Fabricated Company: Not specified
+Description: FIXED IND 1.5UH 1.82A 48
+Footprint: Not specified
+Component Type: FIXED IND
+Location: F9
+
+Image: IMG_8582.heic
+Part number: 296-46453-1-ND
+Manufacturer Part number: TLV7103318DSER
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LIN 3.3V/1.8V 200MA 6WSON
+Footprint: 6WSON
+Component Type: Voltage Regulator
+Location: I32
+
+Image: IMG_8613.heic
+Part number: 490-15635-1-ND
+Manufacturer Part number: LQM18PN3R3MGHD
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: FIXED IND 3.3UH 1.05A 250 MOHM
+Footprint: SMD
+Component Type: Fixed Inductor
+Location: F4
+
+Image: IMG_8609.heic
+Part number: 490-15635-1-ND
+Manufacturer Part number: LQM18PN3R3MGHD
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: FIXED IND 3.3UH 1.05A 250 MOHM
+Footprint: SMD
+Component Type: Fixed Inductor
+Location: F4
+
+Image: IMG_8598.heic
+Part number: 296-24485-1-ND
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK 1.8V 0.5A SYNC 6SON
+Footprint: 6SON
+Component Type: Voltage Regulator
+Location: I2
+
+Image: IMG_8577.heic
+Part number: LT3092ETS8#TRMPBFCT-ND
+Manufacturer Part number: LT3092ETS8#TRMPBF
+Fabricated Company: LINEAR TECHNOLOGY (VA)
+Description: IC CURRENT SOURCE 1% TSOT23-8
+Footprint: TSOT23-8
+Component Type: Current Source
+Location: C25
+
+Image: IMG_8561.heic
+Part number: 296-12158-1-ND
+Manufacturer Part number: TPS79328DBVR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LINEAR 2.8V 200MA SOT23-5
+Footprint: SOT23-5
+Component Type: Voltage Regulator
+Location: I33
+
+Image: IMG_8560.heic
+Part number: MAX77650AEWV+TCT-ND
+Manufacturer Part number: MAX77650AEWV+T
+Fabricated Company: MAXIM INTEGRATED (VA)
+Description: IC BATT CHG LI-ION 1CELL 30WLP
+Footprint: 30WLP
+Component Type: Battery Charger
+Location: B1
+
+Image: IMG_8599.heic
+Part number: 296-21563-1-ND
+Manufacturer Part number: TPS74801DRCR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LDO ADJ 1.5A 10SON
+Footprint: 10SON
+Component Type: Voltage Regulator
+Location: V5
+
+Image: IMG_8576.heic
+Part number: 1727-4825-1-ND
+Manufacturer Part number: BAT760.115
+Fabricated Company: NEXPERIA USA INC (VA)
+Description: DIODE SCHOTTKY 20V 1A SOD323
+Footprint: SOD323
+Component Type: Schottky Diode
+Location: S5
+
+Image: IMG_8608.heic
+Part number: F3507CT-ND
+Manufacturer Part number: SP3010-04UTG
+Fabricated Company: LITTELFUSE INC (VA)
+Description: TVS DIODE 6VWM 12.3VC UDFN
+Footprint: UDFN
+Component Type: TVS Diode
+Location: T3
+
+Image: IMG_8612.heic
+Part number: 587-2878-1-ND
+Manufacturer Part number: NRS4012T100MDGJ
+Fabricated Company: TAIYO YUDEN (VA)
+Description: FIXED IND 10UH 1.1A 204 MOHM SMD
+Footprint: SMD
+Component Type: Fixed Inductor
+Location: F12
+
+Image: IMG_8583.heic
+Part number: 296-39502-1-ND
+Manufacturer Part number: TPS7A3301RGWR
+Fabricated Company: TEXAS INSTRUMENTS (VR)
+Description: IC REG LINEAR NEG ADJ 1A 20VQFN
+Footprint: 20VQFN
+Component Type: Voltage Regulator
+Location: V6
+
+Image: IMG_8595.heic
+Part number: 587-4151-1-ND
+Manufacturer Part number: NMBKK1608T3R3M
+Fabricated Company: TAIYO YUDEN (VA)
+Description: FIXED IND 3.3UH 600MA 512 MOHM
+Footprint: SMD
+Component Type: Fixed Inductor
+Location: F13
+
+Image: IMG_8604.heic
+Part number: 296-2743-5-ND
+Manufacturer Part number: TPS76801QD
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC REG LDO ADJ 1A 8SOIC
+Footprint: 8SOIC
+Component Type: Voltage Regulator
+Location: V7
+
+Image: IMG_8571.heic
+Part number: MAX13030EETE+-ND
+Manufacturer Part number: MAX13030EETE+
+Fabricated Company: MAXIM INTEGRATED
+Description: IC TRNSLTR BIDIRECTIONAL 16TQFN
+Footprint: 16TQFN
+Component Type: Translator
+Location: I18
+
+Image: IMG_8588.heic
+Part number: AD7616-PBSTZ-ND
+Manufacturer Part number: AD7616-PBSTZ
+Fabricated Company: ANALOG DEVICES
+Description: IC DAS ADC DUAL 16BIT 16CH 80LQF
+Footprint: 80LQF
+Component Type: ADC
+Location: A1
+
+Image: IMG_8567.heic
+Part number: 296-46295-1-ND
+Manufacturer Part number: DS90UB913ATRTVRQ1
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC SER/DES 10-100MHZ FPD 32WQFN
+Footprint: 32WQFN
+Component Type: IC SER/DES
+Location: I40
+
+Image: IMG_8619.heic
+Part number: 490-3296-1-ND
+Manufacturer Part number: GRM188R61C225KE15D
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: CAP CER 2.2UF 16V X5R 0603
+Footprint: 0603
+Component Type: CAP CER
+Location: C22
+
+Image: IMG_8603.heic
+Part number: 296-24485-1-ND
+Manufacturer Part number: TPS62231DRYT
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK 1.8V 0.5A SYNC 6SON
+Footprint: 6SON
+Component Type: IC REG BUCK
+Location: I2
+
+Image: IMG_8592.heic
+Part number: 445-180229-1-ND
+Manufacturer Part number: MLF 1005G1R5JTD25
+Fabricated Company: TOK CORPORATION (VA)
+Description: FIXED IND 1.5UH 35MA 950MOHM SMD
+Footprint: SMD
+Component Type: FIXED IND
+Location: F14
+
+Image: IMG_8584.heic
+Part number: 296-29896-1-ND
+Manufacturer Part number: TPS62161DSGR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG BUCK 1.8V 1A SYNC 8WSON
+Footprint: 8WSON
+Component Type: IC REG BUCK
+Location: I42
+
+Image: IMG_8615.heic
+Part number: LT3092EDD#PBF-ND
+Manufacturer Part number: LT3092EDD#PBF
+Fabricated Company: LINEAR TECHNOLOGY
+Description: IC CURRENT SOURCE 1% 8DFN
+Footprint: 8DFN
+Component Type: IC CURRENT SOURCE
+Location: I22
+
+Image: IMG_8614.heic
+Part number: 490-15635-1-ND
+Manufacturer Part number: LQM18PN3R3MGHD
+Fabricated Company: MURATA ELECTRONICS (VA)
+Description: FIXED IND 3.3UH 1.05A 250 MOHM
+Footprint: SMD
+Component Type: FIXED IND
+Location: F4
+
+Image: IMG_8585.heic
+Part number: 296-39503-1-ND
+Manufacturer Part number: TPS7A4700RGWR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LINEAR POS ADJ 1A 20VQFN
+Footprint: 20VQFN
+Component Type: IC REG LINEAR
+Location: I44
+
+Image: IMG_8593.heic
+Part number: 445-174611-1-ND
+Manufacturer Part number: ADL3225V-470MT-TL000
+Fabricated Company: TOK CORPORATION (VA)
+Description: FIXED IND 47UH 500MA 900 MOHM
+Footprint: SMD
+Component Type: FIXED IND
+Location: F5
+
+Image: IMG_8602.heic
+Part number: 296-2743-5-ND
+Manufacturer Part number: TPS76801QD
+Fabricated Company: TEXAS INSTRUMENTS
+Description: IC REG LDO ADJ 1A 8SOIC
+Footprint: 8SOIC
+Component Type: IC REG LDO
+Location: V7
+
+Image: IMG_8618.heic
+Part number: 445-175069-1-ND
+Manufacturer Part number: NVLS3012HBX-2R2M
+Fabricated Company: TOK CORPORATION (VA)
+Description: FIXED IND 2.2UH 3.15A 106 MOHM
+Footprint: SMD
+Component Type: FIXED IND
+Location: F7
+
+Image: IMG_8589.heic
+Part number: 296-21563-1-ND
+Manufacturer Part number: TPS74801DRCR
+Fabricated Company: TEXAS INSTRUMENTS (VA)
+Description: IC REG LDO ADJ 1.5A 10SON
+Footprint: 10SON
+Component Type: IC REG LDO
+Location: V5
+
+Image: IMG_8566.heic
+Part number: SC189ZULCT-ND
+Manufacturer Part number: SC189ZULTRT
+Fabricated Company: SEMTECH CORPORATION (VA)
+Description: IC REG BUCK 3.3V 1.5A 6MLPD
+Footprint: 6MLPD
+Component Type: IC REG BUCK
+Location: I47
+
+Image: IMG_8570.heic
+Part number: MMBT3904LP-7BDICT-ND
+Manufacturer Part number: MMBT3904LP-7B
+Fabricated Company: DIODES INCORPORATED (VA)
+Description: TRANS NPN 40V 0.2A DFN1006-3
+Footprint: DFN1006-3
+Component Type: TRANS NPN
+Location: T5
+

@@ -279,7 +279,7 @@ for part, indices in part_dict.items():
             unified_location = loc_match.group(1).strip()
             for idx in indices:
                 print(all_output_entries[idx])
-                print("-----")
+                print("--------------------------------------------------")
                 all_output_entries[idx] = re.sub(
                     r"^(Location:\s*).+",
                     f"\\1{unified_location}",
@@ -298,7 +298,7 @@ for manuf, indices in manuf_dict.items():
             unified_location = loc_match.group(1).strip()
             for idx in indices:
                 print(all_output_entries[idx])
-                print("-----")
+                print("--------------------------------------------------")
                 all_output_entries[idx] = re.sub(
                     r"^(Location:\s*).+",
                     f"\\1{unified_location}",
