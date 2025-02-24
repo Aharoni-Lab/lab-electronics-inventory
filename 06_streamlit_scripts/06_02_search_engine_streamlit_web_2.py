@@ -147,6 +147,10 @@ else:
                         r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
+                    company_made_match = re.search(
+                        r'Company Made:\s*(\S.*)', block, re.IGNORECASE)
+                    footprints_match = re.search(
+                        r'Footprints:\s*(\S.*)', block, re.IGNORECASE)
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
@@ -156,8 +160,12 @@ else:
                         1).strip() if description_match else "Not available"
                     location = location_match.group(
                         1).strip() if location_match else "Not available"
+                    company_made = company_made_match.group(
+                        1).strip() if company_made_match else "Not available"
+                    footprints = footprints_match.group(
+                        1).strip() if footprints_match else "Not available"
 
-                    # Ensure Manufacturer P/N is only set if it's not empty
+                    # Determine the part number to use for searching
                     if manufacturer_pn:
                         final_pn = manufacturer_pn
                     elif part_number:
@@ -165,26 +173,41 @@ else:
                     else:
                         final_pn = "Not available"
 
-                    # Normalize extracted text
                     normalized_final_pn = normalize_text(final_pn)
                     normalized_description = normalize_text(description)
 
-                    # Check if both queries match
                     match_part = normalized_part_query in normalized_final_pn if normalized_part_query else True
                     match_value = normalized_value_query in normalized_description if normalized_value_query else True
 
                     if match_part and match_value:
-                        results.append((final_pn, description, location))
+                        results.append((
+                            manufacturer_pn if manufacturer_pn else "Not available",
+                            part_number if part_number else "Not available",
+                            description,
+                            location,
+                            company_made,
+                            footprints
+                        ))
 
                 if results:
                     st.write("### Search Results")
-                    df_results = pd.DataFrame(
-                        results, columns=["Manufacturer P/N", "Description", "Location"])
-                    df_results.index = df_results.index + 1
-
-                    # Print the table with all cells left aligned
-                    st.markdown(df_results.to_html(
-                        index=False, escape=False, justify='left'), unsafe_allow_html=True)
+                    # Display each result in two columns:
+                    for res in results:
+                        m_pn, p_num, desc, loc, comp_made, foot = res
+                        st.markdown(f"""
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="width: 70%;">
+                                <strong>{desc}</strong><br>
+                                <span style="font-size: smaller; color: gray;">
+                                    Manufacturer P/N: {m_pn} | Part Number: {p_num} | Company Made: {comp_made} | Footprints: {foot}
+                                </span>
+                            </div>
+                            <div style="width: 25%; text-align: right;">
+                                {loc}
+                            </div>
+                        </div>
+                        <hr>
+                        """, unsafe_allow_html=True)
                 else:
                     st.warning("No items found matching the search criteria.")
 

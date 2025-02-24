@@ -21,7 +21,7 @@ pillow_heif.register_heif_opener()
 
 # =============== Set Google Cloud Credentials =====================================================
 # Set the environment variable for your Google Cloud Vision API credentials.
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/aharonilab-8a8c472b70e5.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/abasaltbahrami/Desktop/json/aharonilab-8a8c472b70e5.json"
 
 # =============== Define Directories and Output File ===============================================
 # Define the directory containing the HEIC files, the directory where converted JPEGs will be saved,
