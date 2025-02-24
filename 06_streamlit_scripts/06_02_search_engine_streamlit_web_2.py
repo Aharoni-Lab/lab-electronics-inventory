@@ -30,13 +30,9 @@ def login():
         return False
     return True
 
-# Function to normalize text (removes extra spaces for consistent searches)
-
 
 def normalize_text(text):
     return re.sub(r'\s+', '', text.strip().lower()) if text else ""
-
-# Function to upload multiple files (images and PDFs) to Firebase
 
 
 def upload_files(files, uploader_name):
@@ -74,17 +70,16 @@ else:
         firebase_admin.initialize_app(
             cred, {'storageBucket': 'aharonilabinventory.appspot.com'})
 
-    # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
         uploader_name = st.text_input("Your Name")
-        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload", type=[
-                                          "jpg", "jpeg", "png", "pdf"], accept_multiple_files=True)
+        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload",
+                                          type=["jpg", "jpeg", "png", "pdf"],
+                                          accept_multiple_files=True)
         if uploader_name and uploaded_files and st.button("Upload Files"):
             upload_files(uploaded_files, uploader_name)
         elif not uploader_name:
             st.warning("Please enter your name before uploading.")
 
-    # Function to fetch file content from Firebase Storage
     def fetch_file_content():
         url = "https://firebasestorage.googleapis.com/v0/b/aharonilabinventory.appspot.com/o/extracted_texts.txt?alt=media"
         response = requests.get(url)
@@ -93,10 +88,14 @@ else:
         else:
             return f"Failed to fetch file: {response.status_code}"
 
-    # Function to save reorder request to Firebase
     def reorder_item(manufacturer_pn, description, requester_name):
         current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        re_order_text = f"Date and Time: {current_time}, Manufacturer Part Number: {manufacturer_pn}, Description: {description}, Requester Name: {requester_name}\n"
+        re_order_text = (
+            f"Date and Time: {current_time}, "
+            f"Manufacturer Part Number: {manufacturer_pn}, "
+            f"Description: {description}, "
+            f"Requester Name: {requester_name}\n"
+        )
         bucket = storage.bucket()
         blob = bucket.blob('to_be_ordered.txt')
 
@@ -128,15 +127,12 @@ else:
             if file_content.startswith("Failed to fetch file"):
                 st.error(file_content)
             else:
-                # Normalize search queries
                 normalized_part_query = normalize_text(
                     part_number_query) if part_number_query else None
                 normalized_value_query = normalize_text(
                     value_query) if value_query else None
 
-                # Assume entries are separated by double newlines
                 blocks = file_content.split("\n\n")
-
                 results = []
                 for block in blocks:
                     manufacturer_match = re.search(
@@ -147,8 +143,8 @@ else:
                         r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
-                    company_made_match = re.search(
-                        r'Fabricated Company:\s*(\S.*)', block, re.IGNORECASE)
+                    fabricated_match = re.search(r'(?:Company Made|Fabricated Company):\s*(\S.*)',
+                                                 block, re.IGNORECASE)
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
@@ -158,8 +154,8 @@ else:
                         1).strip() if description_match else "Not available"
                     location = location_match.group(
                         1).strip() if location_match else "Not available"
-                    company_made = company_made_match.group(
-                        1).strip() if company_made_match else "Not available"
+                    company_made = fabricated_match.group(
+                        1).strip() if fabricated_match else "Not available"
 
                     # Determine the part number to use for searching
                     if manufacturer_pn:
@@ -169,50 +165,53 @@ else:
                     else:
                         final_pn = "Not available"
 
-                    normalized_final_pn = normalize_text(final_pn)
-                    normalized_description = normalize_text(description)
+                    norm_final_pn = normalize_text(final_pn)
+                    norm_description = normalize_text(description)
 
-                    match_part = normalized_part_query in normalized_final_pn if normalized_part_query else True
-                    match_value = normalized_value_query in normalized_description if normalized_value_query else True
+                    match_part = normalized_part_query in norm_final_pn if normalized_part_query else True
+                    match_value = normalized_value_query in norm_description if normalized_value_query else True
 
                     if match_part and match_value:
-                        results.append((
-                            manufacturer_pn if manufacturer_pn else "Not available",
-                            part_number if part_number else "Not available",
-                            description,
-                            location,
-                            company_made
-                        ))
+                        results.append(
+                            (manufacturer_pn, part_number, description, location, company_made))
 
                 if results:
                     st.write("### Search Results")
-                    # Print column headers
-                    st.markdown("""
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="width: 70%;"><strong>Description</strong></div>
-                        <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
-                    </div>
-                    <hr>
-                    """, unsafe_allow_html=True)
-
-                    # Display each result in two columns with details on separate lines
-                    for res in results:
-                        m_pn, p_num, desc, loc, comp_made = res
-                        st.markdown(f"""
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="width: 70%;">
-                                <strong>{desc}</strong><br>
-                                <span style="font-size: smaller; color: gray;">
-                                    Manufacturer P/N: {m_pn}<br>
-                                    Part Number: {p_num}<br>
-                                    Company Made: {comp_made}
-                                </span>
+                    # Column headers (in blue, with minimal spacing)
+                    st.markdown(
+                        """
+                        <div style="color: blue; margin: 0; padding: 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">
+                                <div style="width: 70%;"><strong>Description</strong></div>
+                                <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
                             </div>
-                            <div style="width: 25%; text-align: right;">
-                                {loc}
-                            </div>
+                            <hr style="margin: 4px 0; padding: 0;">
                         </div>
-                        <hr>
+                        """,
+                        unsafe_allow_html=True
+                    )
+
+                    # Display each result
+                    for m_pn, p_num, desc, loc, comp_made in results:
+                        st.markdown(f"""
+                            <div style="color: blue; margin: 0; padding: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">
+                                    <!-- Left side: Description + smaller details -->
+                                    <div style="width: 70%;">
+                                        <strong>{desc}</strong><br>
+                                        <span style="font-size: smaller;">
+                                            Manufacturer P/N: {m_pn}<br>
+                                            Part Number: {p_num}<br>
+                                            Company Made: {comp_made}
+                                        </span>
+                                    </div>
+                                    <!-- Right side: Location -->
+                                    <div style="width: 25%; text-align: right;">
+                                        {loc}
+                                    </div>
+                                </div>
+                                <hr style="margin: 4px 0; padding: 0;">
+                            </div>
                         """, unsafe_allow_html=True)
                 else:
                     st.warning("No items found matching the search criteria.")
@@ -222,13 +221,11 @@ else:
     with st.expander("Click here to reorder parts", expanded=False):
         with st.form("manual_reorder_form"):
             col1, col2, col3 = st.columns(3)
-
             manufacturer_pn = col1.text_input("Manufacturer P/N")
             description = col2.text_input("Description")
             requester_name = col3.text_input("Requester Name")
 
             submit_reorder = st.form_submit_button("Submit Re-Order")
-
             if submit_reorder:
                 if manufacturer_pn and description and requester_name:
                     reorder_item(manufacturer_pn, description, requester_name)
