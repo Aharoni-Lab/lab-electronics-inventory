@@ -148,7 +148,7 @@ else:
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
                     company_made_match = re.search(
-                        r'Company Made:\s*(\S.*)', block, re.IGNORECASE)
+                        r'Fabricated Company:\s*(\S.*)', block, re.IGNORECASE)
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
