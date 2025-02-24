@@ -718,7 +718,7 @@ Footprint: 0603
 Component Type: CAP CER
 Location: C22
 
-```
+
 Image: IMG_8565.heic
 Part number: NCV8154MW180280TBGOSCT-ND
 Manufacturer Part number: NCV8154MW180280TBG

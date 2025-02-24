@@ -317,7 +317,7 @@ else:
 # ----------------------------------------------------------------------------------------
 # Push the "extracted_texts.txt" file to Firebase Storage.
 # ----------------------------------------------------------------------------------------
-cred_path = '/Users/abasaltbahrami/Desktop/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
+cred_path = '/Users/abasaltbahrami/Desktop/json/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(cred_path)

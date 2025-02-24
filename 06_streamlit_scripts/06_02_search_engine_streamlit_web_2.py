@@ -149,8 +149,6 @@ else:
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
                     company_made_match = re.search(
                         r'Company Made:\s*(\S.*)', block, re.IGNORECASE)
-                    footprints_match = re.search(
-                        r'Footprints:\s*(\S.*)', block, re.IGNORECASE)
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
@@ -162,8 +160,6 @@ else:
                         1).strip() if location_match else "Not available"
                     company_made = company_made_match.group(
                         1).strip() if company_made_match else "Not available"
-                    footprints = footprints_match.group(
-                        1).strip() if footprints_match else "Not available"
 
                     # Determine the part number to use for searching
                     if manufacturer_pn:
@@ -185,21 +181,31 @@ else:
                             part_number if part_number else "Not available",
                             description,
                             location,
-                            company_made,
-                            footprints
+                            company_made
                         ))
 
                 if results:
                     st.write("### Search Results")
-                    # Display each result in two columns:
+                    # Print column headers
+                    st.markdown("""
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="width: 70%;"><strong>Description</strong></div>
+                        <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
+                    </div>
+                    <hr>
+                    """, unsafe_allow_html=True)
+
+                    # Display each result in two columns with details on separate lines
                     for res in results:
-                        m_pn, p_num, desc, loc, comp_made, foot = res
+                        m_pn, p_num, desc, loc, comp_made = res
                         st.markdown(f"""
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="width: 70%;">
                                 <strong>{desc}</strong><br>
                                 <span style="font-size: smaller; color: gray;">
-                                    Manufacturer P/N: {m_pn} | Part Number: {p_num} | Company Made: {comp_made} | Footprints: {foot}
+                                    Manufacturer P/N: {m_pn}<br>
+                                    Part Number: {p_num}<br>
+                                    Company Made: {comp_made}
                                 </span>
                             </div>
                             <div style="width: 25%; text-align: right;">

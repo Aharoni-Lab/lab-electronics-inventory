@@ -7,7 +7,7 @@ import firebase_admin
 # -------------------------------------------------------------------------
 # Set the path to your Firebase Admin SDK JSON file.
 # -------------------------------------------------------------------------
-cred_path = '/Users/abasaltbahrami/Desktop/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
+cred_path = '/Users/abasaltbahrami/Desktop/json/aharonilabinventory-firebase-adminsdk-fu6uk-d6f7531b46.json'
 
 # -------------------------------------------------------------------------
 # Initialize Firebase if it hasn't been initialized already.
