@@ -70,6 +70,7 @@ else:
         firebase_admin.initialize_app(
             cred, {'storageBucket': 'aharonilabinventory.appspot.com'})
 
+    # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
         uploader_name = st.text_input("Your Name")
         uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload",
@@ -132,6 +133,7 @@ else:
                 normalized_value_query = normalize_text(
                     value_query) if value_query else None
 
+                # Split blocks by double newlines
                 blocks = file_content.split("\n\n")
                 results = []
                 for block in blocks:
@@ -143,6 +145,7 @@ else:
                         r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
+                    # For "Fabricated Company" or "Company Made"
                     fabricated_match = re.search(r'(?:Company Made|Fabricated Company):\s*(\S.*)',
                                                  block, re.IGNORECASE)
 
@@ -157,7 +160,7 @@ else:
                     company_made = fabricated_match.group(
                         1).strip() if fabricated_match else "Not available"
 
-                    # Determine the part number to use for searching
+                    # Decide which part number is final
                     if manufacturer_pn:
                         final_pn = manufacturer_pn
                     elif part_number:
@@ -177,21 +180,22 @@ else:
 
                 if results:
                     st.write("### Search Results")
-                    # Column headers (in blue, with minimal spacing)
+
+                    # Open a container with a black border that wraps all results
                     st.markdown(
                         """
-                        <div style="color: blue; margin: 0; padding: 0;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">
-                                <div style="width: 70%;"><strong>Description</strong></div>
-                                <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
-                            </div>
-                            <hr style="margin: 4px 0; padding: 0;">
-                        </div>
+                        <div style="border: 2px solid black; padding: 8px; margin: 4px;">
+                          <!-- Headers in black, larger font -->
+                          <div style="color: black; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="width: 70%;"><strong>Description</strong></div>
+                            <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
+                          </div>
+                          <hr style="margin: 4px 0; padding: 0;">
                         """,
                         unsafe_allow_html=True
                     )
 
-                    # Display each result
+                    # Print each result in blue
                     for m_pn, p_num, desc, loc, comp_made in results:
                         st.markdown(f"""
                             <div style="color: blue; margin: 0; padding: 0;">
@@ -213,6 +217,10 @@ else:
                                 <hr style="margin: 4px 0; padding: 0;">
                             </div>
                         """, unsafe_allow_html=True)
+
+                    # Close the container div
+                    st.markdown("</div>", unsafe_allow_html=True)
+
                 else:
                     st.warning("No items found matching the search criteria.")
 
