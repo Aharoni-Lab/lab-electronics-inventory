@@ -73,9 +73,11 @@ else:
     # Sidebar for uploading component photos or quotes
     with st.sidebar.expander("📸 Upload Component Photos/Quotes"):
         uploader_name = st.text_input("Your Name")
-        uploaded_files = st.file_uploader("Choose photos or PDF quotes to upload",
-                                          type=["jpg", "jpeg", "png", "pdf"],
-                                          accept_multiple_files=True)
+        uploaded_files = st.file_uploader(
+            "Choose photos or PDF quotes to upload",
+            type=["jpg", "jpeg", "png", "pdf"],
+            accept_multiple_files=True
+        )
         if uploader_name and uploaded_files and st.button("Upload Files"):
             upload_files(uploaded_files, uploader_name)
         elif not uploader_name:
@@ -146,8 +148,11 @@ else:
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
                     # For "Fabricated Company" or "Company Made"
-                    fabricated_match = re.search(r'(?:Company Made|Fabricated Company):\s*(\S.*)',
-                                                 block, re.IGNORECASE)
+                    fabricated_match = re.search(
+                        r'(?:Company Made|Fabricated Company):\s*(\S.*)',
+                        block,
+                        re.IGNORECASE
+                    )
 
                     manufacturer_pn = manufacturer_match.group(
                         1).strip() if manufacturer_match else ""
@@ -181,11 +186,10 @@ else:
                 if results:
                     st.write("### Search Results")
 
-                    # Open a container with a black border that wraps all results
+                    # Headers in black, larger font
                     st.markdown(
                         """
-                        <div style="border: 2px solid black; padding: 8px; margin: 4px;">
-                          <!-- Headers in black, larger font -->
+                        <div style="padding: 8px; margin: 4px;">
                           <div style="color: black; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center;">
                             <div style="width: 70%;"><strong>Description</strong></div>
                             <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
@@ -195,7 +199,7 @@ else:
                         unsafe_allow_html=True
                     )
 
-                    # Print each result in blue
+                    # Print each result in blue with minimal spacing
                     for m_pn, p_num, desc, loc, comp_made in results:
                         st.markdown(f"""
                             <div style="color: blue; margin: 0; padding: 0;">
