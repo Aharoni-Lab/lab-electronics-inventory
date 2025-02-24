@@ -7,36 +7,36 @@ import firebase_admin
 from firebase_admin import credentials, storage
 import time
 
+# ----------------------------------------------------------------------------------------
+# Activate this for authentication enquiries
+# ----------------------------------------------------------------------------------------
+# def login():
+#     if "authenticated" not in st.session_state:
+#         st.session_state["authenticated"] = False
 
-def login():
-    # 1. Check if "healthcheck" is in the query parameters
-    params = st.experimental_get_query_params()
-    if "healthcheck" in params:
-        st.write("OK")
-        st.stop()  # End the script here, returning a 200 OK with "OK"
+#     if not st.session_state["authenticated"]:
+#         st.title("Login")
+#         st.warning(
+#             "Note: You may need to press the Login button twice due to app state updates.")
+#         username = st.text_input("Username")
+#         password = st.text_input("Password", type="password")
 
-    # 2. Continue with normal authentication
-    if "authenticated" not in st.session_state:
-        st.session_state["authenticated"] = False
+#         if st.button("Login"):
+#             if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
+#                 st.session_state["authenticated"] = True
+#                 st.success("Logged in successfully!")
+#             else:
+#                 st.error("Invalid username or password")
+#         return False
+#     return True
 
-    if not st.session_state["authenticated"]:
-        st.title("Login")
-        st.warning(
-            "Note: You may need to press the Login button twice due to app state updates."
-        )
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
 
-        if st.button("Login"):
-            if username == st.secrets["auth"]["username"] and password == st.secrets["auth"]["password"]:
-                st.session_state["authenticated"] = True
-                st.success("Logged in successfully!")
-            else:
-                st.error("Invalid username or password")
-
-        return False
-
-    return True
+# Optional: If you want a simple health check endpoint, uncomment this block.
+# If the URL contains ?healthcheck, the app returns "OK" and stops.
+params = st.experimental_get_query_params()
+if "healthcheck" in params:
+    st.write("OK")
+    st.stop()
 
 
 def normalize_text(text):
