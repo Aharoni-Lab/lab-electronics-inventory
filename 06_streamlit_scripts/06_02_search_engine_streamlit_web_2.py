@@ -7,8 +7,6 @@ import firebase_admin
 from firebase_admin import credentials, storage
 import time
 
-# Authentication setup using Streamlit secrets
-
 
 def login():
     if "authenticated" not in st.session_state:
@@ -147,7 +145,6 @@ else:
                         r'Description:\s*(\S.*)', block, re.IGNORECASE)
                     location_match = re.search(
                         r'Location:\s*(\S.*)', block, re.IGNORECASE)
-                    # For "Fabricated Company" or "Company Made"
                     fabricated_match = re.search(
                         r'(?:Company Made|Fabricated Company):\s*(\S.*)',
                         block,
@@ -165,12 +162,12 @@ else:
                     company_made = fabricated_match.group(
                         1).strip() if fabricated_match else "Not available"
 
-                    # Check if the search query matches in either field
+                    # Check if the search query matches either manufacturer_pn or part_number
                     if normalized_part_query:
                         norm_manufacturer_pn = normalize_text(manufacturer_pn)
                         norm_part_number = normalize_text(part_number)
-                        match_part = (normalized_part_query in norm_manufacturer_pn) or (
-                            normalized_part_query in norm_part_number)
+                        match_part = (normalized_part_query in norm_manufacturer_pn) or \
+                                     (normalized_part_query in norm_part_number)
                     else:
                         match_part = True
 
@@ -184,25 +181,25 @@ else:
                 if results:
                     st.write("### Search Results")
 
-                    # Headers in black, larger font
+                    # Header row (70% / 30%)
                     st.markdown(
                         """
-                        <div style="padding: 8px; margin: 4px;">
-                          <div style="color: black; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center;">
-                            <div style="width: 70%;"><strong>Description</strong></div>
-                            <div style="width: 25%; text-align: right;"><strong>Location</strong></div>
-                          </div>
-                          <hr style="margin: 4px 0; padding: 0;">
+                        <div style="width: 100%; padding: 8px; margin: 0 auto;">
+                            <div style="color: black; font-size: 1.2em; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="width: 70%;"><strong>Description</strong></div>
+                                <div style="width: 30%; text-align: left;"><strong>Location</strong></div>
+                            </div>
+                            <hr style="margin: 4px 0; padding: 0;">
                         """,
                         unsafe_allow_html=True
                     )
 
-                    # Print each result in blue with minimal spacing
+                    # Data rows (70% / 30%)
                     for m_pn, p_num, desc, loc, comp_made in results:
                         st.markdown(f"""
-                            <div style="color: blue; margin: 0; padding: 0;">
+                            <div style="width: 100%; color: blue; margin: 0; padding: 0;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">
-                                    <!-- Left side: Description + smaller details -->
+                                    <!-- Left column: 70% -->
                                     <div style="width: 70%;">
                                         <strong>{desc}</strong><br>
                                         <span style="font-size: smaller;">
@@ -211,8 +208,8 @@ else:
                                             Company Made: {comp_made}
                                         </span>
                                     </div>
-                                    <!-- Right side: Location -->
-                                    <div style="width: 25%; text-align: right;">
+                                    <!-- Right column: 30% -->
+                                    <div style="width: 30%; text-align: left;">
                                         {loc}
                                     </div>
                                 </div>
@@ -220,7 +217,7 @@ else:
                             </div>
                         """, unsafe_allow_html=True)
 
-                    # Close the container div
+                    # Close the main container div
                     st.markdown("</div>", unsafe_allow_html=True)
 
                 else:
