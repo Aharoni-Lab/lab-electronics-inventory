@@ -165,18 +165,16 @@ else:
                     company_made = fabricated_match.group(
                         1).strip() if fabricated_match else "Not available"
 
-                    # Decide which part number is final
-                    if manufacturer_pn:
-                        final_pn = manufacturer_pn
-                    elif part_number:
-                        final_pn = part_number
+                    # Check if the search query matches in either field
+                    if normalized_part_query:
+                        norm_manufacturer_pn = normalize_text(manufacturer_pn)
+                        norm_part_number = normalize_text(part_number)
+                        match_part = (normalized_part_query in norm_manufacturer_pn) or (
+                            normalized_part_query in norm_part_number)
                     else:
-                        final_pn = "Not available"
+                        match_part = True
 
-                    norm_final_pn = normalize_text(final_pn)
                     norm_description = normalize_text(description)
-
-                    match_part = normalized_part_query in norm_final_pn if normalized_part_query else True
                     match_value = normalized_value_query in norm_description if normalized_value_query else True
 
                     if match_part and match_value:
