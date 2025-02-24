@@ -9,13 +9,21 @@ import time
 
 
 def login():
+    # 1. Check if "healthcheck" is in the query parameters
+    params = st.experimental_get_query_params()
+    if "healthcheck" in params:
+        st.write("OK")
+        st.stop()  # End the script here, returning a 200 OK with "OK"
+
+    # 2. Continue with normal authentication
     if "authenticated" not in st.session_state:
         st.session_state["authenticated"] = False
 
     if not st.session_state["authenticated"]:
         st.title("Login")
         st.warning(
-            "Note: You may need to press the Login button twice due to app state updates.")
+            "Note: You may need to press the Login button twice due to app state updates."
+        )
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
@@ -25,7 +33,9 @@ def login():
                 st.success("Logged in successfully!")
             else:
                 st.error("Invalid username or password")
+
         return False
+
     return True
 
 
