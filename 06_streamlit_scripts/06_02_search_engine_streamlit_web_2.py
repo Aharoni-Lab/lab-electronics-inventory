@@ -31,9 +31,9 @@ import time
 #     return True
 
 
-# Optional: If you want a simple health check endpoint, uncomment this block.
+# Optional: Health check endpoint (uncomment if needed)
 # If the URL contains ?healthcheck, the app returns "OK" and stops.
-params = st.experimental_get_query_params()
+params = st.query_params()
 if "healthcheck" in params:
     st.write("OK")
     st.stop()
