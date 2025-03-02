@@ -1,4 +1,3 @@
-
 # Lab Electronics Inventory
 
 This project automates the extraction and organization of text from images of electronic components, such as resistors, capacitors, and other small parts commonly used in electronics. By capturing images of these components, the tool extracts key information and organizes it into an Excel file for easy access and management.
