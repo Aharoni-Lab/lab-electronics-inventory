@@ -235,7 +235,7 @@ class InventoryManager:
                     if item.description != "Not available":
                         descriptions.append(item.description.lower())
 
-            # Count unique categories
+            # Count unique categories (rough estimate based on common component types)
             categories = set()
             component_types = ['resistor', 'capacitor', 'inductor', 'ic', 'microcontroller',
                                'transistor', 'diode', 'led', 'connector', 'switch', 'sensor']
@@ -293,72 +293,27 @@ class AuthManager:
                 "🔧 Authentication not configured. Please contact administrator.")
             st.stop()
 
-        # Modern Login UI
+        # Login UI
         st.markdown("""
-        <style>
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 60vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            margin: 2rem 0;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 3rem;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 400px;
-            width: 100%;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .login-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-        .login-subtitle {
-            color: #64748b;
-            font-size: 1rem;
-            margin-bottom: 0;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="login-container">
-            <div class="login-card">
-                <div class="login-header">
-                    <h1 class="login-title">🔬 Aharoni Lab</h1>
-                    <p class="login-subtitle">Inventory Management System</p>
-                </div>
-            </div>
+        <div style='text-align: center; padding: 2rem;'>
+            <h1>🔬 Aharoni Lab Inventory System</h1>
+            <p style='color: #666; font-size: 1.1em;'>Secure Access Required</p>
         </div>
         """, unsafe_allow_html=True)
 
         with st.container():
             col1, col2, col3 = st.columns([1, 2, 1])
+
             with col2:
                 with st.form("login_form"):
-                    st.markdown("### 🔐 Secure Access")
+                    st.markdown("### Login Credentials")
                     username = st.text_input(
                         "Username", placeholder="Enter your username")
                     password = st.text_input(
                         "Password", type="password", placeholder="Enter your password")
 
                     submitted = st.form_submit_button(
-                        "Sign In", use_container_width=True, type="primary")
+                        "🔐 Login", use_container_width=True)
 
                     if submitted:
                         try:
@@ -385,220 +340,61 @@ class InventoryUI:
         self.inventory_manager = inventory_manager
 
     def render_header(self):
-        """Render the professional application header"""
+        """Render the application header"""
         st.markdown("""
-        <style>
-        .main-header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            padding: 2.5rem 2rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 8px 32px rgba(30, 60, 114, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .main-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-            pointer-events: none;
-        }
-        .header-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            color: white;
-        }
-        .header-title {
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            letter-spacing: -0.02em;
-        }
-        .header-subtitle {
-            font-size: 1.3rem;
-            opacity: 0.9;
-            margin: 0.5rem 0 0 0;
-            font-weight: 400;
-        }
-        .header-location {
-            font-size: 1rem;
-            opacity: 0.8;
-            margin-top: 0.5rem;
-            font-weight: 300;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="main-header">
-            <div class="header-content">
-                <h1 class="header-title">🔬 Laboratory Inventory Management</h1>
-                <p class="header-subtitle">Advanced Component Tracking & Analytics Platform</p>
-                <p class="header-location">Aharoni Laboratory • CHS 74-134 • Real-time Inventory Control</p>
-            </div>
+        <div style='text-align: center; padding: 1rem; margin-bottom: 2rem; 
+                    background: linear-gradient(90deg, #1f4e79 0%, #2e86de 100%); 
+                    border-radius: 10px; color: white;'>
+            <h1 style='margin: 0; font-size: 2.5em;'>🔬 Laboratory Inventory Management</h1>
+            <p style='margin: 0.5rem 0 0 0; font-size: 1.2em; opacity: 0.9;'>
+                Aharoni Lab • CHS 74-134 • Advanced Component Tracking System
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
     def render_sidebar(self):
-        """Render enhanced sidebar with status and navigation"""
+        """Render the sidebar with system status"""
         with st.sidebar:
-            st.markdown("""
-            <style>
-            .sidebar-section {
-                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                padding: 1.5rem;
-                border-radius: 12px;
-                margin-bottom: 1rem;
-                border: 1px solid #e2e8f0;
-            }
-            .status-indicator {
-                display: flex;
-                align-items: center;
-                margin: 0.5rem 0;
-                padding: 0.5rem;
-                border-radius: 8px;
-                background: rgba(16, 185, 129, 0.1);
-            }
-            .status-dot {
-                width: 8px;
-                height: 8px;
-                border-radius: 50%;
-                background: #10b981;
-                margin-right: 0.5rem;
-                animation: pulse 2s infinite;
-            }
-            @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
-            st.markdown("""
-            <div class="sidebar-section">
-                <h3 style="margin-top: 0; color: #1f2937;">📊 System Status</h3>
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span style="color: #059669; font-weight: 500;">Database Connected</span>
-                </div>
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span style="color: #059669; font-weight: 500;">Firebase Active</span>
-                </div>
-                <div style="margin-top: 1rem; font-size: 0.875rem; color: #6b7280;">
-                    Last sync: {}</div>
-            </div>
-            """.format(datetime.now().strftime('%H:%M:%S')), unsafe_allow_html=True)
-
-            # Quick Actions
-            st.markdown("""
-            <div class="sidebar-section">
-                <h3 style="margin-top: 0; color: #1f2937;">⚡ Quick Actions</h3>
-            </div>
-            """, unsafe_allow_html=True)
-
-            if st.button("🔍 Advanced Search", use_container_width=True):
-                st.session_state.show_advanced_search = True
-
-            if st.button("📈 Analytics", use_container_width=True):
-                st.session_state.show_analytics = True
-
-            if st.button("🔄 Refresh Data", use_container_width=True):
-                st.rerun()
+            # Add system status
+            st.markdown("### 📊 System Status")
+            st.success("🟢 Database: Connected")
+            st.info(f"🕒 Last updated: {datetime.now().strftime('%H:%M:%S')}")
 
     def render_search_section(self):
-        """Render enhanced search interface"""
-        st.markdown("""
-        <style>
-        .search-container {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-        }
-        .search-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        .search-icon {
-            font-size: 2rem;
-            margin-right: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .search-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin: 0;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        """Render the main search interface"""
+        st.markdown("### 🔍 Component Search")
 
-        st.markdown("""
-        <div class="search-container">
-            <div class="search-header">
-                <div class="search-icon">🔍</div>
-                <h2 class="search-title">Component Search & Discovery</h2>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        with st.container():
+            col1, col2, col3 = st.columns([3, 3, 2])
 
-        col1, col2, col3 = st.columns([4, 4, 2])
+            with col1:
+                part_number_query = st.text_input(
+                    "Part Number Search",
+                    placeholder="e.g., STM32F407VG, LM358",
+                    help="Search by manufacturer or internal part number"
+                )
 
-        with col1:
-            part_number_query = st.text_input(
-                "🔧 Part Number Search",
-                placeholder="STM32F407VG, LM358, TL074...",
-                help="Search by manufacturer or internal part number"
-            )
+            with col2:
+                value_query = st.text_input(
+                    "Component Description",
+                    placeholder="e.g., 4.7uF, 100 OHM, XOR gate",
+                    help="Search by component value or description"
+                )
 
-        with col2:
-            value_query = st.text_input(
-                "📋 Component Description",
-                placeholder="4.7µF, 100Ω, XOR gate, ADC...",
-                help="Search by component value, type, or description"
-            )
-
-        with col3:
-            st.markdown("<br>", unsafe_allow_html=True)
-            search_clicked = st.button(
-                "🚀 Search",
-                use_container_width=True,
-                type="primary"
-            )
-
-        # Advanced search toggle
-        if st.session_state.get("show_advanced_search", False):
-            with st.expander("🔬 Advanced Search Options", expanded=True):
-                col1, col2 = st.columns(2)
-                with col1:
-                    location_filter = st.selectbox("Filter by Location",
-                                                   ["All Locations", "Lab Bench", "Storage Room", "Refrigerator"])
-                    supplier_filter = st.selectbox("Filter by Supplier",
-                                                   ["All Suppliers", "Digi-Key", "Mouser", "Element14"])
-                with col2:
-                    date_filter = st.date_input("Components added after")
-                    category_filter = st.multiselect("Component Categories",
-                                                     ["Resistors", "Capacitors", "ICs", "Sensors", "Connectors"])
+            with col3:
+                st.markdown("<br>", unsafe_allow_html=True)  # Spacing
+                search_clicked = st.button(
+                    "🔍 Search Inventory",
+                    use_container_width=True,
+                    type="primary"
+                )
 
         if search_clicked:
             if not part_number_query and not value_query:
                 st.warning("⚠️ Please enter at least one search criterion")
                 return
 
-            with st.spinner("🔍 Searching inventory database..."):
+            with st.spinner("Searching inventory database..."):
                 results = self.inventory_manager.search_inventory(
                     part_number_query, value_query)
 
@@ -611,130 +407,68 @@ class InventoryUI:
                 st.info("💡 Try using broader search terms or check your spelling")
 
     def _display_search_results(self, results: List[InventoryItem]):
-        """Display search results with professional styling"""
-        st.markdown("""
-        <style>
-        .results-header {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            border-left: 4px solid #0ea5e9;
-        }
-        .results-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0c4a6e;
-            margin: 0;
-        }
-        .results-count {
-            color: #0369a1;
-            font-size: 1rem;
-            margin-top: 0.5rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        """Display search results in a professional table format"""
+        st.markdown("### 📋 Search Results")
 
-        st.markdown("""
-        <div class="results-header">
-            <h3 class="results-title">📋 Search Results</h3>
-            <p class="results-count">Found {} matching components in inventory</p>
-        </div>
-        """.format(len(results)), unsafe_allow_html=True)
-
-        # Create enhanced DataFrame
+        # Create DataFrame for better display
         df_data = []
-        for i, item in enumerate(results, 1):
+        for item in results:
             df_data.append({
-                '#': i,
                 'Description': item.description,
                 'Manufacturer P/N': item.manufacturer_pn,
                 'Internal P/N': item.part_number,
                 'Location': item.location,
-                'Supplier': item.company_made,
-                'Status': '🟢 Available'
+                'Supplier': item.company_made
             })
 
         df = pd.DataFrame(df_data)
 
-        # Enhanced dataframe display
+        # Display with custom styling
+        st.markdown("""
+        <style>
+        .dataframe {
+            font-size: 14px;
+        }
+        .dataframe th {
+            background-color: #f0f2f6;
+            font-weight: bold;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
         st.dataframe(
             df,
             use_container_width=True,
             hide_index=True,
             column_config={
-                "#": st.column_config.NumberColumn("#", width="small"),
                 "Description": st.column_config.TextColumn("Description", width="large"),
                 "Location": st.column_config.TextColumn("Location", width="medium"),
                 "Manufacturer P/N": st.column_config.TextColumn("Mfg P/N", width="medium"),
                 "Internal P/N": st.column_config.TextColumn("Internal P/N", width="medium"),
-                "Supplier": st.column_config.TextColumn("Supplier", width="medium"),
-                "Status": st.column_config.TextColumn("Status", width="small")
+                "Supplier": st.column_config.TextColumn("Supplier", width="medium")
             }
         )
 
-        # Export options
-        col1, col2, col3 = st.columns([2, 2, 1])
-        with col1:
-            if st.button("📥 Export to CSV", use_container_width=True):
-                csv = df.to_csv(index=False)
-                st.download_button("Download CSV", csv,
-                                   "inventory_search_results.csv", "text/csv")
-        with col2:
-            if st.button("📊 Generate Report", use_container_width=True):
-                st.info("Report generation feature coming soon!")
-
     def render_reorder_section(self):
-        """Render enhanced reorder request interface"""
-        st.markdown("""
-        <style>
-        .reorder-container {
-            background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 20%, #f59e0b 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
-            border: 1px solid #fbbf24;
-        }
-        .reorder-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .reorder-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #92400e;
-            margin: 0;
-        }
-        .reorder-subtitle {
-            color: #a16207;
-            margin-top: 0.5rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
-
-        st.markdown("""
-        <div class="reorder-container">
-            <div class="reorder-header">
-                <h2 class="reorder-title">📦 Component Reorder Management</h2>
-                <p class="reorder-subtitle">Request new components or restock existing inventory</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        """Render the reorder request interface"""
+        st.markdown("### 📦 Component Reorder Request")
 
         with st.expander("🛒 Submit New Reorder Request", expanded=False):
-            with st.form("reorder_form", clear_on_submit=True):
-                st.markdown("#### Request Details")
+            st.markdown(
+                "Fill out the form below to request components that are out of stock or needed.")
 
+            with st.form("reorder_form", clear_on_submit=True):
                 col1, col2 = st.columns(2)
+
                 with col1:
                     manufacturer_pn = st.text_input(
                         "Manufacturer Part Number *",
                         placeholder="e.g., STM32F407VGT6",
                         help="Enter the exact manufacturer part number"
                     )
+
                     requester_name = st.text_input(
-                        "Requester Name *",
+                        "Your Name *",
                         placeholder="Enter your full name",
                         help="This will be used for order tracking"
                     )
@@ -742,48 +476,47 @@ class InventoryUI:
                 with col2:
                     description = st.text_area(
                         "Component Description *",
-                        placeholder="32-bit ARM Cortex-M4 MCU, 168MHz, 1MB Flash...",
+                        placeholder="e.g., 32-bit ARM Cortex-M4 MCU, 168MHz, 1MB Flash",
                         help="Provide detailed component description",
                         height=100
                     )
 
-                st.markdown("#### Additional Information")
+                # Additional fields
                 col3, col4 = st.columns(2)
                 with col3:
                     quantity = st.number_input(
                         "Quantity", min_value=1, value=1)
-                    urgency = st.selectbox("Priority Level",
-                                           ["🔵 Standard", "🟡 High", "🔴 Critical"])
+                    urgency = st.selectbox(
+                        "Urgency Level", ["Standard", "High", "Critical"])
 
                 with col4:
-                    supplier_pref = st.text_input("Preferred Supplier (Optional)",
-                                                  placeholder="Digi-Key, Mouser, Element14...")
-                    budget_code = st.text_input("Budget/Project Code",
-                                                placeholder="PROJ-2024-001")
+                    supplier_pref = st.text_input(
+                        "Preferred Supplier (Optional)", placeholder="e.g., Digi-Key, Mouser")
+                    notes = st.text_area(
+                        "Additional Notes (Optional)", height=100)
 
-                notes = st.text_area("Additional Notes",
-                                     placeholder="Special requirements, specifications, or comments...",
-                                     height=80)
-
-                submitted = st.form_submit_button("🚀 Submit Request",
-                                                  use_container_width=True,
-                                                  type="primary")
+                # Submit button
+                st.markdown("<br>", unsafe_allow_html=True)
+                submitted = st.form_submit_button(
+                    "📤 Submit Reorder Request",
+                    use_container_width=True,
+                    type="primary"
+                )
 
                 if submitted:
                     if manufacturer_pn and description and requester_name:
+                        # Enhanced description with additional details
                         enhanced_description = f"{description}"
                         if quantity > 1:
                             enhanced_description += f" | Qty: {quantity}"
-                        if urgency != "🔵 Standard":
-                            enhanced_description += f" | Priority: {urgency}"
+                        if urgency != "Standard":
+                            enhanced_description += f" | Urgency: {urgency}"
                         if supplier_pref:
                             enhanced_description += f" | Preferred Supplier: {supplier_pref}"
-                        if budget_code:
-                            enhanced_description += f" | Budget Code: {budget_code}"
                         if notes:
                             enhanced_description += f" | Notes: {notes}"
 
-                        with st.spinner("📤 Submitting reorder request..."):
+                        with st.spinner("Submitting reorder request..."):
                             success = self.inventory_manager.submit_reorder_request(
                                 manufacturer_pn, enhanced_description, requester_name
                             )
@@ -797,231 +530,127 @@ class InventoryUI:
                                 "❌ Failed to submit reorder request. Please try again.")
 
     def render_file_upload_section(self):
-        """Render enhanced file upload interface"""
-        st.markdown("""
-        <style>
-        .upload-container {
-            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(3, 169, 244, 0.15);
-            border: 1px solid #81d4fa;
-        }
-        .upload-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .upload-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #0277bd;
-            margin: 0;
-        }
-        .upload-subtitle {
-            color: #0288d1;
-            margin-top: 0.5rem;
-        }
-        .upload-zone {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px dashed #03a9f4;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            margin: 1rem 0;
-            transition: all 0.3s ease;
-        }
-        .upload-zone:hover {
-            background: rgba(255, 255, 255, 0.9);
-            border-color: #0288d1;
-        }
-        .file-info {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 0.5rem 0;
-            border-left: 4px solid #03a9f4;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        """Render the file upload interface"""
+        st.markdown("### 📤 File Upload Center")
+        st.markdown(
+            "Upload component photos, datasheets, or quotes to organize your lab documentation.")
 
-        st.markdown("""
-        <div class="upload-container">
-            <div class="upload-header">
-                <h2 class="upload-title">📤 Document & Media Upload Center</h2>
-                <p class="upload-subtitle">Upload component photos, datasheets, and technical documentation</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col1, col2 = st.columns([3, 1])
+        # Create two columns for better layout
+        col1, col2 = st.columns([2, 1])
 
         with col1:
-            st.markdown("#### 📸 Upload Files")
+            # Upload form
+            with st.container():
+                st.markdown("#### 📸 Upload Component Files")
 
-            uploader_name = st.text_input(
-                "Uploader Name *",
-                placeholder="Enter your full name",
-                help="Files will be organized in folders by uploader name"
-            )
+                uploader_name = st.text_input(
+                    "Your Name *",
+                    placeholder="Enter your full name",
+                    help="This will be used to organize uploaded files in folders"
+                )
 
-            uploaded_files = st.file_uploader(
-                "Choose files to upload",
-                type=["jpg", "jpeg", "png", "pdf", "doc", "docx"],
-                accept_multiple_files=True,
-                help="Supported: Images (JPG, PNG), Documents (PDF, DOC, DOCX)"
-            )
+                uploaded_files = st.file_uploader(
+                    "Choose files to upload",
+                    type=["jpg", "jpeg", "png", "pdf"],
+                    accept_multiple_files=True,
+                    help="Supported formats: JPG, PNG, PDF (Max file size depends on your Streamlit deployment)"
+                )
 
-            if uploaded_files and uploader_name:
-                st.markdown("#### 📋 Upload Preview")
-                total_size = 0
-                for file in uploaded_files:
-                    file_size = len(file.read()) / 1024 / 1024
-                    file.seek(0)
-                    total_size += file_size
+                # Upload button and logic
+                if uploaded_files and uploader_name:
+                    st.markdown("#### 📋 Files Ready for Upload:")
+                    for file in uploaded_files:
+                        file_size = len(file.read()) / 1024 / \
+                            1024  # Size in MB
+                        file.seek(0)  # Reset file pointer
+                        st.write(f"• **{file.name}** ({file_size:.2f} MB)")
 
-                    st.markdown(f"""
-                    <div class="file-info">
-                        <strong>📄 {file.name}</strong><br>
-                        <small>Size: {file_size:.2f} MB | Type: {file.type}</small>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    if st.button("🚀 Upload Files", use_container_width=True, type="primary"):
+                        with st.spinner("Uploading files to Firebase..."):
+                            results = self.inventory_manager.upload_files(
+                                uploaded_files, uploader_name)
 
-                st.info(f"Total upload size: {total_size:.2f} MB")
+                        success_count = sum(results.values())
+                        total_count = len(results)
 
-                if st.button("🚀 Upload All Files", use_container_width=True, type="primary"):
-                    with st.spinner("📤 Uploading files to secure storage..."):
-                        results = self.inventory_manager.upload_files(
-                            uploaded_files, uploader_name)
+                        if success_count == total_count:
+                            st.success(
+                                f"✅ All {total_count} files uploaded successfully!")
+                            st.balloons()
+                        else:
+                            st.warning(
+                                f"⚠️ {success_count}/{total_count} files uploaded successfully")
 
-                    success_count = sum(results.values())
-                    total_count = len(results)
+                        # Show detailed results
+                        with st.expander("📊 Upload Details", expanded=success_count != total_count):
+                            for filename, success in results.items():
+                                if success:
+                                    st.success(f"✅ {filename}")
+                                else:
+                                    st.error(f"❌ {filename} - Upload failed")
 
-                    if success_count == total_count:
-                        st.success(
-                            f"✅ All {total_count} files uploaded successfully!")
-                        st.balloons()
-                    else:
-                        st.warning(
-                            f"⚠️ {success_count}/{total_count} files uploaded successfully")
-
-                    with st.expander("📊 Upload Details", expanded=success_count != total_count):
-                        for filename, success in results.items():
-                            if success:
-                                st.success(f"✅ {filename}")
-                            else:
-                                st.error(f"❌ {filename} - Upload failed")
+                elif uploaded_files and not uploader_name:
+                    st.warning(
+                        "⚠️ Please enter your name before uploading files")
+                elif not uploaded_files:
+                    st.info("📁 Select files above to see upload preview")
 
         with col2:
+            # Upload guidelines and tips
             st.markdown("#### 💡 Upload Guidelines")
-            st.markdown("""
-            **File Organization:**
-            - 📁 Auto-organized by uploader
-            - 🏷️ Use descriptive filenames
-            - 🔗 Include part numbers
-            
-            **Supported Formats:**
-            - 📸 **Images**: JPG, PNG
-            - 📄 **Documents**: PDF, DOC, DOCX
-            
-            **Best Practices:**
-            - 🔍 Clear, high-resolution photos
-            - 📋 Complete datasheets
-            - 💰 Supplier quotes with P/N
-            - 📝 Descriptive filenames
-            """)
 
-            with st.expander("🔧 File Management"):
+            with st.container():
                 st.markdown("""
-                **Naming Convention:**
-                ```
-                PartNumber_Description.ext
-                STM32F407_Datasheet.pdf
-                Resistor_100ohm_Photo.jpg
-                ```
+                **File Organization:**
+                - Files are organized by uploader name
+                - Use descriptive filenames
+                - Include component part numbers when possible
                 
-                **Storage Details:**
-                - 🔒 Secure Firebase Storage
-                - 👥 Team accessible
-                - 📊 Usage tracking
-                - 🔄 Version control ready
+                **Supported Files:**
+                - 📸 **Photos**: JPG, PNG
+                - 📄 **Documents**: PDF
+                
+                **Best Practices:**
+                - Clear, well-lit component photos
+                - Complete datasheets and specifications
+                - Supplier quotes with part numbers
+                - Keep filenames descriptive
                 """)
 
+                st.markdown("#### 📊 Upload Statistics")
+                st.info("📈 Upload tracking coming soon")
+
+                # File management tips
+                with st.expander("🔧 File Management Tips"):
+                    st.markdown("""
+                    **Naming Convention:**
+                    - `PartNumber_Description.ext`
+                    - `STM32F407_Datasheet.pdf`
+                    - `Resistor_100ohm_Photo.jpg`
+                    
+                    **Organization:**
+                    - Group related files by project
+                    - Include version numbers for updates
+                    - Use consistent naming across team
+                    """)
+
+                    st.markdown("---")
+                    st.markdown("#### 🗂️ File Access")
+                    st.info(
+                        "📁 Uploaded files are stored in Firebase Storage and can be accessed by administrators through the Firebase console.")
+
     def render_dashboard_section(self):
-        """Render enhanced dashboard with analytics"""
-        st.markdown("""
-        <style>
-        .dashboard-container {
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
-            border: 1px solid #c4b5fd;
-        }
-        .dashboard-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .dashboard-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #6b21a8;
-            margin: 0;
-        }
-        .dashboard-subtitle {
-            color: #7c3aed;
-            margin-top: 0.5rem;
-            font-size: 1.1rem;
-        }
-        .metric-card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease;
-        }
-        .metric-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-        }
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #1f2937;
-            margin: 0;
-        }
-        .metric-label {
-            color: #6b7280;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-        .metric-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        </style>
-        """, unsafe_allow_html=True)
+        """Render the dashboard with real metrics"""
+        st.markdown("### 📊 Inventory Dashboard")
 
-        st.markdown("""
-        <div class="dashboard-container">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">📊 Inventory Analytics Dashboard</h1>
-                <p class="dashboard-subtitle">Real-time insights and performance metrics</p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Get metrics with enhanced error handling
+        # Get real metrics with error handling
+        metrics = None
         try:
-            with st.spinner("📊 Loading analytics..."):
+            with st.spinner("Loading dashboard metrics..."):
                 metrics = self.inventory_manager.get_dashboard_metrics()
         except Exception as e:
             logger.error(f"Dashboard metrics error: {e}")
-            st.error("⚠️ Unable to load dashboard metrics.")
+            st.error("⚠️ Unable to load dashboard metrics. Using fallback values.")
             metrics = {
                 "total_components": "Unavailable",
                 "active_requests": "Unavailable",
@@ -1029,115 +658,50 @@ class InventoryUI:
                 "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
             }
 
-        # Enhanced metrics display
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            total = metrics.get("total_components", "Error")
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-icon">📦</div>
-                <h2 class="metric-value">{total if isinstance(total, int) else total}</h2>
-                <p class="metric-label">Total Components</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col2:
-            requests = metrics.get("active_requests", "Error")
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-icon">🛒</div>
-                <h2 class="metric-value">{requests if isinstance(requests, int) else requests}</h2>
-                <p class="metric-label">Active Requests</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col3:
-            categories = metrics.get("categories", "Error")
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-icon">🏷️</div>
-                <h2 class="metric-value">{categories if isinstance(categories, int) else categories}</h2>
-                <p class="metric-label">Categories</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col4:
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-icon">🕒</div>
-                <h2 class="metric-value" style="font-size: 1.2rem;">{metrics.get("last_updated", "Unknown")}</h2>
-                <p class="metric-label">Last Updated</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Enhanced action buttons
-        st.markdown("<br>", unsafe_allow_html=True)
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            if st.button("📋 View Active Requests", use_container_width=True, type="primary"):
-                st.session_state.show_requests = True
-
-        with col2:
-            if st.button("📈 Generate Analytics", use_container_width=True):
-                st.session_state.show_analytics = True
-
-        with col3:
-            if st.button("📤 Export Data", use_container_width=True):
-                st.info("Export functionality coming soon!")
-
-        # Display requests if toggled
-        if st.session_state.get("show_requests", False):
-            self._show_active_requests()
-
-        # Display analytics if toggled
-        if st.session_state.get("show_analytics", False):
-            self._show_analytics_panel()
-
-    def _show_active_requests(self):
-        """Display active requests with enhanced UI"""
+        # Display metrics with smaller font
         st.markdown("""
         <style>
-        .requests-container {
-            background: linear-gradient(135deg, #fef7ed 0%, #fed7aa 100%);
-            padding: 2rem;
-            border-radius: 16px;
-            margin-top: 2rem;
-            box-shadow: 0 4px 20px rgba(251, 146, 60, 0.15);
-            border: 1px solid #fdba74;
+        .metric-container .metric-value {
+            font-size: 1.5rem !important;
         }
-        .request-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 1rem 0;
-            border-left: 4px solid #f97316;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .request-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        .request-title {
-            font-weight: 700;
-            color: #9a3412;
-            font-size: 1.1rem;
-        }
-        .request-meta {
-            font-size: 0.875rem;
-            color: #a16207;
+        .metric-container .metric-label {
+            font-size: 0.875rem !important;
         }
         </style>
         """, unsafe_allow_html=True)
 
-        st.markdown("""
-        <div class="requests-container">
-            <h3 style="text-align: center; color: #9a3412; margin-bottom: 1rem;">📋 Active Reorder Requests</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            total = metrics.get("total_components", "Error")
+            if isinstance(total, int):
+                st.metric("Total Components", f"{total:,}", delta=None)
+            else:
+                st.metric("Total Components", str(total), delta=None)
+
+        with col2:
+            requests = metrics.get("active_requests", "Error")
+            if isinstance(requests, int):
+                st.metric("Active Requests", requests, delta=None)
+            else:
+                st.metric("Active Requests", str(requests), delta=None)
+
+        with col3:
+            st.metric("Last Updated", metrics.get(
+                "last_updated", "Unknown"), delta=None)
+
+        # View Active Requests Button
+        st.markdown("---")
+        if st.button("📋 View Active Requests", use_container_width=True, type="primary"):
+            st.session_state.show_requests = True
+
+        # Display requests if button was clicked
+        if st.session_state.get("show_requests", False):
+            self._show_active_requests()
+
+    def _show_active_requests(self):
+        """Display the active reorder requests with delete options"""
+        st.markdown("### 📋 Active Reorder Requests")
 
         try:
             if self.inventory_manager.bucket:
@@ -1148,17 +712,16 @@ class InventoryUI:
                         '\n') if line.strip()]
 
                     if requests:
-                        st.success(
-                            f"📊 Found {len(requests)} active request(s)")
+                        st.success(f"Found {len(requests)} active request(s)")
 
-                        # Initialize session state
+                        # Initialize session state for checkboxes
                         if "selected_requests" not in st.session_state:
                             st.session_state.selected_requests = set()
 
-                        # Enhanced selection controls
-                        col1, col2, col3 = st.columns([2, 2, 2])
+                        # Add "Select All" option and Delete button
+                        col1, col2 = st.columns([3, 1])
                         with col1:
-                            select_all = st.checkbox("🔲 Select All Requests")
+                            select_all = st.checkbox("Select All Requests")
                             if select_all:
                                 st.session_state.selected_requests = set(
                                     range(len(requests)))
@@ -1174,21 +737,19 @@ class InventoryUI:
                                         st.rerun()
                                 else:
                                     st.warning(
-                                        "⚠️ No requests selected for deletion")
-
-                        with col3:
-                            if st.button("📧 Email Summary", type="secondary"):
-                                st.info("Email functionality coming soon!")
+                                        "No requests selected for deletion")
 
                         st.markdown("---")
 
-                        # Display requests with enhanced styling
+                        # Display each request with checkbox (no form needed)
                         for i, request in enumerate(requests):
-                            col1, col2 = st.columns([1, 20])
+                            col1, col2 = st.columns([1, 10])
 
                             with col1:
+                                # Use individual checkboxes that update session state immediately
                                 is_selected = st.checkbox(
                                     "",
+                                    # Include length to force refresh
                                     key=f"req_{i}_{len(requests)}",
                                     value=i in st.session_state.selected_requests,
                                     on_change=self._toggle_request_selection,
@@ -1196,68 +757,26 @@ class InventoryUI:
                                 )
 
                             with col2:
-                                with st.expander(f"🛒 Request #{i+1} - {request.split(',')[1].split(':')[1].strip() if len(request.split(',')) > 1 else 'Unknown'}", expanded=False):
+                                with st.expander(f"Request #{i+1}", expanded=False):
+                                    # Parse the request details
                                     parts = request.split(', ')
                                     for part in parts:
                                         if ':' in part:
                                             key, value = part.split(':', 1)
-                                            if key.strip() == "Date and Time":
-                                                st.markdown(
-                                                    f"**📅 {key.strip()}:** {value.strip()}")
-                                            elif key.strip() == "Manufacturer Part Number":
-                                                st.markdown(
-                                                    f"**🔧 {key.strip()}:** `{value.strip()}`")
-                                            elif key.strip() == "Requester Name":
-                                                st.markdown(
-                                                    f"**👤 {key.strip()}:** {value.strip()}")
-                                            else:
-                                                st.markdown(
-                                                    f"**{key.strip()}:** {value.strip()}")
+                                            st.write(
+                                                f"**{key.strip()}:** {value.strip()}")
                                         else:
                                             st.write(part)
                     else:
-                        st.info("📭 No active requests found")
+                        st.info("No active requests found")
                 else:
-                    st.info("📄 No reorder requests file found")
+                    st.info("No reorder requests file found")
             else:
-                st.error("❌ Unable to access database")
+                st.error("Unable to access database")
 
         except Exception as e:
             logger.error(f"Error fetching active requests: {e}")
-            st.error("🚨 Failed to load active requests")
-
-    def _show_analytics_panel(self):
-        """Display analytics dashboard"""
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); 
-                    padding: 2rem; border-radius: 16px; margin-top: 2rem;
-                    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.15); border: 1px solid #bbf7d0;">
-            <h3 style="text-align: center; color: #166534; margin-bottom: 1rem;">📈 Advanced Analytics</h3>
-        </div>
-        """, unsafe_allow_html=True)
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown("#### 📊 Component Distribution")
-            # Placeholder for future chart
-            st.info("📈 Component category charts coming soon!")
-
-        with col2:
-            st.markdown("#### 📅 Request Trends")
-            # Placeholder for future chart
-            st.info("📊 Request trend analysis coming soon!")
-
-        st.markdown("#### 🔍 Quick Insights")
-        insights = [
-            "🔧 Most requested component type: Microcontrollers",
-            "📈 30% increase in requests this month",
-            "⚡ Average response time: 2.3 days",
-            "🎯 95% request fulfillment rate"
-        ]
-
-        for insight in insights:
-            st.success(insight)
+            st.error("Failed to load active requests")
 
     def _toggle_request_selection(self, index):
         """Toggle selection of a specific request"""
@@ -1270,12 +789,13 @@ class InventoryUI:
             st.session_state.selected_requests.add(index)
 
     def _delete_selected_requests(self, current_requests) -> int:
-        """Delete selected requests with enhanced feedback"""
+        """Delete selected requests from Firebase and return count of deleted items"""
         try:
             if not st.session_state.selected_requests:
                 return 0
 
             if self.inventory_manager.bucket:
+                # Remove selected requests (in reverse order to maintain indices)
                 selected_indices = sorted(
                     st.session_state.selected_requests, reverse=True)
                 updated_requests = current_requests.copy()
@@ -1286,152 +806,59 @@ class InventoryUI:
                         updated_requests.pop(index)
                         deleted_count += 1
 
+                # Update the file
                 blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
                 updated_content = '\n'.join(
                     updated_requests) + '\n' if updated_requests else ''
                 blob.upload_from_string(updated_content)
 
+                # Clear selection and show success
                 st.session_state.selected_requests = set()
-                st.success(
-                    f"✅ Successfully deleted {deleted_count} request(s)")
+                st.success(f"Successfully deleted {deleted_count} request(s)")
                 return deleted_count
             else:
-                st.error("❌ Unable to access database")
+                st.error("Unable to access database")
                 return 0
 
         except Exception as e:
             logger.error(f"Error deleting requests: {e}")
-            st.error("🚨 Failed to delete selected requests")
+            st.error("Failed to delete selected requests")
             return 0
 
 
 def main():
-    """Main application entry point with enhanced styling"""
-    # Enhanced page configuration
+    """Main application entry point"""
+    # Page configuration
     st.set_page_config(
         page_title="Aharoni Lab Inventory",
         page_icon="🔬",
         layout="wide",
-        initial_sidebar_state="expanded",
-        menu_items={
-            'Get Help': 'https://github.com/your-repo/issues',
-            'Report a bug': 'https://github.com/your-repo/issues',
-            'About': "Professional Laboratory Inventory Management System v2.0"
-        }
+        initial_sidebar_state="expanded"
     )
 
-    # Professional custom CSS
+    # Custom CSS for professional styling
     st.markdown("""
     <style>
-    /* Global Styles */
     .main > div {
         padding-top: 1rem;
     }
-    
-    /* Enhanced Button Styles */
     .stButton > button {
-        border-radius: 8px;
+        border-radius: 5px;
         border: none;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(90deg, #1f4e79 0%, #2e86de 100%);
         color: white;
-        font-weight: 600;
-        padding: 0.5rem 1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        font-weight: 500;
     }
     .stButton > button:hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        background: linear-gradient(90deg, #2e86de 0%, #1f4e79 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
-    
-    /* Form Input Enhancements */
-    .stTextInput > div > div > input,
-    .stTextArea > div > div > textarea,
+    .stTextInput > div > div > input {
+        border-radius: 5px;
+    }
     .stSelectbox > div > div > select {
-        border-radius: 8px;
-        border: 2px solid #e2e8f0;
-        transition: border-color 0.3s ease;
-    }
-    .stTextInput > div > div > input:focus,
-    .stTextArea > div > div > textarea:focus,
-    .stSelectbox > div > div > select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    /* Tab Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        border: 1px solid #e2e8f0;
-    }
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-    
-    /* Sidebar Enhancements */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-    }
-    
-    /* Dataframe Styling */
-    .dataframe {
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .dataframe th {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-        font-weight: 600;
-        color: #1f2937;
-    }
-    
-    /* Alert Enhancements */
-    .stAlert {
-        border-radius: 8px;
-        border: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    /* Metric Styling */
-    [data-testid="metric-container"] {
-        background: rgba(255, 255, 255, 0.8);
-        border: 1px solid #e2e8f0;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    
-    /* Hide Streamlit Elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    
-    /* Loading Animation */
-    .stSpinner > div {
-        border-top-color: #667eea;
-    }
-    
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        border-radius: 5px;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1440,21 +867,18 @@ def main():
     if not AuthManager.authenticate():
         return
 
-    # Initialize managers with error handling
+    # Initialize managers
     try:
         inventory_manager = InventoryManager()
         ui = InventoryUI(inventory_manager)
 
-        # Render enhanced UI
+        # Render UI components
         ui.render_header()
         ui.render_sidebar()
 
-        # Enhanced main content with icons
-        tab1, tab2, tab3 = st.tabs([
-            "🔍 Search & Discovery",
-            "📊 Analytics Dashboard",
-            "📤 Document Center"
-        ])
+        # Main content area
+        tab1, tab2, tab3 = st.tabs(
+            ["🔍 Search Components", "📊 Dashboard", "📤 File Upload"])
 
         with tab1:
             ui.render_search_section()
@@ -1467,36 +891,24 @@ def main():
         with tab3:
             ui.render_file_upload_section()
 
-        # Footer
-        st.markdown("---")
-        st.markdown("""
-        <div style="text-align: center; color: #6b7280; font-size: 0.875rem; padding: 1rem;">
-            <p>🔬 <strong>Aharoni Laboratory Inventory Management System</strong> | Version 2.0 Professional</p>
-            <p>Developed with ❤️ for scientific excellence | CHS 74-134</p>
-        </div>
-        """, unsafe_allow_html=True)
-
     except Exception as e:
         logger.error(f"Application error: {e}")
-        st.markdown("""
-        <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); 
-                    padding: 2rem; border-radius: 16px; margin: 2rem 0;
-                    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15); border: 1px solid #fecaca;">
-            <h3 style="color: #dc2626; text-align: center;">🚨 System Error</h3>
-            <p style="color: #991b1b; text-align: center;">An unexpected error occurred. Please contact the administrator.</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.error(
+            "🚨 An unexpected error occurred. Please check the configuration and try again.")
 
-        with st.expander("🔧 Technical Details (Administrator Only)"):
+        # Show error details in an expander for debugging
+        with st.expander("🔧 Error Details (for administrator)"):
             st.code(str(e))
-            st.markdown("""
-            **Possible Solutions:**
-            - ✅ Verify Firebase credentials in secrets.toml
-            - ✅ Check authentication configuration  
-            - ✅ Confirm network connectivity
-            - ✅ Validate Firebase service permissions
-            - ✅ Refresh the page and try again
-            """)
+            st.write("**Possible causes:**")
+            st.write("- Missing or incorrect Firebase credentials in secrets.toml")
+            st.write("- Missing authentication configuration")
+            st.write("- Network connectivity issues")
+            st.write("- Firebase service account permissions")
+
+        st.info("💡 **Quick fixes to try:**")
+        st.write("1. Refresh the page")
+        st.write("2. Check your internet connection")
+        st.write("3. Contact the administrator if the problem persists")
 
 
 if __name__ == "__main__":
