@@ -660,30 +660,6 @@ class InventoryUI:
 
             st.success("🟢 File Upload: Ready")
 
-        # Recent activity placeholder
-        st.markdown("---")
-        st.markdown("#### 📋 Recent Activity")
-        st.info("🔄 Activity logging will be implemented in future updates")
-
-        # Quick actions
-        st.markdown("---")
-        st.markdown("#### ⚡ Quick Actions")
-
-        action_col1, action_col2, action_col3 = st.columns(3)
-
-        with action_col1:
-            if st.button("📤 View All Requests", use_container_width=True):
-                st.info("Feature coming soon: View all reorder requests")
-
-        with action_col2:
-            if st.button("📊 Export Data", use_container_width=True):
-                st.info("Feature coming soon: Export inventory data")
-
-        with action_col3:
-            if st.button("🔄 Refresh Data", use_container_width=True):
-                st.cache_data.clear()
-                st.rerun()
-
 
 def main():
     """Main application entry point"""
