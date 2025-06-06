@@ -449,9 +449,8 @@ class InventoryUI:
                         else:
                             st.error(
                                 "Failed to submit reorder request. Please try again.")
-                    else:
-                        st.error(
-                            "Please fill in all required fields marked with *")
+                else:
+                    st.error("Please fill in all required fields marked with *")
 
     def render_dashboard_section(self):
         """Render the dashboard with metrics and active requests"""
