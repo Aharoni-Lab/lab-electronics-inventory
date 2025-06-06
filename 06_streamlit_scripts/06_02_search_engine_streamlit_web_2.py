@@ -37,6 +37,12 @@ class InventoryManager:
         """Initialize Firebase connection"""
         try:
             if not firebase_admin._apps:
+                # Check if Firebase secrets are available
+                if "firebase" not in st.secrets:
+                    st.error(
+                        "🔧 Firebase configuration missing. Please contact administrator.")
+                    st.stop()
+
                 cred = credentials.Certificate({
                     "type": st.secrets["firebase"]["type"],
                     "project_id": st.secrets["firebase"]["project_id"],
@@ -55,10 +61,17 @@ class InventoryManager:
             self.bucket = storage.bucket()
             logger.info("Firebase initialized successfully")
 
+        except KeyError as e:
+            logger.error(f"Missing Firebase configuration: {e}")
+            st.error(
+                f"🔧 Missing Firebase setting: {e}. Please contact administrator.")
+            st.stop()
         except Exception as e:
             logger.error(f"Firebase initialization failed: {e}")
             st.error(
-                "Failed to initialize database connection. Please contact administrator.")
+                "❌ Failed to initialize database connection. Please contact administrator.")
+            st.error(f"Debug info: {str(e)}")
+            st.stop()
 
     def fetch_inventory_data(self) -> Optional[str]:
         """Fetch inventory data from Firebase storage"""
@@ -207,6 +220,12 @@ class AuthManager:
         if st.session_state["authenticated"]:
             return True
 
+        # Check if auth secrets are available
+        if "auth" not in st.secrets:
+            st.error(
+                "🔧 Authentication not configured. Please contact administrator.")
+            st.stop()
+
         # Login UI
         st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
@@ -230,15 +249,19 @@ class AuthManager:
                         "🔐 Login", use_container_width=True)
 
                     if submitted:
-                        if (username == st.secrets["auth"]["username"] and
-                                password == st.secrets["auth"]["password"]):
-                            st.session_state["authenticated"] = True
-                            st.success("✅ Authentication successful!")
-                            time.sleep(1)
-                            st.rerun()
-                        else:
+                        try:
+                            if (username == st.secrets["auth"]["username"] and
+                                    password == st.secrets["auth"]["password"]):
+                                st.session_state["authenticated"] = True
+                                st.success("✅ Authentication successful!")
+                                time.sleep(1)
+                                st.rerun()
+                            else:
+                                st.error(
+                                    "❌ Invalid credentials. Please try again.")
+                        except KeyError:
                             st.error(
-                                "❌ Invalid credentials. Please try again.")
+                                "🔧 Authentication configuration error. Please contact administrator.")
 
         return False
 
@@ -447,7 +470,7 @@ class InventoryUI:
                         "Additional Notes (Optional)", height=60)
 
                 submitted = st.form_submit_button(
-                    "📤 Submit Reorder Request", use_container_width=True)
+                    "📤 Submit Reorder Request", use_container_width=True, type="primary")
 
                 if submitted:
                     if manufacturer_pn and description and requester_name:
@@ -556,11 +579,21 @@ def main():
     except Exception as e:
         logger.error(f"Application error: {e}")
         st.error(
-            "🚨 An unexpected error occurred. Please refresh the page or contact the administrator.")
+            "🚨 An unexpected error occurred. Please check the configuration and try again.")
 
-        # Optional: Display error details in debug mode
-        if st.secrets.get("debug_mode", False):
-            st.exception(e)
+        # Show error details in an expander for debugging
+        with st.expander("🔧 Error Details (for administrator)"):
+            st.code(str(e))
+            st.write("**Possible causes:**")
+            st.write("- Missing or incorrect Firebase credentials in secrets.toml")
+            st.write("- Missing authentication configuration")
+            st.write("- Network connectivity issues")
+            st.write("- Firebase service account permissions")
+
+        st.info("💡 **Quick fixes to try:**")
+        st.write("1. Refresh the page")
+        st.write("2. Check your internet connection")
+        st.write("3. Contact the administrator if the problem persists")
 
 
 if __name__ == "__main__":
