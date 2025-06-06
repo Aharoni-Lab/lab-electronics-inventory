@@ -149,6 +149,8 @@ class InventoryManager:
             if match_part and match_value:
                 results.append(item)
 
+        return results
+
     @staticmethod
     def _normalize_text(text: str) -> str:
         """Normalize text for search operations"""
@@ -567,6 +569,9 @@ class InventoryUI:
                         else:
                             st.error(
                                 "❌ Failed to submit reorder request. Please try again.")
+                    else:
+                        st.error(
+                            "❌ Please fill in all required fields marked with *")
 
     def render_dashboard_section(self):
         """Render the dashboard with real metrics"""
@@ -740,10 +745,6 @@ def main():
 
         with tab2:
             ui.render_dashboard_section()
-
-            else:
-                st.error(
-                    "❌ Please fill in all required fields marked with *")
 
     except Exception as e:
         logger.error(f"Application error: {e}")
