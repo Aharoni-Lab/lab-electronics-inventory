@@ -648,57 +648,59 @@ class InventoryUI:
                     if requests:
                         st.success(f"Found {len(requests)} active request(s)")
 
-                        # Add "Select All" option
+                        # Initialize session state for checkboxes
+                        if "selected_requests" not in st.session_state:
+                            st.session_state.selected_requests = set()
+
+                        # Add "Select All" option and Delete button
                         col1, col2 = st.columns([3, 1])
                         with col1:
                             select_all = st.checkbox("Select All Requests")
+                            if select_all:
+                                st.session_state.selected_requests = set(
+                                    range(len(requests)))
+                            elif not select_all and len(st.session_state.selected_requests) == len(requests):
+                                st.session_state.selected_requests = set()
+
                         with col2:
                             if st.button("🗑️ Delete Selected", type="secondary"):
-                                deleted_count = self._delete_selected_requests()
-                                if deleted_count > 0:
-                                    # Just rerun to refresh the list without hiding it
-                                    st.rerun()
+                                if st.session_state.selected_requests:
+                                    deleted_count = self._delete_selected_requests(
+                                        requests)
+                                    if deleted_count > 0:
+                                        st.rerun()
+                                else:
+                                    st.warning(
+                                        "No requests selected for deletion")
 
                         st.markdown("---")
 
-                        # Initialize session state for checkboxes
-                        if "selected_requests" not in st.session_state:
-                            st.session_state.selected_requests = []
+                        # Display each request with checkbox (no form needed)
+                        for i, request in enumerate(requests):
+                            col1, col2 = st.columns([1, 10])
 
-                        # Create a form to handle multiple checkboxes
-                        with st.form("request_selection_form"):
-                            selected_indices = []
+                            with col1:
+                                # Use individual checkboxes that update session state immediately
+                                is_selected = st.checkbox(
+                                    "",
+                                    # Include length to force refresh
+                                    key=f"req_{i}_{len(requests)}",
+                                    value=i in st.session_state.selected_requests,
+                                    on_change=self._toggle_request_selection,
+                                    args=(i,)
+                                )
 
-                            # Display each request with checkbox
-                            for i, request in enumerate(requests):
-                                col1, col2 = st.columns([1, 10])
-
-                                with col1:
-                                    is_selected = st.checkbox(
-                                        "", key=f"req_{i}", value=select_all)
-                                    if is_selected:
-                                        selected_indices.append(i)
-
-                                with col2:
-                                    with st.expander(f"Request #{i+1}", expanded=False):
-                                        # Parse the request details
-                                        parts = request.split(', ')
-                                        for part in parts:
-                                            if ':' in part:
-                                                key, value = part.split(':', 1)
-                                                st.write(
-                                                    f"**{key.strip()}:** {value.strip()}")
-                                            else:
-                                                st.write(part)
-
-                            # Update selected requests in session state
-                            submitted = st.form_submit_button(
-                                "Update Selection")
-                            if submitted:
-                                st.session_state.selected_requests = selected_indices
-                                if selected_indices:
-                                    st.info(
-                                        f"Selected {len(selected_indices)} request(s) for deletion")
+                            with col2:
+                                with st.expander(f"Request #{i+1}", expanded=False):
+                                    # Parse the request details
+                                    parts = request.split(', ')
+                                    for part in parts:
+                                        if ':' in part:
+                                            key, value = part.split(':', 1)
+                                            st.write(
+                                                f"**{key.strip()}:** {value.strip()}")
+                                        else:
+                                            st.write(part)
                     else:
                         st.info("No active requests found")
                 else:
@@ -710,43 +712,44 @@ class InventoryUI:
             logger.error(f"Error fetching active requests: {e}")
             st.error("Failed to load active requests")
 
-    def _delete_selected_requests(self) -> int:
+    def _toggle_request_selection(self, index):
+        """Toggle selection of a specific request"""
+        if "selected_requests" not in st.session_state:
+            st.session_state.selected_requests = set()
+
+        if index in st.session_state.selected_requests:
+            st.session_state.selected_requests.remove(index)
+        else:
+            st.session_state.selected_requests.add(index)
+
+    def _delete_selected_requests(self, current_requests) -> int:
         """Delete selected requests from Firebase and return count of deleted items"""
         try:
-            if "selected_requests" not in st.session_state or not st.session_state.selected_requests:
-                st.warning("No requests selected for deletion")
+            if not st.session_state.selected_requests:
                 return 0
 
             if self.inventory_manager.bucket:
+                # Remove selected requests (in reverse order to maintain indices)
+                selected_indices = sorted(
+                    st.session_state.selected_requests, reverse=True)
+                updated_requests = current_requests.copy()
+                deleted_count = 0
+
+                for index in selected_indices:
+                    if 0 <= index < len(updated_requests):
+                        updated_requests.pop(index)
+                        deleted_count += 1
+
+                # Update the file
                 blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
-                if blob.exists():
-                    reorder_content = blob.download_as_text()
-                    requests = [line.strip() for line in reorder_content.split(
-                        '\n') if line.strip()]
+                updated_content = '\n'.join(
+                    updated_requests) + '\n' if updated_requests else ''
+                blob.upload_from_string(updated_content)
 
-                    # Remove selected requests (in reverse order to maintain indices)
-                    selected_indices = sorted(
-                        st.session_state.selected_requests, reverse=True)
-                    deleted_count = 0
-
-                    for index in selected_indices:
-                        if 0 <= index < len(requests):
-                            requests.pop(index)
-                            deleted_count += 1
-
-                    # Update the file
-                    updated_content = '\n'.join(
-                        requests) + '\n' if requests else ''
-                    blob.upload_from_string(updated_content)
-
-                    # Clear selection and show success
-                    st.session_state.selected_requests = []
-                    st.success(
-                        f"Successfully deleted {deleted_count} request(s)")
-                    return deleted_count
-                else:
-                    st.error("No requests file found")
-                    return 0
+                # Clear selection and show success
+                st.session_state.selected_requests = set()
+                st.success(f"Successfully deleted {deleted_count} request(s)")
+                return deleted_count
             else:
                 st.error("Unable to access database")
                 return 0
