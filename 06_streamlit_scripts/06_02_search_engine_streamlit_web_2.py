@@ -656,8 +656,7 @@ class InventoryUI:
                             if st.button("🗑️ Delete Selected", type="secondary"):
                                 deleted_count = self._delete_selected_requests()
                                 if deleted_count > 0:
-                                    # Clear the show_requests flag to hide the list and refresh
-                                    st.session_state.show_requests = False
+                                    # Just rerun to refresh the list without hiding it
                                     st.rerun()
 
                         st.markdown("---")
