@@ -620,45 +620,48 @@ class InventoryUI:
             st.metric("Last Updated", metrics.get(
                 "last_updated", "Unknown"), delta=None)
 
-        # Additional dashboard content
+        # View Active Requests Button
         st.markdown("---")
+        if st.button("📋 View Active Requests", use_container_width=True, type="primary"):
+            self._show_active_requests()
 
-        col1, col2 = st.columns(2)
+    def _show_active_requests(self):
+        """Display the active reorder requests"""
+        st.markdown("### 📋 Active Reorder Requests")
 
-        with col1:
-            st.markdown("#### 📈 Quick Stats")
-            total_components = metrics.get("total_components", 0)
-            if isinstance(total_components, int) and total_components > 0:
-                st.success(f"✅ {total_components} components tracked")
-                active_requests = metrics.get("active_requests", 0)
-                if isinstance(active_requests, int):
-                    if active_requests == 0:
-                        st.info("📋 No pending reorder requests")
+        try:
+            if self.inventory_manager.bucket:
+                blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
+                if blob.exists():
+                    reorder_content = blob.download_as_text()
+                    requests = [line.strip() for line in reorder_content.split(
+                        '\n') if line.strip()]
+
+                    if requests:
+                        st.success(f"Found {len(requests)} active request(s)")
+
+                        # Create a more readable display
+                        for i, request in enumerate(requests, 1):
+                            with st.expander(f"Request #{i}", expanded=False):
+                                # Parse the request details
+                                parts = request.split(', ')
+                                for part in parts:
+                                    if ':' in part:
+                                        key, value = part.split(':', 1)
+                                        st.write(
+                                            f"**{key.strip()}:** {value.strip()}")
+                                    else:
+                                        st.write(part)
                     else:
-                        st.warning(f"⏳ {active_requests} pending requests")
+                        st.info("No active requests found")
                 else:
-                    st.info("📋 Request status: " + str(active_requests))
+                    st.info("No reorder requests file found")
             else:
-                st.warning("⚠️ Unable to load inventory statistics")
-                st.info(
-                    "💡 This might be due to network issues or Firebase connectivity")
+                st.error("Unable to access database")
 
-        with col2:
-            st.markdown("#### 🔧 System Health")
-            # Test Firebase connection
-            try:
-                test_data = self.inventory_manager.fetch_inventory_data()
-                if test_data:
-                    st.success("🟢 Database Connection: Active")
-                    st.success("🟢 Search Engine: Operational")
-                else:
-                    st.warning("🟡 Database Connection: Limited")
-                    st.warning("🟡 Search Engine: Degraded")
-            except:
-                st.error("🔴 Database Connection: Failed")
-                st.error("🔴 Search Engine: Offline")
-
-            st.success("🟢 File Upload: Ready")
+        except Exception as e:
+            logger.error(f"Error fetching active requests: {e}")
+            st.error("Failed to load active requests")
 
 
 def main():
