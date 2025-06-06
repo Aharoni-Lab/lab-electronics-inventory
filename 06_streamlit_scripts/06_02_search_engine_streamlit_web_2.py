@@ -353,50 +353,9 @@ class InventoryUI:
         """, unsafe_allow_html=True)
 
     def render_sidebar(self):
-        """Render the sidebar with file upload functionality"""
+        """Render the sidebar with system status"""
         with st.sidebar:
-            st.markdown("### 📤 File Upload Center")
-
-            with st.expander("📸 Upload Component Files", expanded=False):
-                uploader_name = st.text_input(
-                    "Your Name",
-                    placeholder="Enter your full name",
-                    help="This will be used to organize uploaded files"
-                )
-
-                uploaded_files = st.file_uploader(
-                    "Choose files to upload",
-                    type=["jpg", "jpeg", "png", "pdf"],
-                    accept_multiple_files=True,
-                    help="Supported formats: JPG, PNG, PDF"
-                )
-
-                if uploaded_files and uploader_name:
-                    if st.button("🚀 Upload Files", use_container_width=True):
-                        with st.spinner("Uploading files..."):
-                            results = self.inventory_manager.upload_files(
-                                uploaded_files, uploader_name)
-
-                        success_count = sum(results.values())
-                        total_count = len(results)
-
-                        if success_count == total_count:
-                            st.success(
-                                f"✅ All {total_count} files uploaded successfully!")
-                        else:
-                            st.warning(
-                                f"⚠️ {success_count}/{total_count} files uploaded successfully")
-
-                        for filename, success in results.items():
-                            if not success:
-                                st.error(f"❌ Failed to upload: {filename}")
-
-                elif uploaded_files and not uploader_name:
-                    st.warning(
-                        "⚠️ Please enter your name before uploading files")
-
             # Add system status
-            st.markdown("---")
             st.markdown("### 📊 System Status")
             st.success("🟢 Database: Connected")
             st.info(f"🕒 Last updated: {datetime.now().strftime('%H:%M:%S')}")
@@ -569,9 +528,115 @@ class InventoryUI:
                         else:
                             st.error(
                                 "❌ Failed to submit reorder request. Please try again.")
-                    else:
-                        st.error(
-                            "❌ Please fill in all required fields marked with *")
+
+    def render_file_upload_section(self):
+        """Render the file upload interface"""
+        st.markdown("### 📤 File Upload Center")
+        st.markdown(
+            "Upload component photos, datasheets, or quotes to organize your lab documentation.")
+
+        # Create two columns for better layout
+        col1, col2 = st.columns([2, 1])
+
+        with col1:
+            # Upload form
+            with st.container():
+                st.markdown("#### 📸 Upload Component Files")
+
+                uploader_name = st.text_input(
+                    "Your Name *",
+                    placeholder="Enter your full name",
+                    help="This will be used to organize uploaded files in folders"
+                )
+
+                uploaded_files = st.file_uploader(
+                    "Choose files to upload",
+                    type=["jpg", "jpeg", "png", "pdf"],
+                    accept_multiple_files=True,
+                    help="Supported formats: JPG, PNG, PDF (Max file size depends on your Streamlit deployment)"
+                )
+
+                # Upload button and logic
+                if uploaded_files and uploader_name:
+                    st.markdown("#### 📋 Files Ready for Upload:")
+                    for file in uploaded_files:
+                        file_size = len(file.read()) / 1024 / \
+                            1024  # Size in MB
+                        file.seek(0)  # Reset file pointer
+                        st.write(f"• **{file.name}** ({file_size:.2f} MB)")
+
+                    if st.button("🚀 Upload Files", use_container_width=True, type="primary"):
+                        with st.spinner("Uploading files to Firebase..."):
+                            results = self.inventory_manager.upload_files(
+                                uploaded_files, uploader_name)
+
+                        success_count = sum(results.values())
+                        total_count = len(results)
+
+                        if success_count == total_count:
+                            st.success(
+                                f"✅ All {total_count} files uploaded successfully!")
+                            st.balloons()
+                        else:
+                            st.warning(
+                                f"⚠️ {success_count}/{total_count} files uploaded successfully")
+
+                        # Show detailed results
+                        with st.expander("📊 Upload Details", expanded=success_count != total_count):
+                            for filename, success in results.items():
+                                if success:
+                                    st.success(f"✅ {filename}")
+                                else:
+                                    st.error(f"❌ {filename} - Upload failed")
+
+                elif uploaded_files and not uploader_name:
+                    st.warning(
+                        "⚠️ Please enter your name before uploading files")
+                elif not uploaded_files:
+                    st.info("📁 Select files above to see upload preview")
+
+        with col2:
+            # Upload guidelines and tips
+            st.markdown("#### 💡 Upload Guidelines")
+
+            with st.container():
+                st.markdown("""
+                **File Organization:**
+                - Files are organized by uploader name
+                - Use descriptive filenames
+                - Include component part numbers when possible
+                
+                **Supported Files:**
+                - 📸 **Photos**: JPG, PNG
+                - 📄 **Documents**: PDF
+                
+                **Best Practices:**
+                - Clear, well-lit component photos
+                - Complete datasheets and specifications
+                - Supplier quotes with part numbers
+                - Keep filenames descriptive
+                """)
+
+                st.markdown("#### 📊 Upload Statistics")
+                st.info("📈 Upload tracking coming soon")
+
+                # File management tips
+                with st.expander("🔧 File Management Tips"):
+                    st.markdown("""
+                    **Naming Convention:**
+                    - `PartNumber_Description.ext`
+                    - `STM32F407_Datasheet.pdf`
+                    - `Resistor_100ohm_Photo.jpg`
+                    
+                    **Organization:**
+                    - Group related files by project
+                    - Include version numbers for updates
+                    - Use consistent naming across team
+                    """)
+
+        st.markdown("---")
+        st.markdown("#### 🗂️ File Access")
+        st.info("📁 Uploaded files are stored in Firebase Storage and can be accessed by administrators through the Firebase console.")
 
     def render_dashboard_section(self):
         """Render the dashboard with real metrics"""
