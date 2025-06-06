@@ -604,7 +604,7 @@ class InventoryUI:
         </style>
         """, unsafe_allow_html=True)
 
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
 
         with col1:
             total = metrics.get("total_components", "Error")
@@ -621,19 +621,16 @@ class InventoryUI:
                 st.metric("Active Requests", str(requests), delta=None)
 
         with col3:
-            categories = metrics.get("categories", "Error")
-            if isinstance(categories, int):
-                st.metric("Component Types", categories, delta=None)
-            else:
-                st.metric("Component Types", str(categories), delta=None)
-
-        with col4:
             st.metric("Last Updated", metrics.get(
                 "last_updated", "Unknown"), delta=None)
 
         # View Active Requests Button
         st.markdown("---")
         if st.button("📋 View Active Requests", use_container_width=True, type="primary"):
+            st.session_state.show_requests = True
+
+        # Display requests if button was clicked
+        if st.session_state.get("show_requests", False):
             self._show_active_requests()
 
     def _show_active_requests(self):
@@ -657,7 +654,11 @@ class InventoryUI:
                             select_all = st.checkbox("Select All Requests")
                         with col2:
                             if st.button("🗑️ Delete Selected", type="secondary"):
-                                self._delete_selected_requests()
+                                deleted_count = self._delete_selected_requests()
+                                if deleted_count > 0:
+                                    # Clear the show_requests flag to hide the list and refresh
+                                    st.session_state.show_requests = False
+                                    st.rerun()
 
                         st.markdown("---")
 
@@ -710,12 +711,12 @@ class InventoryUI:
             logger.error(f"Error fetching active requests: {e}")
             st.error("Failed to load active requests")
 
-    def _delete_selected_requests(self):
-        """Delete selected requests from Firebase"""
+    def _delete_selected_requests(self) -> int:
+        """Delete selected requests from Firebase and return count of deleted items"""
         try:
             if "selected_requests" not in st.session_state or not st.session_state.selected_requests:
                 st.warning("No requests selected for deletion")
-                return
+                return 0
 
             if self.inventory_manager.bucket:
                 blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
@@ -727,9 +728,12 @@ class InventoryUI:
                     # Remove selected requests (in reverse order to maintain indices)
                     selected_indices = sorted(
                         st.session_state.selected_requests, reverse=True)
+                    deleted_count = 0
+
                     for index in selected_indices:
                         if 0 <= index < len(requests):
                             requests.pop(index)
+                            deleted_count += 1
 
                     # Update the file
                     updated_content = '\n'.join(
@@ -739,16 +743,19 @@ class InventoryUI:
                     # Clear selection and show success
                     st.session_state.selected_requests = []
                     st.success(
-                        f"Successfully deleted {len(selected_indices)} request(s)")
-                    st.rerun()
+                        f"Successfully deleted {deleted_count} request(s)")
+                    return deleted_count
                 else:
                     st.error("No requests file found")
+                    return 0
             else:
                 st.error("Unable to access database")
+                return 0
 
         except Exception as e:
             logger.error(f"Error deleting requests: {e}")
             st.error("Failed to delete selected requests")
+            return 0
 
 
 def main():
