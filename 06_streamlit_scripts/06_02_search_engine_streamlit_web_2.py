@@ -211,10 +211,10 @@ class InventoryManager:
             inventory_data = self.fetch_inventory_data()
             if not inventory_data:
                 return {
-                    "total_components": "Error",
-                    "active_requests": "Error",
-                    "categories": "Error",
-                    "last_updated": "Error"
+                    "total_components": "No Data",
+                    "active_requests": "No Data",
+                    "categories": "No Data",
+                    "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
                 }
 
             blocks = inventory_data.split("\n\n")
@@ -236,7 +236,7 @@ class InventoryManager:
             # Count unique categories (rough estimate based on common component types)
             categories = set()
             component_types = ['resistor', 'capacitor', 'inductor', 'ic', 'microcontroller',
-                               'transistor', 'diode', 'led', 'connector', 'switch']
+                               'transistor', 'diode', 'led', 'connector', 'switch', 'sensor']
 
             for desc in descriptions:
                 for comp_type in component_types:
@@ -244,21 +244,22 @@ class InventoryManager:
                         categories.add(comp_type.title())
 
             # Get reorder requests count
+            active_requests = 0
             try:
-                blob = self.bucket.blob('to_be_ordered.txt')
-                if blob.exists():
-                    reorder_content = blob.download_as_text()
-                    active_requests = len(
-                        [line for line in reorder_content.split('\n') if line.strip()])
-                else:
-                    active_requests = 0
-            except:
+                if self.bucket:
+                    blob = self.bucket.blob('to_be_ordered.txt')
+                    if blob.exists():
+                        reorder_content = blob.download_as_text()
+                        active_requests = len(
+                            [line for line in reorder_content.split('\n') if line.strip()])
+            except Exception as e:
+                logger.warning(f"Could not fetch reorder requests: {e}")
                 active_requests = "N/A"
 
             return {
                 "total_components": valid_items,
                 "active_requests": active_requests,
-                "categories": len(categories) if categories else len(locations),
+                "categories": len(categories) if categories else max(1, len(locations)),
                 "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
             }
 
@@ -268,7 +269,7 @@ class InventoryManager:
                 "total_components": "Error",
                 "active_requests": "Error",
                 "categories": "Error",
-                "last_updated": "Error"
+                "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
             }
 
 
@@ -571,36 +572,48 @@ class InventoryUI:
         """Render the dashboard with real metrics"""
         st.markdown("### 📊 Inventory Dashboard")
 
-        # Get real metrics
-        with st.spinner("Loading dashboard metrics..."):
-            metrics = self.inventory_manager.get_dashboard_metrics()
+        # Get real metrics with error handling
+        metrics = None
+        try:
+            with st.spinner("Loading dashboard metrics..."):
+                metrics = self.inventory_manager.get_dashboard_metrics()
+        except Exception as e:
+            logger.error(f"Dashboard metrics error: {e}")
+            st.error("⚠️ Unable to load dashboard metrics. Using fallback values.")
+            metrics = {
+                "total_components": "Unavailable",
+                "active_requests": "Unavailable",
+                "categories": "Unavailable",
+                "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
+            }
 
         # Display metrics
         col1, col2, col3, col4 = st.columns(4)
 
         with col1:
-            total = metrics["total_components"]
+            total = metrics.get("total_components", "Error")
             if isinstance(total, int):
                 st.metric("Total Components", f"{total:,}", delta=None)
             else:
-                st.metric("Total Components", total, delta=None)
+                st.metric("Total Components", str(total), delta=None)
 
         with col2:
-            requests = metrics["active_requests"]
+            requests = metrics.get("active_requests", "Error")
             if isinstance(requests, int):
                 st.metric("Active Requests", requests, delta=None)
             else:
-                st.metric("Active Requests", requests, delta=None)
+                st.metric("Active Requests", str(requests), delta=None)
 
         with col3:
-            categories = metrics["categories"]
+            categories = metrics.get("categories", "Error")
             if isinstance(categories, int):
                 st.metric("Component Types", categories, delta=None)
             else:
-                st.metric("Component Types", categories, delta=None)
+                st.metric("Component Types", str(categories), delta=None)
 
         with col4:
-            st.metric("Last Updated", metrics["last_updated"], delta=None)
+            st.metric("Last Updated", metrics.get(
+                "last_updated", "Unknown"), delta=None)
 
         # Additional dashboard content
         st.markdown("---")
@@ -609,22 +622,37 @@ class InventoryUI:
 
         with col1:
             st.markdown("#### 📈 Quick Stats")
-            if isinstance(metrics["total_components"], int) and metrics["total_components"] > 0:
-                st.success(
-                    f"✅ {metrics['total_components']} components tracked")
-                if isinstance(metrics["active_requests"], int):
-                    if metrics["active_requests"] == 0:
+            total_components = metrics.get("total_components", 0)
+            if isinstance(total_components, int) and total_components > 0:
+                st.success(f"✅ {total_components} components tracked")
+                active_requests = metrics.get("active_requests", 0)
+                if isinstance(active_requests, int):
+                    if active_requests == 0:
                         st.info("📋 No pending reorder requests")
                     else:
-                        st.warning(
-                            f"⏳ {metrics['active_requests']} pending requests")
+                        st.warning(f"⏳ {active_requests} pending requests")
+                else:
+                    st.info("📋 Request status: " + str(active_requests))
             else:
                 st.warning("⚠️ Unable to load inventory statistics")
+                st.info(
+                    "💡 This might be due to network issues or Firebase connectivity")
 
         with col2:
             st.markdown("#### 🔧 System Health")
-            st.success("🟢 Database Connection: Active")
-            st.success("🟢 Search Engine: Operational")
+            # Test Firebase connection
+            try:
+                test_data = self.inventory_manager.fetch_inventory_data()
+                if test_data:
+                    st.success("🟢 Database Connection: Active")
+                    st.success("🟢 Search Engine: Operational")
+                else:
+                    st.warning("🟡 Database Connection: Limited")
+                    st.warning("🟡 Search Engine: Degraded")
+            except:
+                st.error("🔴 Database Connection: Failed")
+                st.error("🔴 Search Engine: Offline")
+
             st.success("🟢 File Upload: Ready")
 
         # Recent activity placeholder
@@ -711,20 +739,11 @@ def main():
             ui.render_reorder_section()
 
         with tab2:
-            st.markdown("### 📊 Inventory Dashboard")
-            st.info(
-                "📈 Dashboard features coming soon - analytics, usage statistics, and inventory trends")
+            ui.render_dashboard_section()
 
-            # Placeholder metrics
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("Total Components", "Loading...", delta=None)
-            with col2:
-                st.metric("Active Requests", "Loading...", delta=None)
-            with col3:
-                st.metric("Categories", "Loading...", delta=None)
-            with col4:
-                st.metric("Last Updated", "Loading...", delta=None)
+            else:
+                st.error(
+                    "❌ Please fill in all required fields marked with *")
 
     except Exception as e:
         logger.error(f"Application error: {e}")
