@@ -467,10 +467,15 @@ class InventoryUI:
                     supplier_pref = st.text_input(
                         "Preferred Supplier (Optional)", placeholder="e.g., Digi-Key, Mouser")
                     notes = st.text_area(
-                        "Additional Notes (Optional)", height=60)
+                        "Additional Notes (Optional)", height=100)
 
+                # Submit button
+                st.markdown("<br>", unsafe_allow_html=True)
                 submitted = st.form_submit_button(
-                    "📤 Submit Reorder Request", use_container_width=True, type="primary")
+                    "📤 Submit Reorder Request",
+                    use_container_width=True,
+                    type="primary"
+                )
 
                 if submitted:
                     if manufacturer_pn and description and requester_name:
