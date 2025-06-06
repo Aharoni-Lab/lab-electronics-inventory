@@ -634,9 +634,9 @@ class InventoryUI:
                     - Use consistent naming across team
                     """)
 
-        st.markdown("---")
-        st.markdown("#### 🗂️ File Access")
-        st.info("📁 Uploaded files are stored in Firebase Storage and can be accessed by administrators through the Firebase console.")
+                    else:
+                        st.error(
+                            "❌ Please fill in all required fields marked with *")
 
     def render_dashboard_section(self):
         """Render the dashboard with real metrics"""
@@ -876,7 +876,8 @@ def main():
         ui.render_sidebar()
 
         # Main content area
-        tab1, tab2 = st.tabs(["🔍 Search Components", "📊 Dashboard"])
+        tab1, tab2, tab3 = st.tabs(
+            ["🔍 Search Components", "📊 Dashboard", "📤 File Upload"])
 
         with tab1:
             ui.render_search_section()
@@ -885,6 +886,9 @@ def main():
 
         with tab2:
             ui.render_dashboard_section()
+
+        with tab3:
+            ui.render_file_upload_section()
 
     except Exception as e:
         logger.error(f"Application error: {e}")
