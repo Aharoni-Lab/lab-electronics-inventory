@@ -135,7 +135,7 @@ class InventoryManager:
                     item.manufacturer_pn)
                 norm_part_number = self._normalize_text(item.part_number)
                 match_part = (normalized_part_query in norm_manufacturer_pn or
-                              normalized_part_query in norm_part_number)
+                             normalized_part_query in norm_part_number)
             else:
                 match_part = True
 
@@ -238,7 +238,7 @@ class InventoryManager:
             # Count unique categories (rough estimate based on common component types)
             categories = set()
             component_types = ['resistor', 'capacitor', 'inductor', 'ic', 'microcontroller',
-                               'transistor', 'diode', 'led', 'connector', 'switch', 'sensor']
+                             'transistor', 'diode', 'led', 'connector', 'switch', 'sensor']
 
             for desc in descriptions:
                 for comp_type in component_types:
@@ -318,7 +318,7 @@ class AuthManager:
                     if submitted:
                         try:
                             if (username == st.secrets["auth"]["username"] and
-                                    password == st.secrets["auth"]["password"]):
+                                password == st.secrets["auth"]["password"]):
                                 st.session_state["authenticated"] = True
                                 st.success("✅ Authentication successful!")
                                 time.sleep(1)
@@ -342,8 +342,8 @@ class InventoryUI:
     def render_header(self):
         """Render the application header"""
         st.markdown("""
-        <div style='text-align: center; padding: 1rem; margin-bottom: 2rem; 
-                    background: linear-gradient(90deg, #1f4e79 0%, #2e86de 100%); 
+        <div style='text-align: center; padding: 1rem; margin-bottom: 2rem;
+                    background: linear-gradient(90deg, #1f4e79 0%, #2e86de 100%);
                     border-radius: 10px; color: white;'>
             <h1 style='margin: 0; font-size: 2.5em;'>🔬 Laboratory Inventory Management</h1>
             <p style='margin: 0.5rem 0 0 0; font-size: 1.2em; opacity: 0.9;'>
@@ -528,59 +528,55 @@ class InventoryUI:
                         else:
                             st.error(
                                 "❌ Failed to submit reorder request. Please try again.")
-
+                    else:
+                        st.error("❌ Please fill in all required fields marked with *")❌ Failed to submit reorder request. Please try again.")
     def render_file_upload_section(self):
         """Render the file upload interface"""
         st.markdown("### 📤 File Upload Center")
-        st.markdown(
-            "Upload component photos, datasheets, or quotes to organize your lab documentation.")
-
+        st.markdown("Upload component photos, datasheets, or quotes to organize your lab documentation.")
+        
         # Create two columns for better layout
         col1, col2 = st.columns([2, 1])
-
+        
         with col1:
             # Upload form
             with st.container():
                 st.markdown("#### 📸 Upload Component Files")
-
+                
                 uploader_name = st.text_input(
                     "Your Name *",
                     placeholder="Enter your full name",
                     help="This will be used to organize uploaded files in folders"
                 )
-
+                
                 uploaded_files = st.file_uploader(
                     "Choose files to upload",
                     type=["jpg", "jpeg", "png", "pdf"],
                     accept_multiple_files=True,
                     help="Supported formats: JPG, PNG, PDF (Max file size depends on your Streamlit deployment)"
                 )
-
+                
                 # Upload button and logic
                 if uploaded_files and uploader_name:
                     st.markdown("#### 📋 Files Ready for Upload:")
                     for file in uploaded_files:
-                        file_size = len(file.read()) / 1024 / \
-                            1024  # Size in MB
+                        file_size = len(file.read()) / 1024 / 1024  # Size in MB
                         file.seek(0)  # Reset file pointer
                         st.write(f"• **{file.name}** ({file_size:.2f} MB)")
-
+                    
                     if st.button("🚀 Upload Files", use_container_width=True, type="primary"):
                         with st.spinner("Uploading files to Firebase..."):
-                            results = self.inventory_manager.upload_files(
-                                uploaded_files, uploader_name)
-
+                            results = self.inventory_manager.upload_files(uploaded_files, uploader_name)
+                        
                         success_count = sum(results.values())
                         total_count = len(results)
-
+                        
                         if success_count == total_count:
-                            st.success(
-                                f"✅ All {total_count} files uploaded successfully!")
+                            st.success(f"✅ All {total_count} files uploaded successfully!")
                             st.balloons()
                         else:
-                            st.warning(
-                                f"⚠️ {success_count}/{total_count} files uploaded successfully")
-
+                            st.warning(f"⚠️ {success_count}/{total_count} files uploaded successfully")
+                            
                         # Show detailed results
                         with st.expander("📊 Upload Details", expanded=success_count != total_count):
                             for filename, success in results.items():
@@ -588,17 +584,16 @@ class InventoryUI:
                                     st.success(f"✅ {filename}")
                                 else:
                                     st.error(f"❌ {filename} - Upload failed")
-
+                
                 elif uploaded_files and not uploader_name:
-                    st.warning(
-                        "⚠️ Please enter your name before uploading files")
+                    st.warning("⚠️ Please enter your name before uploading files")
                 elif not uploaded_files:
                     st.info("📁 Select files above to see upload preview")
-
+        
         with col2:
             # Upload guidelines and tips
             st.markdown("#### 💡 Upload Guidelines")
-
+            
             with st.container():
                 st.markdown("""
                 **File Organization:**
@@ -616,10 +611,10 @@ class InventoryUI:
                 - Supplier quotes with part numbers
                 - Keep filenames descriptive
                 """)
-
+                
                 st.markdown("#### 📊 Upload Statistics")
                 st.info("📈 Upload tracking coming soon")
-
+                
                 # File management tips
                 with st.expander("🔧 File Management Tips"):
                     st.markdown("""
@@ -633,15 +628,15 @@ class InventoryUI:
                     - Include version numbers for updates
                     - Use consistent naming across team
                     """)
-
-                    else:
-                        st.error(
-                            "❌ Please fill in all required fields marked with *")
-
+                    
+                        st.markdown("---")
+                        st.markdown("#### 🗂️ File Access")
+                        st.info("📁 Uploaded files are stored in Firebase Storage and can be accessed by administrators through the Firebase console.")
+    
     def render_dashboard_section(self):
         """Render the dashboard with real metrics"""
         st.markdown("### 📊 Inventory Dashboard")
-
+        
         # Get real metrics with error handling
         metrics = None
         try:
@@ -656,7 +651,7 @@ class InventoryUI:
                 "categories": "Unavailable",
                 "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M')
             }
-
+        
         # Display metrics with smaller font
         st.markdown("""
         <style>
@@ -668,93 +663,87 @@ class InventoryUI:
         }
         </style>
         """, unsafe_allow_html=True)
-
+        
         col1, col2, col3 = st.columns(3)
-
+        
         with col1:
             total = metrics.get("total_components", "Error")
             if isinstance(total, int):
                 st.metric("Total Components", f"{total:,}", delta=None)
             else:
                 st.metric("Total Components", str(total), delta=None)
-
+        
         with col2:
             requests = metrics.get("active_requests", "Error")
             if isinstance(requests, int):
                 st.metric("Active Requests", requests, delta=None)
             else:
                 st.metric("Active Requests", str(requests), delta=None)
-
+        
         with col3:
-            st.metric("Last Updated", metrics.get(
-                "last_updated", "Unknown"), delta=None)
-
+            st.metric("Last Updated", metrics.get("last_updated", "Unknown"), delta=None)
+        
         # View Active Requests Button
         st.markdown("---")
         if st.button("📋 View Active Requests", use_container_width=True, type="primary"):
             st.session_state.show_requests = True
-
+        
         # Display requests if button was clicked
         if st.session_state.get("show_requests", False):
             self._show_active_requests()
-
+    
     def _show_active_requests(self):
         """Display the active reorder requests with delete options"""
         st.markdown("### 📋 Active Reorder Requests")
-
+        
         try:
             if self.inventory_manager.bucket:
                 blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
                 if blob.exists():
                     reorder_content = blob.download_as_text()
-                    requests = [line.strip() for line in reorder_content.split(
-                        '\n') if line.strip()]
-
+                    requests = [line.strip() for line in reorder_content.split('\n') if line.strip()]
+                    
                     if requests:
                         st.success(f"Found {len(requests)} active request(s)")
-
+                        
                         # Initialize session state for checkboxes
                         if "selected_requests" not in st.session_state:
                             st.session_state.selected_requests = set()
-
+                        
                         # Add "Select All" option and Delete button
                         col1, col2 = st.columns([3, 1])
                         with col1:
                             select_all = st.checkbox("Select All Requests")
                             if select_all:
-                                st.session_state.selected_requests = set(
-                                    range(len(requests)))
+                                st.session_state.selected_requests = set(range(len(requests)))
                             elif not select_all and len(st.session_state.selected_requests) == len(requests):
                                 st.session_state.selected_requests = set()
-
+                        
                         with col2:
                             if st.button("🗑️ Delete Selected", type="secondary"):
                                 if st.session_state.selected_requests:
-                                    deleted_count = self._delete_selected_requests(
-                                        requests)
+                                    deleted_count = self._delete_selected_requests(requests)
                                     if deleted_count > 0:
                                         st.rerun()
                                 else:
-                                    st.warning(
-                                        "No requests selected for deletion")
-
+                                    st.warning("No requests selected for deletion")
+                        
                         st.markdown("---")
-
+                        
                         # Display each request with checkbox (no form needed)
                         for i, request in enumerate(requests):
                             col1, col2 = st.columns([1, 10])
-
+                            
                             with col1:
                                 # Use individual checkboxes that update session state immediately
                                 is_selected = st.checkbox(
-                                    "",
-                                    # Include length to force refresh
-                                    key=f"req_{i}_{len(requests)}",
+                                    "", 
+                                    key=f"req_{i}_{len(requests)}", # Include length to force refresh
                                     value=i in st.session_state.selected_requests,
                                     on_change=self._toggle_request_selection,
                                     args=(i,)
                                 )
-
+                            
                             with col2:
                                 with st.expander(f"Request #{i+1}", expanded=False):
                                     # Parse the request details
@@ -762,8 +751,7 @@ class InventoryUI:
                                     for part in parts:
                                         if ':' in part:
                                             key, value = part.split(':', 1)
-                                            st.write(
-                                                f"**{key.strip()}:** {value.strip()}")
+                                            st.write(f"**{key.strip()}:** {value.strip()}")
                                         else:
                                             st.write(part)
                     else:
@@ -772,45 +760,43 @@ class InventoryUI:
                     st.info("No reorder requests file found")
             else:
                 st.error("Unable to access database")
-
+                
         except Exception as e:
             logger.error(f"Error fetching active requests: {e}")
             st.error("Failed to load active requests")
-
+    
     def _toggle_request_selection(self, index):
         """Toggle selection of a specific request"""
         if "selected_requests" not in st.session_state:
             st.session_state.selected_requests = set()
-
+        
         if index in st.session_state.selected_requests:
             st.session_state.selected_requests.remove(index)
         else:
             st.session_state.selected_requests.add(index)
-
+    
     def _delete_selected_requests(self, current_requests) -> int:
         """Delete selected requests from Firebase and return count of deleted items"""
         try:
             if not st.session_state.selected_requests:
                 return 0
-
+            
             if self.inventory_manager.bucket:
                 # Remove selected requests (in reverse order to maintain indices)
-                selected_indices = sorted(
-                    st.session_state.selected_requests, reverse=True)
+                selected_indices = sorted(st.session_state.selected_requests, reverse=True)
                 updated_requests = current_requests.copy()
                 deleted_count = 0
-
+                
                 for index in selected_indices:
                     if 0 <= index < len(updated_requests):
                         updated_requests.pop(index)
                         deleted_count += 1
-
+                
                 # Update the file
                 blob = self.inventory_manager.bucket.blob('to_be_ordered.txt')
-                updated_content = '\n'.join(
-                    updated_requests) + '\n' if updated_requests else ''
+                updated_content = '\n'.join(updated_requests) + '\n' if updated_requests else ''
                 blob.upload_from_string(updated_content)
-
+                
                 # Clear selection and show success
                 st.session_state.selected_requests = set()
                 st.success(f"Successfully deleted {deleted_count} request(s)")
@@ -818,12 +804,11 @@ class InventoryUI:
             else:
                 st.error("Unable to access database")
                 return 0
-
+                
         except Exception as e:
             logger.error(f"Error deleting requests: {e}")
             st.error("Failed to delete selected requests")
             return 0
-
 
 def main():
     """Main application entry point"""
@@ -834,7 +819,7 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded"
     )
-
+    
     # Custom CSS for professional styling
     st.markdown("""
     <style>
@@ -861,40 +846,38 @@ def main():
     }
     </style>
     """, unsafe_allow_html=True)
-
+    
     # Authentication check
     if not AuthManager.authenticate():
         return
-
+    
     # Initialize managers
     try:
         inventory_manager = InventoryManager()
         ui = InventoryUI(inventory_manager)
-
+        
         # Render UI components
         ui.render_header()
         ui.render_sidebar()
-
+        
         # Main content area
-        tab1, tab2, tab3 = st.tabs(
-            ["🔍 Search Components", "📊 Dashboard", "📤 File Upload"])
-
+        tab1, tab2, tab3 = st.tabs(["🔍 Search Components", "📊 Dashboard", "📤 File Upload"])
+        
         with tab1:
             ui.render_search_section()
             st.markdown("---")
             ui.render_reorder_section()
-
+        
         with tab2:
             ui.render_dashboard_section()
-
+        
         with tab3:
             ui.render_file_upload_section()
-
+    
     except Exception as e:
         logger.error(f"Application error: {e}")
-        st.error(
-            "🚨 An unexpected error occurred. Please check the configuration and try again.")
-
+        st.error("🚨 An unexpected error occurred. Please check the configuration and try again.")
+        
         # Show error details in an expander for debugging
         with st.expander("🔧 Error Details (for administrator)"):
             st.code(str(e))
@@ -903,12 +886,11 @@ def main():
             st.write("- Missing authentication configuration")
             st.write("- Network connectivity issues")
             st.write("- Firebase service account permissions")
-
+        
         st.info("💡 **Quick fixes to try:**")
         st.write("1. Refresh the page")
         st.write("2. Check your internet connection")
         st.write("3. Contact the administrator if the problem persists")
-
 
 if __name__ == "__main__":
     main()
